@@ -7,9 +7,11 @@ project("render")
 include_directories(${CMAKE_SOURCE_DIR}/third/include)
 include_directories(${CMAKE_SOURCE_DIR}/common/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/include)
+include_directories(${CMAKE_SOURCE_DIR}/engine/nre/include)
 
 aux_source_directory(${CMAKE_SOURCE_DIR}/common SRC_COMMON)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine SRC_ENGINE)
+aux_source_directory(${CMAKE_SOURCE_DIR}/engine/nre SRC_NRE)
 
 add_library(lib-assimp
             SHARED
@@ -28,6 +30,7 @@ add_library( # Sets the name of the library.
              # Provides a relative path to your source file(s).
              ${SRC_COMMON}
              ${SRC_ENGINE}
+             ${SRC_NRE}
              loader.cpp)
 
 target_link_libraries( # Specifies the target library.
