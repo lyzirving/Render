@@ -61,6 +61,7 @@ void Thread::run()
         work();
     }
     m_isRunning.store(false);
+    onQuit();
     LOG_DEBUG("thread[%s] quit", m_name.c_str());
 }
 
