@@ -29,6 +29,7 @@ protected:
 
 protected:
     std::atomic<bool> m_interrupted;
+    std::atomic<bool> m_isRunning;
     bool m_loop;
     std::thread m_thread;
     std::string m_name;

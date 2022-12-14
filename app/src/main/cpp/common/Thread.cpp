@@ -7,6 +7,7 @@
 #define LOCAL_TAG "Thread"
 
 Thread::Thread(const char* name, bool loop) : m_interrupted(false),
+                                              m_isRunning(false),
                                               m_loop(loop),
                                               m_thread(),
                                               m_name(name)
@@ -38,11 +39,15 @@ bool Thread::isInterrupted()
 
 void Thread::join()
 {
-    m_thread.join();
+    if(m_thread.joinable())
+    {
+        m_thread.join();
+    }
 }
 
 void Thread::run()
 {
+    m_isRunning.store(true);
     LOG_DEBUG("thread[%s] start", m_name.c_str());
     if (m_loop)
     {
@@ -55,12 +60,20 @@ void Thread::run()
     {
         work();
     }
+    m_isRunning.store(false);
     LOG_DEBUG("thread[%s] quit", m_name.c_str());
 }
 
 void Thread::start()
 {
-    std::thread thread(std::bind(&Thread::run, this));
-    m_thread = std::move(thread);
+    if(!m_isRunning.load())
+    {
+        std::thread thread(std::bind(&Thread::run, this));
+        m_thread = std::move(thread);
+    }
+    else
+    {
+        LOG_DEBUG("thread[%s] is already running", m_name.c_str());
+    }
 }
 
