@@ -15,6 +15,19 @@ namespace gre
     #define GRE_SUCCESS  0
     #define GRE_ERROR    1
 
+    enum GrePriority : uint8_t
+    {
+        TOP,
+        HIGH,
+        NORMAL,
+        LOW
+    };
+
+    enum GreTimerKey : uint8_t
+    {
+        REFRESH
+    };
+
     enum GreContextId : uint8_t
     {
         CTX_MAIN,
