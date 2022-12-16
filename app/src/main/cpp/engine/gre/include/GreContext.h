@@ -14,6 +14,7 @@ namespace gre
 {
     class GreThread;
     class GreWindow;
+    class GreTimerManager;
 
     class GreContext
     {
@@ -28,6 +29,7 @@ namespace gre
         GreContextId m_id;
         std::shared_ptr<GreThread> m_thread;
         std::shared_ptr<GreWindow> m_window;
+        std::shared_ptr<GreTimerManager> m_timerMgr;
     };
 }
 

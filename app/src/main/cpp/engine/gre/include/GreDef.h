@@ -17,10 +17,10 @@ namespace gre
 
     enum GrePriority : uint8_t
     {
-        TOP,
-        HIGH,
+        LOW,
         NORMAL,
-        LOW
+        HIGH,
+        TOP
     };
 
     enum GreTimerKey : uint8_t

@@ -1,7 +1,9 @@
+#include <cassert>
+
 #include "GreContext.h"
 #include "GreThread.h"
 #include "GreWindow.h"
-#include <pthread.h>
+#include "GreTimerManager.h"
 
 #include "LogUtil.h"
 
@@ -23,7 +25,8 @@ namespace gre
 
     GreContext::GreContext(GreContextId id) : m_id(id),
                                               m_thread(nullptr),
-                                              m_window(nullptr)
+                                              m_window(nullptr),
+                                              m_timerMgr(nullptr)
     {
     }
 
@@ -38,6 +41,8 @@ namespace gre
         }
 
         m_window = std::make_shared<GreWindow>(m_id);
+        m_timerMgr = std::make_shared<GreTimerManager>();
+
         m_thread = std::make_shared<GreThread>(CTX_ID_TO_STR(m_id));
         m_thread->setFunc(loopWork, this);
         m_thread->start();
@@ -50,7 +55,15 @@ namespace gre
 
     void GreContext::main()
     {
-
+        if (m_timerMgr)
+        {
+            m_timerMgr->process();
+        }
+        else
+        {
+            LOG_ERR("timer manager is null");
+            assert(0);
+        }
     }
 }
 
