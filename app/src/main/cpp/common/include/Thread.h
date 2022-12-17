@@ -10,7 +10,7 @@
 #include <thread>
 #include <string>
 #include <atomic>
-#include "SimpleObjPool.h"
+#include "Pool.h"
 
 class Thread
 {

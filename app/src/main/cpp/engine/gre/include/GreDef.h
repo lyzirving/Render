@@ -23,7 +23,7 @@ namespace gre
         TOP
     };
 
-    enum GreTimerKey : uint8_t
+    enum GreEventId : uint8_t
     {
         REFRESH
     };

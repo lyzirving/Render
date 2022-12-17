@@ -24,10 +24,11 @@ namespace gre
         virtual ~GreTimerManager();
 
         void addTimer(const std::shared_ptr<GreTimer>& timer);
+        void removeTimer(const std::shared_ptr<GreTimer>& timer);
         void process();
 
     private:
-        std::vector<std::shared_ptr<GreTimer>> m_timerList;
+        std::vector<std::shared_ptr<GreTimer>> m_timerArray;
     };
 }
 

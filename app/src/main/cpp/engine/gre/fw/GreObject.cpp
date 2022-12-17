@@ -13,7 +13,7 @@ namespace gre
 
     GreObject::~GreObject() = default;
 
-    void GreObject::slotCallback(std::shared_ptr<GreEventArg> &arg)
+    void GreObject::slotCb(PoolEvtArgType &&arg)
     {
         //no implementation in base class
     }

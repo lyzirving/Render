@@ -8,19 +8,28 @@
 
 namespace gre
 {
-    GreTimer::GreTimer(GreTimerKey key, int64_t intervalMs, GrePriority priority)
+    static uint32_t gTimerId{0};
+
+    GreTimer::GreTimer(GreEventId key, int64_t intervalMs, GrePriority priority)
     : GreObject(),
       m_key(key), m_priority(priority),
       m_intervalMs(intervalMs), m_lastNotifyTime(0),
-      m_isRunning(false)
-    {
-    }
+      m_isRunning(false), m_timerId(gTimerId++)
+      {
+      }
 
     GreTimer::~GreTimer() = default;
 
-    void GreTimer::fire(std::shared_ptr<GreEventArg> &arg)
+    bool GreTimer::operator==(const GreTimer &other) const
     {
-        slotCallback(arg);
+        return m_timerId == other.m_timerId
+               && m_key == other.m_key
+               && m_priority == other.m_priority;
+    }
+
+    void GreTimer::fire(PoolEvtArgType &&arg)
+    {
+        slotCb(std::move(arg));
     }
 
     void GreTimer::start()

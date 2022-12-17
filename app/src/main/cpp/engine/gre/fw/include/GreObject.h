@@ -1,7 +1,7 @@
 #ifndef RENDER_GREOBJECT_H
 #define RENDER_GREOBJECT_H
 
-#include <memory>
+#include "Pool.h"
 
 namespace gre
 {
@@ -14,13 +14,15 @@ namespace gre
         void* arg0;
     };
 
+    using PoolEvtArgType = std::unique_ptr<GreEventArg, Pool<GreEventArg>::Deleter>;
+
     class IEvent
     {
     public:
         IEvent() {}
         virtual ~IEvent() {}
 
-        virtual void fire(std::shared_ptr<GreEventArg> &arg) = 0;
+        virtual void fire(PoolEvtArgType &&arg) = 0;
     };
 
     class GreObject
@@ -29,9 +31,8 @@ namespace gre
         GreObject();
 
         virtual ~GreObject();
-        virtual void slotCallback(std::shared_ptr<GreEventArg>& arg);
-
     protected:
+        virtual void slotCb(PoolEvtArgType &&arg);
     };
 }
 

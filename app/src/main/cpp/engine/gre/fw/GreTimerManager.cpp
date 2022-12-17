@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "GreTimerManager.h"
+#include "GreEventPool.h"
 #include "SystemUtil.h"
 #include "LogUtil.h"
 
@@ -11,33 +12,78 @@
 
 namespace gre
 {
-    GreTimerManager::GreTimerManager() : m_timerList()
+    GreTimerManager::GreTimerManager() : m_timerArray()
     {
     }
 
     GreTimerManager::~GreTimerManager()
     {
-        if(!m_timerList.empty())
+        if(!m_timerArray.empty())
         {
-            auto itr = m_timerList.begin();
-            while (itr != m_timerList.end())
+            auto itr = m_timerArray.begin();
+            while (itr != m_timerArray.end())
             {
                 itr->reset();
-                itr = m_timerList.erase(itr);
+                itr = m_timerArray.erase(itr);
             }
         }
     }
 
     void GreTimerManager::addTimer(const std::shared_ptr<GreTimer> &timer)
     {
-        m_timerList.emplace_back(timer);
-        std::sort(m_timerList.begin(), m_timerList.end(), GreTimerCmpObj);
+        if (!timer)
+        {
+            return;
+        }
+        bool found{false};
+        for (auto & item : m_timerArray) {
+            if((*timer) == (*item))
+            {
+                found = true;
+                break;
+            }
+        }
+        if (found)
+        {
+            LOG_DEBUG("timer[id[%u], key[%u], priority[%u]] has already been added",
+                      timer->getId(), timer->getKey(), timer->getPriority());
+        }
+        else
+        {
+            m_timerArray.emplace_back(timer);
+            std::sort(m_timerArray.begin(), m_timerArray.end(), GreTimerCmpObj);
+        }
+    }
+
+    void GreTimerManager::removeTimer(const std::shared_ptr<GreTimer> &timer)
+    {
+        if (!timer)
+        {
+            return;
+        }
+        bool found{false};
+        uint32_t ind{0};
+        for (auto & item : m_timerArray) {
+            if((*timer) == (*item))
+            {
+                found = true;
+                break;
+            }
+            ind++;
+        }
+        if (found && ind < m_timerArray.size())
+        {
+            LOG_DEBUG("timer[id[%u], key[%u], priority[%u]] is removed",
+                      timer->getId(), timer->getKey(), timer->getPriority());
+            m_timerArray[ind].reset();
+            m_timerArray.erase(m_timerArray.begin() + ind, m_timerArray.begin() + ind + 1);
+        }
     }
 
     void GreTimerManager::process()
     {
-        auto itr = m_timerList.begin();
-        while(itr != m_timerList.end())
+        auto itr = m_timerArray.begin();
+        while(itr != m_timerArray.end())
         {
             GreTimer *timer = itr->get();
             if(timer)
@@ -45,13 +91,13 @@ namespace gre
                 int64_t timeMs = systemTimeMs();
                 if (timer->tick(timeMs))
                 {
-                    //todo make event poll
+                    timer->fire(std::move(GreEventPool::get()->getEvtArg()));
                 }
                 itr++;
             }
             else
             {
-                itr = m_timerList.erase(itr);
+                itr = m_timerArray.erase(itr);
             }
         }
     }

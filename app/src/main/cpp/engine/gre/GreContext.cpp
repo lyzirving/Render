@@ -41,7 +41,10 @@ namespace gre
         }
 
         m_window = std::make_shared<GreWindow>(m_id);
+        m_window->start();
+
         m_timerMgr = std::make_shared<GreTimerManager>();
+        m_timerMgr->addTimer(m_window);
 
         m_thread = std::make_shared<GreThread>(CTX_ID_TO_STR(m_id));
         m_thread->setFunc(loopWork, this);
