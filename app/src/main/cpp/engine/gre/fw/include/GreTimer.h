@@ -21,13 +21,14 @@ namespace gre
         GreTimer& operator=(const GreTimer &other) = delete;
         bool operator==(const GreTimer &other) const;
 
-        void start();
-        void stop();
+        void startTimer();
+        void stopTimer();
         bool tick(int64_t sysTimeMs);
 
         inline GreEventId getKey() { return m_key; }
         inline GrePriority getPriority() { return m_priority; }
         inline uint32_t  getId() { return m_timerId; }
+        inline bool isStart() { return m_isRunning.load(); }
 
     private:
         inline int64_t getExpiration() { return m_lastNotifyTime + m_intervalMs; }

@@ -24,8 +24,12 @@ namespace gre
 
         uint8_t init();
         void main();
+        void release();
+        void setWeakSelf(const std::shared_ptr<GreContext> &context);
+
     private:
 
+        std::weak_ptr<GreContext> m_self;
         GreContextId m_id;
         std::shared_ptr<GreThread> m_thread;
         std::shared_ptr<GreWindow> m_window;

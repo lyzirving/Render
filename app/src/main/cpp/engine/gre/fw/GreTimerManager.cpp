@@ -88,12 +88,15 @@ namespace gre
             GreTimer *timer = itr->get();
             if(timer)
             {
-                int64_t timeMs = systemTimeMs();
-                if (timer->tick(timeMs))
+                if(timer->isStart())
                 {
-                    timer->fire(std::move(GreEventPool::get()->getEvtArg()));
+                    int64_t timeMs = systemTimeMs();
+                    if (timer->tick(timeMs))
+                    {
+                        timer->fire(std::move(GreEventPool::get()->getEvtArg()));
+                    }
+                    itr++;
                 }
-                itr++;
             }
             else
             {

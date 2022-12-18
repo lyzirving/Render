@@ -67,17 +67,17 @@ private:
             uint32_t size = m_pool.size();
             if(size < m_max)
             {
-                __android_log_print(ANDROID_LOG_DEBUG, LIB_TAG,
-                                    "[Pool][add] current pool size[%u]",
-                                    (size + 1));
+//                __android_log_print(ANDROID_LOG_DEBUG, LIB_TAG,
+//                                    "[Pool][add] current pool size[%u]",
+//                                    (size + 1));
                 std::unique_ptr<T> newItem(item);
                 m_pool.push_back(std::move(newItem));
             }
             else
             {
-                __android_log_print(ANDROID_LOG_DEBUG, LIB_TAG,
-                                    "[Pool][add] out of max size[%u]",
-                                    m_max);
+//                __android_log_print(ANDROID_LOG_DEBUG, LIB_TAG,
+//                                    "[Pool][add] out of max size[%u]",
+//                                    m_max);
                 delete item;
             }
         }

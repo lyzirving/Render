@@ -14,7 +14,7 @@
 #endif
 #define LOCAL_TAG "LogUtil"
 
-#define LIB_TAG "Render"
+#define LIB_TAG "lib-render"
 
 #define LOG_DEBUG(format, ...)  __android_log_print(ANDROID_LOG_DEBUG,               \
                                                     LIB_TAG, "[%s][%s][%d] " format, \

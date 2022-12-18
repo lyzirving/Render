@@ -32,7 +32,7 @@ namespace gre
         slotCb(std::move(arg));
     }
 
-    void GreTimer::start()
+    void GreTimer::startTimer()
     {
         if(m_isRunning.load())
         {
@@ -42,7 +42,7 @@ namespace gre
         m_isRunning.store(true);
     }
 
-    void GreTimer::stop()
+    void GreTimer::stopTimer()
     {
         m_isRunning.store(false);
     }

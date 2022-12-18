@@ -20,7 +20,12 @@ namespace gre
         virtual void slotCb(PoolEvtArgType &&arg) override;
 
     private:
+        void printFps();
+
         GreContextId m_id;
+        uint64_t m_totalFrame;
+        int64_t m_lastRecTimeMs;
+        uint8_t m_fps;
     };
 }
 
