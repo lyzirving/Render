@@ -28,11 +28,10 @@ namespace gre
         inline GreEventId getKey() { return m_key; }
         inline GrePriority getPriority() { return m_priority; }
         inline uint32_t  getId() { return m_timerId; }
+        inline int64_t getExpiration() { return m_lastNotifyTime + m_intervalMs; }
         inline bool isStart() { return m_isRunning.load(); }
 
     private:
-        inline int64_t getExpiration() { return m_lastNotifyTime + m_intervalMs; }
-
         GreEventId m_key;
         GrePriority m_priority;
         int64_t m_intervalMs;

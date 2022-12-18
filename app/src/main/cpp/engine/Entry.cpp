@@ -3,8 +3,8 @@
  * @date    2022-12-13
  * @brief   connection between android application and native layer
 **/
-
 #include <jni.h>
+#include <android/native_window_jni.h>
 
 #include "GreProxy.h"
 #include "LogUtil.h"

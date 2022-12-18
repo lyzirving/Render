@@ -2,8 +2,8 @@
 
 #include "GreContext.h"
 #include "GreThread.h"
+#include "GreTimerMgr.h"
 #include "GreWindow.h"
-#include "GreTimerManager.h"
 
 #include "LogUtil.h"
 
@@ -15,7 +15,8 @@
 namespace gre {
 
     static void threadLoop(void *arg) {
-        if (arg) {
+        if (arg)
+        {
             auto *ctx = static_cast<GreContext *>(arg);
             ctx->mainWork();
         }
@@ -60,7 +61,7 @@ namespace gre {
         m_window = std::make_shared<GreWindow>(m_id);
         m_window->startTimer();
 
-        m_timerMgr = std::make_shared<GreTimerManager>();
+        m_timerMgr = std::make_shared<GreTimerMgr>();
         m_timerMgr->addTimer(m_window);
 
         m_thread = std::make_shared<GreThread>(CTX_ID_TO_STR(m_id));

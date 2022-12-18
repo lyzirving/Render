@@ -1,8 +1,8 @@
 #ifndef RENDER_GFXEGLCORE_H
 #define RENDER_GFXEGLCORE_H
 
-#include "../../../../../../../../../../../AndroidStudioSdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/EGL/egl.h"
-#include "../../../../../../../../../../../AndroidStudioSdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/include/EGL/eglext.h"
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
 
 namespace gfx
 {

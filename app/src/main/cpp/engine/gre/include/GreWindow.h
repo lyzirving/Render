@@ -8,11 +8,15 @@
 **/
 #include "GreTimer.h"
 
+struct ANativeWindow;
+
+namespace gfx
+{
+    class GfxEglCore;
+}
+
 namespace gre
 {
-    class ANativeWindow;
-    class GfxEglCore;
-
     class GreWindow : public GreTimer
     {
     public:
@@ -32,7 +36,7 @@ namespace gre
         int64_t m_lastRecTimeMs;
         uint8_t m_fps;
 
-        std::shared_ptr<GfxEglCore> mEgl;
+        std::shared_ptr<gfx::GfxEglCore> mEgl;
     };
 }
 

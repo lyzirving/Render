@@ -2,7 +2,8 @@
 #define RENDER_GREPROXY_H
 
 #include <cstdint>
-#include <android/native_window_jni.h>
+
+struct ANativeWindow;
 
 namespace gre
 {

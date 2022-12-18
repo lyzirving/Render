@@ -1,5 +1,5 @@
-#ifndef RENDER_GRETIMERMANAGER_H
-#define RENDER_GRETIMERMANAGER_H
+#ifndef RENDER_GRETIMERMGR_H
+#define RENDER_GRETIMERMGR_H
 
 #include <vector>
 
@@ -17,19 +17,27 @@ namespace gre
         }
     } GreTimerCmpObj;
 
-    class GreTimerManager
+    class GreTimerMgr
     {
     public:
-        GreTimerManager();
-        virtual ~GreTimerManager();
+        GreTimerMgr();
+        virtual ~GreTimerMgr();
+
+        inline int64_t getTimeout() { return m_minExpiration; }
 
         void addTimer(const std::shared_ptr<GreTimer>& timer);
         void removeTimer(const std::shared_ptr<GreTimer>& timer);
         void process();
 
     private:
+        void computeMinExpiration();
+        void processTimer();
+
         std::vector<std::shared_ptr<GreTimer>> m_timerArray;
+        std::vector<std::shared_ptr<GreTimer>> m_tmpArray;
+        std::atomic<bool> m_ticking;
+        int64_t m_minExpiration;
     };
 }
 
-#endif //RENDER_GRETIMERMANAGER_H
+#endif //RENDER_GRETIMERMGR_H

@@ -1,6 +1,7 @@
 #include <algorithm>
+#include <limits>
 
-#include "GreTimerManager.h"
+#include "GreTimerMgr.h"
 #include "GreEventPool.h"
 #include "SystemUtil.h"
 #include "LogUtil.h"
@@ -8,15 +9,18 @@
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "GreTimerManager"
+#define LOCAL_TAG "GreTimerMgr"
 
 namespace gre
 {
-    GreTimerManager::GreTimerManager() : m_timerArray()
+    #define TIMEOUT_INFINITE LONG_MAX
+
+    GreTimerMgr::GreTimerMgr()
+    : m_timerArray(), m_tmpArray(), m_ticking(false), m_minExpiration(TIMEOUT_INFINITE)
     {
     }
 
-    GreTimerManager::~GreTimerManager()
+    GreTimerMgr::~GreTimerMgr()
     {
         if(!m_timerArray.empty())
         {
@@ -27,9 +31,18 @@ namespace gre
                 itr = m_timerArray.erase(itr);
             }
         }
+        if(!m_tmpArray.empty())
+        {
+            auto itr = m_tmpArray.begin();
+            while (itr != m_tmpArray.end())
+            {
+                itr->reset();
+                itr = m_tmpArray.erase(itr);
+            }
+        }
     }
 
-    void GreTimerManager::addTimer(const std::shared_ptr<GreTimer> &timer)
+    void GreTimerMgr::addTimer(const std::shared_ptr<GreTimer> &timer)
     {
         if (!timer)
         {
@@ -55,7 +68,25 @@ namespace gre
         }
     }
 
-    void GreTimerManager::removeTimer(const std::shared_ptr<GreTimer> &timer)
+    void GreTimerMgr::computeMinExpiration()
+    {
+        m_minExpiration = TIMEOUT_INFINITE;
+        if(!m_timerArray.empty())
+        {
+            auto itr = m_timerArray.begin();
+            while (itr != m_timerArray.end())
+            {
+                int64_t expire = itr->get()->getExpiration();
+                if(expire < m_minExpiration)
+                {
+                    m_minExpiration = expire;
+                }
+                itr++;
+            }
+        }
+    }
+
+    void GreTimerMgr::removeTimer(const std::shared_ptr<GreTimer> &timer)
     {
         if (!timer)
         {
@@ -80,7 +111,16 @@ namespace gre
         }
     }
 
-    void GreTimerManager::process()
+    void GreTimerMgr::process()
+    {
+        m_ticking.store(true);
+        processTimer();
+        //todo logic: process timer-add motion when manager is ticking
+        computeMinExpiration();
+        m_ticking.store(false);
+    }
+
+    void GreTimerMgr::processTimer()
     {
         auto itr = m_timerArray.begin();
         while(itr != m_timerArray.end())
@@ -95,8 +135,8 @@ namespace gre
                     {
                         timer->fire(std::move(GreEventPool::get()->getEvtArg()));
                     }
-                    itr++;
                 }
+                itr++;
             }
             else
             {

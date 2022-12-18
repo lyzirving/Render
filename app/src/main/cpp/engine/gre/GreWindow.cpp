@@ -1,5 +1,4 @@
 #include <limits>
-#include <android/native_window_jni.h>
 
 #include "GreWindow.h"
 #include "GfxEglCore.h"
@@ -49,6 +48,7 @@ namespace gre
             m_totalFrame++;
         }
         m_fps++;
+
         if (m_lastRecTimeMs == 0)
         {
             m_lastRecTimeMs = systemTimeMs();
