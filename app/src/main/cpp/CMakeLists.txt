@@ -10,12 +10,16 @@ include_directories(${CMAKE_SOURCE_DIR}/common/tools/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gre/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gre/fw/include)
+include_directories(${CMAKE_SOURCE_DIR}/engine/gfx/include)
+include_directories(${CMAKE_SOURCE_DIR}/engine/gfx/egl/include)
 
 aux_source_directory(${CMAKE_SOURCE_DIR}/common SRC_COMMON)
 aux_source_directory(${CMAKE_SOURCE_DIR}/common/tools SRC_TOOLS)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine SRC_ENGINE)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gre SRC_GRE)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gre/fw SRC_FW)
+aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gfx SRC_GFX)
+aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gfx/egl SRC_EGL)
 
 add_library(lib-assimp
             SHARED
@@ -37,6 +41,8 @@ add_library( # Sets the name of the library.
              ${SRC_ENGINE}
              ${SRC_GRE}
              ${SRC_FW}
+             ${SRC_GFX}
+             ${SRC_EGL}
              loader.cpp)
 
 target_link_libraries( # Specifies the target library.

@@ -1,6 +1,8 @@
 #include <limits>
+#include <android/native_window_jni.h>
 
 #include "GreWindow.h"
+#include "GfxEglCore.h"
 #include "SystemUtil.h"
 #include "LogUtil.h"
 
@@ -13,11 +15,23 @@ namespace gre
 {
     GreWindow::GreWindow(GreContextId id)
     : GreTimer(GreEventId::REFRESH, 1000 / 60, GrePriority::TOP),
-      m_id(id), m_totalFrame(0), m_lastRecTimeMs(0), m_fps(0)
+      m_id(id), m_totalFrame(0), m_lastRecTimeMs(0), m_fps(0),
+      mEgl(nullptr)
     {
     }
 
     GreWindow::~GreWindow() = default;
+
+    bool GreWindow::attachSurface(ANativeWindow *surface)
+    {
+        if (!surface)
+        {
+            LOG_ERR("invalid surface ptr");
+            return false;
+        }
+        //todo switch this event into rendering thread
+        return true;
+    }
 
     void GreWindow::slotCb(PoolEvtArgType &&arg)
     {

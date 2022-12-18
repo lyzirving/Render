@@ -24,6 +24,14 @@ static void nativeDetachView(JNIEnv *env, jclass clazz, jint id) {
     gre::PROXY_detachView(id);
 }
 
+static void nativeAttachSurface(JNIEnv *env, jclass clazz, jint id, jobject surface) {
+    ANativeWindow *window = ANativeWindow_fromSurface(env, surface);
+    if(!gre::PROXY_attachSurface(id, window))
+    {
+        ANativeWindow_release(window);
+    }
+}
+
 static JNINativeMethod methods[] = {
         {
                 "nAttachView",
@@ -34,6 +42,11 @@ static JNINativeMethod methods[] = {
                 "nDetachView",
                 "(I)V",
                 (void *) nativeDetachView
+        },
+        {
+                "nAttachSurface",
+                "(ILandroid/view/Surface;)V",
+                (void *) nativeAttachSurface
         },
 };
 

@@ -10,11 +10,16 @@
 
 namespace gre
 {
+    class ANativeWindow;
+    class GfxEglCore;
+
     class GreWindow : public GreTimer
     {
     public:
         GreWindow(GreContextId id);
         virtual ~GreWindow();
+
+        bool attachSurface(ANativeWindow *surface);
 
     protected:
         virtual void slotCb(PoolEvtArgType &&arg) override;
@@ -26,6 +31,8 @@ namespace gre
         uint64_t m_totalFrame;
         int64_t m_lastRecTimeMs;
         uint8_t m_fps;
+
+        std::shared_ptr<GfxEglCore> mEgl;
     };
 }
 

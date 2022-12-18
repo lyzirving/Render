@@ -2,10 +2,13 @@
 #define RENDER_GREPROXY_H
 
 #include <cstdint>
+#include <android/native_window_jni.h>
 
 namespace gre
 {
     void PROXY_attachView(int32_t id);
+
+    bool PROXY_attachSurface(int32_t id, ANativeWindow *window);
 
     void PROXY_detachView(int32_t id);
 }

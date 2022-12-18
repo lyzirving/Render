@@ -15,6 +15,7 @@ namespace gre
     class GreThread;
     class GreWindow;
     class GreTimerManager;
+    class ANativeWindow;
 
     class GreContext
     {
@@ -22,8 +23,9 @@ namespace gre
         GreContext(GreContextId id = GreContextId::CTX_MAIN);
         virtual ~GreContext();
 
+        bool attachSurface(ANativeWindow *surface);
         uint8_t init();
-        void main();
+        void mainWork();
         void release();
         void setWeakSelf(const std::shared_ptr<GreContext> &context);
 

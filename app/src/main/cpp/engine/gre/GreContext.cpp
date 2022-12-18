@@ -14,10 +14,10 @@
 
 namespace gre {
 
-    static void loopWork(void *arg) {
+    static void threadLoop(void *arg) {
         if (arg) {
             auto *ctx = static_cast<GreContext *>(arg);
-            ctx->main();
+            ctx->mainWork();
         }
     }
 
@@ -36,6 +36,19 @@ namespace gre {
         m_thread.reset();
     }
 
+    bool GreContext::attachSurface(ANativeWindow *surface)
+    {
+        if(m_window)
+        {
+            return m_window->attachSurface(surface);
+        }
+        else
+        {
+            LOG_ERR("GreWindow is null");
+            return false;
+        }
+    }
+
     uint8_t GreContext::init()
     {
         if(m_id >= GreContextId::CTX_COUNT)
@@ -51,7 +64,7 @@ namespace gre {
         m_timerMgr->addTimer(m_window);
 
         m_thread = std::make_shared<GreThread>(CTX_ID_TO_STR(m_id));
-        m_thread->setFunc(loopWork, this);
+        m_thread->setFunc(threadLoop, this);
         m_thread->start();
 
         return GRE_SUCCESS;
@@ -60,7 +73,7 @@ namespace gre {
         return GRE_ERROR;
     }
 
-    void GreContext::main()
+    void GreContext::mainWork()
     {
         if (m_timerMgr)
         {
