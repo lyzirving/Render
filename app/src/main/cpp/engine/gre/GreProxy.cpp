@@ -16,10 +16,21 @@ namespace gre {
             return;
         }
         if (!m_arrayCtx[id]) {
-            LOG_DEBUG("success to attach view[%u]", id);
             m_arrayCtx[id] = std::make_shared<GreContext>(GreContextId(id));
-            m_arrayCtx[id]->init();
-        } else {
+            std::shared_ptr<GreContext> self(m_arrayCtx[id]);
+            m_arrayCtx[id]->setWeakSelf(self);
+            if(m_arrayCtx[id]->init() == GRE_SUCCESS)
+            {
+                LOG_DEBUG("success to attach view[%u]", id);
+            }
+            else
+            {
+                LOG_ERR("fail to attach view[%u]", id);
+                PROXY_detachView(id);
+            }
+        }
+        else
+        {
             LOG_ERR("view[%u] already existed", id);
         }
     }

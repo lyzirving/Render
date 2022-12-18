@@ -59,7 +59,7 @@ namespace gre
             if (cur - m_lastRecTimeMs > 1000)
             {
                 m_lastRecTimeMs = cur;
-                LOG_DEBUG("frame rate[%u], total frame[%lu]", m_fps, m_totalFrame);
+                LOG_DEBUG("fps[%u], frames[%lu]", m_fps, m_totalFrame);
                 m_fps = 0;
             }
         }

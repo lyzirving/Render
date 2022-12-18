@@ -11,7 +11,7 @@ namespace gre
         GreEventArg();
         virtual ~GreEventArg();
 
-        void* arg0;
+        void* argPtr;
     };
 
     using PoolEvtArgType = std::unique_ptr<GreEventArg, Pool<GreEventArg>::Deleter>;

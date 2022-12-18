@@ -52,6 +52,12 @@ namespace gre {
 
     uint8_t GreContext::init()
     {
+        if(m_self.expired())
+        {
+            LOG_ERR("context is invalid or weak self has not been set");
+            goto err;
+        }
+
         if(m_id >= GreContextId::CTX_COUNT)
         {
             LOG_ERR("invalid context id[%u]", m_id);

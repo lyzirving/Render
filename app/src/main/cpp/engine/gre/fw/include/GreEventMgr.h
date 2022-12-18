@@ -2,11 +2,19 @@
 #ifndef RENDER_GREEVENTMGR_H
 #define RENDER_GREEVENTMGR_H
 
+#include <unordered_map>
+#include <vector>
+
 namespace gre
 {
+    //todo implement this class
     class GreEventMgr
     {
-        //todo implement this class
+    public:
+        GreEventMgr();
+        virtual ~GreEventMgr();
+
+    private:
     };
 }
 

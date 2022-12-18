@@ -2,11 +2,11 @@
 
 namespace gre
 {
-    GreEventArg::GreEventArg() : arg0(nullptr) {}
+    GreEventArg::GreEventArg() : argPtr(nullptr) {}
 
     GreEventArg::~GreEventArg()
     {
-        arg0 = nullptr;
+        argPtr = nullptr;
     }
 
     GreObject::GreObject() = default;
