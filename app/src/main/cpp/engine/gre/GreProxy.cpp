@@ -64,7 +64,6 @@ namespace gre {
         }
         if(m_arrayCtx[id])
         {
-            // todo this event needs to be executed in render thread, or it will occasionally cause crash
             m_arrayCtx[id]->release();
             m_arrayCtx[id].reset();
             LOG_DEBUG("success to detach view[%u]", id);
