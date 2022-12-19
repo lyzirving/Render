@@ -31,16 +31,23 @@ namespace gre
         delete ptr;
     }
 
-    GreEventPool::GreEventPool() : m_poolEvtArg() {}
+    GreEventPool::GreEventPool()
+    : m_poolEvtArg(), m_poolSyncArg() {}
 
     GreEventPool::~GreEventPool()
     {
         m_poolEvtArg.release();
+        m_poolSyncArg.release();
     }
 
     PoolEvtArgType GreEventPool::getEvtArg()
     {
         return m_poolEvtArg.get();
+    }
+
+    PoolSyncEvtArgType GreEventPool::getSyncEvtArg()
+    {
+        return m_poolSyncArg.get();
     }
 }
 

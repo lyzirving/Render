@@ -13,7 +13,7 @@ class Pool
 public:
     using Deleter = std::function<void(T*)>;
 
-    Pool(uint32_t max = 50) : m_pool(), m_max(max) {};
+    Pool(uint32_t max = 30) : m_pool(), m_max(max) {};
     virtual ~Pool() { release(); }
 
     bool empty()

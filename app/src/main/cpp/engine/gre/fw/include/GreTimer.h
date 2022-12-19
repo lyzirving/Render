@@ -17,6 +17,7 @@ namespace gre
 
         virtual ~GreTimer();
         virtual void fire(PoolEvtArgType &&arg) override;
+        virtual void fire(PoolSyncEvtArgType &&arg) override;
 
         GreTimer& operator=(const GreTimer &other) = delete;
         bool operator==(const GreTimer &other) const;

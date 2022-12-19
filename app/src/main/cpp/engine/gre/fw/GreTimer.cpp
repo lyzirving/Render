@@ -32,6 +32,11 @@ namespace gre
         slotCb(std::move(arg));
     }
 
+    void GreTimer::fire(PoolSyncEvtArgType &&arg)
+    {
+        slotCb(std::move(arg));
+    }
+
     void GreTimer::startTimer()
     {
         if(m_isRunning.load())

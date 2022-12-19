@@ -37,6 +37,10 @@ namespace gre
         printFps();
     }
 
+    void GreWindow::slotCb(PoolSyncEvtArgType &&arg)
+    {
+    }
+
     void GreWindow::printFps()
     {
         if (m_totalFrame == ULONG_MAX - 1)

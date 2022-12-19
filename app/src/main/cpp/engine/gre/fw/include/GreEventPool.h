@@ -13,12 +13,14 @@ namespace gre
         static void release(GreEventPool *ptr);
 
         PoolEvtArgType getEvtArg();
+        PoolSyncEvtArgType getSyncEvtArg();
 
     private:
         GreEventPool();
         ~GreEventPool();
 
         Pool<GreEventArg> m_poolEvtArg;
+        Pool<GreSyncEventArg> m_poolSyncArg;
     };
 }
 

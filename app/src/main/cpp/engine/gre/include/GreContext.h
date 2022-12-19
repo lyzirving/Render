@@ -8,6 +8,8 @@
 **/
 
 #include <memory>
+#include <mutex>
+#include <pthread.h>
 #include "GreDef.h"
 
 struct ANativeWindow;
@@ -31,12 +33,16 @@ namespace gre
         void setWeakSelf(const std::shared_ptr<GreContext> &context);
 
     private:
+        int64_t getThreadId();
+        bool isMainThread();
 
         std::weak_ptr<GreContext> m_self;
         GreContextId m_id;
         std::shared_ptr<GreThread> m_thread;
         std::shared_ptr<GreWindow> m_window;
         std::shared_ptr<GreTimerMgr> m_timerMgr;
+        pthread_key_t m_keyThreadId;
+        int64_t m_mainThreadId;
     };
 }
 

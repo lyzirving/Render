@@ -1,10 +1,11 @@
 #include <cassert>
+#include <unistd.h>
+#include <sys/syscall.h>
 
 #include "GreContext.h"
 #include "GreThread.h"
 #include "GreTimerMgr.h"
 #include "GreWindow.h"
-
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
@@ -26,7 +27,11 @@ namespace gre {
                                               m_id(id),
                                               m_thread(nullptr),
                                               m_window(nullptr),
-                                              m_timerMgr(nullptr) {
+                                              m_timerMgr(nullptr),
+                                              m_keyThreadId(),
+                                              m_mainThreadId(0)
+    {
+        pthread_key_create(&m_keyThreadId, nullptr);
     }
 
     GreContext::~GreContext()
@@ -35,6 +40,7 @@ namespace gre {
         m_window.reset();
         m_timerMgr.reset();
         m_thread.reset();
+        pthread_key_delete(m_keyThreadId);
     }
 
     bool GreContext::attachSurface(ANativeWindow *surface)
@@ -48,6 +54,19 @@ namespace gre {
             LOG_ERR("GreWindow is null");
             return false;
         }
+    }
+
+    int64_t GreContext::getThreadId()
+    {
+        int64_t *ptr;
+        ptr = (int64_t *)pthread_getspecific(m_keyThreadId);
+        if (ptr == nullptr)
+        {
+            ptr = (int64_t*)std::malloc(sizeof(int64_t));
+            *ptr = syscall(SYS_gettid);
+            pthread_setspecific(m_keyThreadId, ptr);
+        }
+        return *ptr;
     }
 
     uint8_t GreContext::init()
@@ -81,8 +100,23 @@ namespace gre {
         return GRE_ERROR;
     }
 
+    bool GreContext::isMainThread()
+    {
+        if (m_mainThreadId == 0)
+        {
+            LOG_ERR("main thread has not been started");
+            assert(0);
+        }
+        return getThreadId() == m_mainThreadId;
+    }
+
     void GreContext::mainWork()
     {
+        if (m_mainThreadId == 0)
+        {
+            m_mainThreadId = getThreadId();
+            LOG_DEBUG("main thread id[%ld]", m_mainThreadId);
+        }
         if (m_timerMgr)
         {
             m_timerMgr->process();
@@ -96,16 +130,24 @@ namespace gre {
 
     void GreContext::release()
     {
-        if(m_window)
-            m_window->stopTimer();
-
-        if (m_timerMgr)
-            m_timerMgr->removeTimer(m_window);
-
-        if (m_thread)
+        if (isMainThread())
         {
-            m_thread->interrupt();
-            m_thread->join();
+            if(m_window)
+                m_window->stopTimer();
+
+            if (m_timerMgr)
+                m_timerMgr->removeTimer(m_window);
+
+            if (m_thread)
+            {
+                m_thread->interrupt();
+                m_thread->join();
+            }
+        }
+        else
+        {
+            LOG_DEBUG("not in rendering thread");
+            //todo switch it in rendering thread and block
         }
     }
 

@@ -10,8 +10,6 @@
 
 namespace gre
 {
-    //todo 1) create GreEventSocket. 2) fix crash when quitting the app.
-
     class GreEventMgr
     {
     public:

@@ -1,10 +1,14 @@
 #include "GreObject.h"
 #include "GreContext.h"
+#include "Sync.h"
 
 namespace gre
 {
-    GreEventArg::GreEventArg() : argInt0(0), argInt1(0),
-                                 argObj(nullptr), argData(nullptr) {}
+    GreEventArg::GreEventArg()
+    : argInt0(0), argInt1(0),
+      argObj(nullptr), argData(nullptr)
+      {
+      }
 
     GreEventArg::~GreEventArg()
     {
@@ -13,8 +17,14 @@ namespace gre
     }
 
     GreEventArg::GreEventArg(GreEventArg &&other)  noexcept
-    : argInt0(other.argInt0), argInt1(other.argInt1),
-      argObj(std::move(other.argObj)), argData(std::move(other.argData)) {}
+    {
+        this->argInt0 = other.argInt0;
+        this->argInt1 = other.argInt1;
+        this->argObj = other.argObj;
+        this->argData = other.argData;
+        other.argObj = nullptr;
+        other.argData = nullptr;
+    }
 
     GreEventArg & GreEventArg::operator=(GreEventArg &&other) noexcept
     {
@@ -30,6 +40,46 @@ namespace gre
         return *this;
     }
 
+    GreSyncEventArg::GreSyncEventArg()
+    : GreEventArg(), sync(new Sync) {}
+
+    GreSyncEventArg::~GreSyncEventArg()
+    {
+        if (sync)
+        {
+            delete sync;
+            sync = nullptr;
+        }
+    }
+
+    GreSyncEventArg::GreSyncEventArg(GreSyncEventArg &&other)  noexcept
+    {
+        this->argInt0 = other.argInt0;
+        this->argInt1 = other.argInt1;
+        this->argObj = other.argObj;
+        this->argData = other.argData;
+        this->sync = other.sync;
+        other.argObj = nullptr;
+        other.argData = nullptr;
+        other.sync = nullptr;
+    }
+
+    GreSyncEventArg & GreSyncEventArg::operator=(GreSyncEventArg &&other) noexcept
+    {
+        if(this != &other)
+        {
+            this->argInt0 = other.argInt0;
+            this->argInt1 = other.argInt1;
+            this->argObj = other.argObj;
+            this->argData = other.argData;
+            this->sync = other.sync;
+            other.argObj = nullptr;
+            other.argData = nullptr;
+            other.sync = nullptr;
+        }
+        return *this;
+    }
+
     GreObject::GreObject() : m_ctx() {}
 
     GreObject::~GreObject()
@@ -38,6 +88,11 @@ namespace gre
     }
 
     void GreObject::slotCb(PoolEvtArgType &&arg)
+    {
+        //no implementation in base class
+    }
+
+    void GreObject::slotCb(PoolSyncEvtArgType &&arg)
     {
         //no implementation in base class
     }

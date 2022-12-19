@@ -3,6 +3,8 @@
 
 #include "Pool.h"
 
+class Sync;
+
 namespace gre
 {
     class GreObject;
@@ -25,8 +27,23 @@ namespace gre
         void *argData;
     };
 
+    class GreSyncEventArg : public GreEventArg
+    {
+    public:
+        GreSyncEventArg();
+        virtual ~GreSyncEventArg();
+
+        GreSyncEventArg(const GreSyncEventArg &other) = delete;
+        GreSyncEventArg & operator=(const GreSyncEventArg &other) = delete;
+
+        GreSyncEventArg(GreSyncEventArg &&other) noexcept;
+        GreSyncEventArg & operator=(GreSyncEventArg &&other) noexcept;
+
+        Sync *sync;
+    };
+
     using PoolEvtArgType = std::unique_ptr<GreEventArg, Pool<GreEventArg>::Deleter>;
-    using SlotCbType = void (*)(PoolEvtArgType &&);
+    using PoolSyncEvtArgType = std::unique_ptr<GreSyncEventArg, Pool<GreSyncEventArg>::Deleter>;
 
     class IEvent
     {
@@ -35,6 +52,7 @@ namespace gre
         virtual ~IEvent() {}
 
         virtual void fire(PoolEvtArgType &&arg) = 0;
+        virtual void fire(PoolSyncEvtArgType &&arg) = 0;
     };
 
     class GreObject
@@ -44,6 +62,7 @@ namespace gre
 
         virtual ~GreObject();
         virtual void slotCb(PoolEvtArgType &&arg);
+        virtual void slotCb(PoolSyncEvtArgType &&arg);
 
         std::shared_ptr<GreContext> getCtx();
         void setWeakCtx(const std::weak_ptr<GreContext> &ctx);

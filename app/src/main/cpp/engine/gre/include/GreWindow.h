@@ -26,6 +26,7 @@ namespace gre
         bool attachSurface(ANativeWindow *surface);
 
         virtual void slotCb(PoolEvtArgType &&arg) override;
+        virtual void slotCb(PoolSyncEvtArgType &&arg) override;
 
     private:
         void printFps();
