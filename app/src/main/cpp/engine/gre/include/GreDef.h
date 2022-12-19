@@ -23,6 +23,14 @@ namespace gre
         TOP
     };
 
+    enum GreEventType : uint8_t
+    {
+        RENDER,
+        UI,
+        INSTANT,
+        EVT_TYPE_CNT
+    };
+
     enum GreEventId : uint8_t
     {
         REFRESH

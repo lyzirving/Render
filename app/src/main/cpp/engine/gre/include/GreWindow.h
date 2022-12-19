@@ -25,7 +25,6 @@ namespace gre
 
         bool attachSurface(ANativeWindow *surface);
 
-    protected:
         virtual void slotCb(PoolEvtArgType &&arg) override;
 
     private:

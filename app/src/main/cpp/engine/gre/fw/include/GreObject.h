@@ -5,16 +5,27 @@
 
 namespace gre
 {
+    class GreObject;
+
     class GreEventArg
     {
     public:
         GreEventArg();
         virtual ~GreEventArg();
 
-        void* argPtr;
+        GreEventArg(const GreEventArg &other) = delete;
+        GreEventArg & operator=(const GreEventArg &other) = delete;
+
+        GreEventArg(GreEventArg &&other) noexcept;
+        GreEventArg & operator=(GreEventArg &&other) noexcept;
+
+        int32_t argInt0, argInt1;
+        GreObject* argObj;
+        void *argData;
     };
 
     using PoolEvtArgType = std::unique_ptr<GreEventArg, Pool<GreEventArg>::Deleter>;
+    using SlotCbType = void (*)(PoolEvtArgType &&);
 
     class IEvent
     {
@@ -31,7 +42,6 @@ namespace gre
         GreObject();
 
         virtual ~GreObject();
-    protected:
         virtual void slotCb(PoolEvtArgType &&arg);
     };
 }
