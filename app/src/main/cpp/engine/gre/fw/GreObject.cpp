@@ -1,4 +1,5 @@
 #include "GreObject.h"
+#include "GreContext.h"
 
 namespace gre
 {
@@ -29,13 +30,26 @@ namespace gre
         return *this;
     }
 
-    GreObject::GreObject() = default;
+    GreObject::GreObject() : m_ctx() {}
 
-    GreObject::~GreObject() = default;
+    GreObject::~GreObject()
+    {
+        m_ctx.reset();
+    }
 
     void GreObject::slotCb(PoolEvtArgType &&arg)
     {
         //no implementation in base class
+    }
+
+    std::shared_ptr<GreContext> GreObject::getCtx()
+    {
+        return m_ctx.lock();
+    }
+
+    void GreObject::setWeakCtx(const std::weak_ptr<GreContext> &ctx)
+    {
+        m_ctx = ctx;
     }
 }
 

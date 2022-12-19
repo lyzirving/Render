@@ -6,6 +6,7 @@
 namespace gre
 {
     class GreObject;
+    class GreContext;
 
     class GreEventArg
     {
@@ -43,6 +44,12 @@ namespace gre
 
         virtual ~GreObject();
         virtual void slotCb(PoolEvtArgType &&arg);
+
+        std::shared_ptr<GreContext> getCtx();
+        void setWeakCtx(const std::weak_ptr<GreContext> &ctx);
+
+    protected:
+        std::weak_ptr<GreContext> m_ctx;
     };
 }
 

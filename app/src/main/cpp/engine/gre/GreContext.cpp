@@ -65,6 +65,7 @@ namespace gre {
         }
 
         m_window = std::make_shared<GreWindow>(m_id);
+        m_window->setWeakCtx(m_self);
         m_window->startTimer();
 
         m_timerMgr = std::make_shared<GreTimerMgr>();
