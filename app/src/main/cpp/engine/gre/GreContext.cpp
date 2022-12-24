@@ -25,21 +25,32 @@ namespace gre {
 
     GreContext::GreContext(GreContextId id) : GreObject(),
                                               m_id(id),
-                                              m_mainThreadId(0),
-                                              m_keyThreadId(),
+                                              m_pTid(nullptr),
+                                              m_kTid(),
+                                              m_tMap(),
                                               m_thread(nullptr),
                                               m_window(nullptr),
                                               m_timerMgr(nullptr)
     {
-        pthread_key_create(&m_keyThreadId, nullptr);
+        pthread_key_create(&m_kTid, nullptr);
     }
 
     GreContext::~GreContext()
     {
+        auto itr = m_tMap.begin();
+        while (itr != m_tMap.end())
+        {
+            int64_t *p = itr->second;
+            if(p) { free(p); }
+            itr = m_tMap.erase(itr);
+        }
+
+        free(m_pTid);
+        pthread_key_delete(m_kTid);
+
         m_window.reset();
         m_timerMgr.reset();
         m_thread.reset();
-        pthread_key_delete(m_keyThreadId);
     }
 
     bool GreContext::attachSurface(ANativeWindow *surface)
@@ -53,19 +64,6 @@ namespace gre {
             LOG_ERR("GreWindow is null");
             return false;
         }
-    }
-
-    int64_t GreContext::getThreadId()
-    {
-        int64_t *ptr;
-        ptr = (int64_t *)pthread_getspecific(m_keyThreadId);
-        if (ptr == nullptr)
-        {
-            ptr = (int64_t*)std::malloc(sizeof(int64_t));
-            *ptr = syscall(SYS_gettid);
-            pthread_setspecific(m_keyThreadId, ptr);
-        }
-        return *ptr;
     }
 
     uint8_t GreContext::init()
@@ -102,20 +100,30 @@ namespace gre {
 
     bool GreContext::isMainThread()
     {
-        if (m_mainThreadId == 0)
+        if (!m_pTid)
         {
             LOG_ERR("main thread has not been started");
             assert(0);
         }
-        return getThreadId() == m_mainThreadId;
+        auto *ptr = (int64_t *)pthread_getspecific(m_kTid);
+        if (ptr == nullptr)
+        {
+            ptr = (int64_t *)std::malloc(sizeof(int64_t));
+            *ptr = syscall(SYS_gettid);
+            pthread_setspecific(m_kTid, ptr);
+            m_tMap.insert(std::make_pair(*ptr, ptr));
+        }
+        return *ptr == *m_pTid;
     }
 
     void GreContext::mainWork()
     {
-        if (m_mainThreadId == 0)
+        if (!m_pTid)
         {
-            m_mainThreadId = getThreadId();
-            LOG_DEBUG("main thread id[%ld]", m_mainThreadId);
+            m_pTid = (int64_t *)std::malloc(sizeof(int64_t));
+            *m_pTid = syscall(SYS_gettid);
+            pthread_setspecific(m_kTid, m_pTid);
+            LOG_DEBUG("main thread id[%ld]", *m_pTid);
         }
         if (m_timerMgr)
         {

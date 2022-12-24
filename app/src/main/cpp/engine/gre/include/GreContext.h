@@ -10,6 +10,8 @@
 #include <memory>
 #include <mutex>
 #include <pthread.h>
+#include <map>
+
 #include "GreDef.h"
 #include "GreObject.h"
 
@@ -34,12 +36,13 @@ namespace gre
         void release();
 
     private:
-        int64_t getThreadId();
         bool isMainThread();
 
         GreContextId m_id;
-        int64_t m_mainThreadId;
-        pthread_key_t m_keyThreadId;
+        int64_t *m_pTid;
+        pthread_key_t m_kTid;
+
+        std::map<int64_t, int64_t *> m_tMap;
 
         std::shared_ptr<GreThread> m_thread;
         std::shared_ptr<GreWindow> m_window;
