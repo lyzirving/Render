@@ -91,6 +91,7 @@ namespace gre {
         m_timerMgr->addTimer(m_window);
 
         m_thread = std::make_shared<GreThread>(CTX_ID_TO_STR(m_id));
+        m_thread->setWeakCtx(m_self);
         m_thread->setFunc(threadLoop, this);
         m_thread->start();
 
@@ -128,32 +129,28 @@ namespace gre {
         }
     }
 
+    void GreContext::requestQuit()
+    {
+        if (m_thread)
+        {
+            m_thread->interrupt();
+            m_thread->join();
+        }
+    }
+
     void GreContext::release()
     {
-        if (isMainThread())
-        {
-            if(m_window)
-                m_window->stopTimer();
+        if (m_timerMgr)
+            m_timerMgr->removeTimer(m_window);
 
-            if (m_timerMgr)
-                m_timerMgr->removeTimer(m_window);
-
-            if (m_thread)
-            {
-                m_thread->interrupt();
-                m_thread->join();
-            }
-        }
-        else
-        {
-            LOG_DEBUG("not in rendering thread");
-            //todo switch it in rendering thread and block
-        }
+        if (m_window)
+            m_window->release();
     }
 
     void GreContext::setWeakSelf(const std::shared_ptr<GreContext> &context)
     {
         m_self = context;
     }
+
 }
 

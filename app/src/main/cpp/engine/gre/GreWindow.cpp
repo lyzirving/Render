@@ -15,7 +15,7 @@ namespace gre
     GreWindow::GreWindow(GreContextId id)
     : GreTimer(GreEventId::REFRESH, 1000 / 60, GrePriority::TOP),
       m_id(id), m_totalFrame(0), m_lastRecTimeMs(0), m_fps(0),
-      mEgl(nullptr)
+      m_egl(nullptr)
     {
     }
 
@@ -67,6 +67,13 @@ namespace gre
                 m_fps = 0;
             }
         }
+    }
+
+    void GreWindow::release()
+    {
+        LOG_DEBUG("enter");
+        if(m_egl)
+            m_egl->release();
     }
 
 }

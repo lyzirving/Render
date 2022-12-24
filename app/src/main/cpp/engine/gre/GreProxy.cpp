@@ -64,7 +64,7 @@ namespace gre {
         }
         if(m_arrayCtx[id])
         {
-            m_arrayCtx[id]->release();
+            m_arrayCtx[id]->requestQuit();
             m_arrayCtx[id].reset();
             LOG_DEBUG("success to detach view[%u]", id);
         }

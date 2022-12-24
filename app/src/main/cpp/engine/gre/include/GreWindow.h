@@ -23,10 +23,11 @@ namespace gre
         GreWindow(GreContextId id);
         virtual ~GreWindow();
 
-        bool attachSurface(ANativeWindow *surface);
-
         virtual void slotCb(PoolEvtArgType &&arg) override;
         virtual void slotCb(PoolSyncEvtArgType &&arg) override;
+
+        bool attachSurface(ANativeWindow *surface);
+        void release();
 
     private:
         void printFps();
@@ -36,7 +37,7 @@ namespace gre
         int64_t m_lastRecTimeMs;
         uint8_t m_fps;
 
-        std::shared_ptr<gfx::GfxEglCore> mEgl;
+        std::shared_ptr<gfx::GfxEglCore> m_egl;
     };
 }
 

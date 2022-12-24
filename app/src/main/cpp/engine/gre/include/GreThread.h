@@ -10,10 +10,11 @@
 #include <memory>
 
 #include "Thread.h"
+#include "GreObject.h"
 
 namespace gre
 {
-    class GreThread : public Thread
+    class GreThread : public Thread, public GreObject
     {
     public:
         GreThread(const char *name);

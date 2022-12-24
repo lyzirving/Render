@@ -1,4 +1,5 @@
 #include "GreThread.h"
+#include "GreContext.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
@@ -9,6 +10,7 @@
 namespace gre
 {
     GreThread::GreThread(const char *name) : Thread(name, true),
+                                             GreObject(),
                                              m_pFunc(nullptr), m_arg(nullptr)
     {
     }
@@ -17,8 +19,18 @@ namespace gre
 
     void GreThread::onQuit()
     {
+        LOG_DEBUG("enter");
         m_pFunc = nullptr;
         m_arg = nullptr;
+        std::shared_ptr<GreContext> ctx = m_ctx.lock();
+        if (ctx)
+        {
+            ctx->release();
+        }
+        else
+        {
+            LOG_ERR("context is null from weak ptr");
+        }
     }
 
     void GreThread::work()

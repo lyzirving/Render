@@ -29,6 +29,7 @@ namespace gre
         bool attachSurface(ANativeWindow *surface);
         uint8_t init();
         void mainWork();
+        void requestQuit();
         void release();
         void setWeakSelf(const std::shared_ptr<GreContext> &context);
 
