@@ -30,6 +30,7 @@ namespace gre
         else
         {
             LOG_ERR("context is null from weak ptr");
+            assert(0);
         }
     }
 

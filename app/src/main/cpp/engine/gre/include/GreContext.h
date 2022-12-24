@@ -11,6 +11,7 @@
 #include <mutex>
 #include <pthread.h>
 #include "GreDef.h"
+#include "GreObject.h"
 
 struct ANativeWindow;
 
@@ -20,7 +21,7 @@ namespace gre
     class GreWindow;
     class GreTimerMgr;
 
-    class GreContext
+    class GreContext : public GreObject
     {
     public:
         GreContext(GreContextId id = GreContextId::CTX_MAIN);
@@ -31,19 +32,18 @@ namespace gre
         void mainWork();
         void requestQuit();
         void release();
-        void setWeakSelf(const std::shared_ptr<GreContext> &context);
 
     private:
         int64_t getThreadId();
         bool isMainThread();
 
-        std::weak_ptr<GreContext> m_self;
         GreContextId m_id;
+        int64_t m_mainThreadId;
+        pthread_key_t m_keyThreadId;
+
         std::shared_ptr<GreThread> m_thread;
         std::shared_ptr<GreWindow> m_window;
         std::shared_ptr<GreTimerMgr> m_timerMgr;
-        pthread_key_t m_keyThreadId;
-        int64_t m_mainThreadId;
     };
 }
 

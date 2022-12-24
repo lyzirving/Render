@@ -17,8 +17,8 @@ namespace gre {
         }
         if (!m_arrayCtx[id]) {
             m_arrayCtx[id] = std::make_shared<GreContext>(GreContextId(id));
-            std::shared_ptr<GreContext> self(m_arrayCtx[id]);
-            m_arrayCtx[id]->setWeakSelf(self);
+            std::weak_ptr<GreContext> self = m_arrayCtx[id];
+            m_arrayCtx[id]->setWeakCtx(self);
             if(m_arrayCtx[id]->init() == GRE_SUCCESS)
             {
                 LOG_DEBUG("success to attach view[%u]", id);

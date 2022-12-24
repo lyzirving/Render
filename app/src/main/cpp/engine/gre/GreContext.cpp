@@ -23,20 +23,19 @@ namespace gre {
         }
     }
 
-    GreContext::GreContext(GreContextId id) : m_self(),
+    GreContext::GreContext(GreContextId id) : GreObject(),
                                               m_id(id),
+                                              m_mainThreadId(0),
+                                              m_keyThreadId(),
                                               m_thread(nullptr),
                                               m_window(nullptr),
-                                              m_timerMgr(nullptr),
-                                              m_keyThreadId(),
-                                              m_mainThreadId(0)
+                                              m_timerMgr(nullptr)
     {
         pthread_key_create(&m_keyThreadId, nullptr);
     }
 
     GreContext::~GreContext()
     {
-        m_self.reset();
         m_window.reset();
         m_timerMgr.reset();
         m_thread.reset();
@@ -71,7 +70,7 @@ namespace gre {
 
     uint8_t GreContext::init()
     {
-        if(m_self.expired())
+        if(m_ctx.expired())
         {
             LOG_ERR("context is invalid or weak self has not been set");
             goto err;
@@ -84,14 +83,14 @@ namespace gre {
         }
 
         m_window = std::make_shared<GreWindow>(m_id);
-        m_window->setWeakCtx(m_self);
+        m_window->setWeakCtx(m_ctx);
         m_window->startTimer();
 
         m_timerMgr = std::make_shared<GreTimerMgr>();
         m_timerMgr->addTimer(m_window);
 
         m_thread = std::make_shared<GreThread>(CTX_ID_TO_STR(m_id));
-        m_thread->setWeakCtx(m_self);
+        m_thread->setWeakCtx(m_ctx);
         m_thread->setFunc(threadLoop, this);
         m_thread->start();
 
@@ -146,11 +145,5 @@ namespace gre {
         if (m_window)
             m_window->release();
     }
-
-    void GreContext::setWeakSelf(const std::shared_ptr<GreContext> &context)
-    {
-        m_self = context;
-    }
-
 }
 
