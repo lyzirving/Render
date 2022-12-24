@@ -13,10 +13,10 @@
 
 namespace gre
 {
-    #define TIMEOUT_INFINITE LONG_MAX
+    #define TIMEOUT_MS_MAX (30 * 1000)
 
     GreTimerMgr::GreTimerMgr()
-    : m_timerArray(), m_tmpArray(), m_ticking(false), m_minExpiration(TIMEOUT_INFINITE)
+    : m_timerArray(), m_tmpArray(), m_ticking(false), m_minExpiration(TIMEOUT_MS_MAX)
     {
     }
 
@@ -70,7 +70,7 @@ namespace gre
 
     void GreTimerMgr::computeMinExpiration()
     {
-        m_minExpiration = TIMEOUT_INFINITE;
+        m_minExpiration = TIMEOUT_MS_MAX;
         if(!m_timerArray.empty())
         {
             auto itr = m_timerArray.begin();
@@ -133,7 +133,8 @@ namespace gre
                     int64_t timeMs = systemTimeMs();
                     if (timer->tick(timeMs))
                     {
-                        timer->fire(std::move(GreEventPool::get()->getEvtArg()));
+                        PoolEvtArg arg = GreEventPool::get()->getEvtArg();
+                        timer->fire(arg);
                     }
                 }
                 itr++;

@@ -23,8 +23,7 @@ namespace gre
         GreWindow(GreContextId id);
         virtual ~GreWindow();
 
-        virtual void slotCb(PoolEvtArgType &&arg) override;
-        virtual void slotCb(PoolSyncEvtArgType &&arg) override;
+        virtual void slotCb(const PoolEvtArg &arg) override;
 
         bool attachSurface(ANativeWindow *surface);
         void release();

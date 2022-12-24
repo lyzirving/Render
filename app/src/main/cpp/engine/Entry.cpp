@@ -32,6 +32,10 @@ static void nativeAttachSurface(JNIEnv *env, jclass clazz, jint id, jobject surf
     }
 }
 
+static void nativeTestInterface(JNIEnv *env, jclass clazz, jint id) {
+    gre::PROXY_testInterface(id);
+}
+
 static JNINativeMethod methods[] = {
         {
                 "nAttachView",
@@ -47,6 +51,11 @@ static JNINativeMethod methods[] = {
                 "nAttachSurface",
                 "(ILandroid/view/Surface;)V",
                 (void *) nativeAttachSurface
+        },
+        {
+                "nTestInterface",
+                "(I)V",
+                (void *) nativeTestInterface
         },
 };
 

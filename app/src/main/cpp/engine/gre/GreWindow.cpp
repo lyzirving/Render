@@ -32,13 +32,9 @@ namespace gre
         return true;
     }
 
-    void GreWindow::slotCb(PoolEvtArgType &&arg)
+    void GreWindow::slotCb(const PoolEvtArg &arg)
     {
         printFps();
-    }
-
-    void GreWindow::slotCb(PoolSyncEvtArgType &&arg)
-    {
     }
 
     void GreWindow::printFps()
@@ -71,7 +67,6 @@ namespace gre
 
     void GreWindow::release()
     {
-        LOG_DEBUG("enter");
         if(m_egl)
             m_egl->release();
     }

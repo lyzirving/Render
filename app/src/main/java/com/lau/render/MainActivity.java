@@ -3,6 +3,7 @@ package com.lau.render;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.lau.render.scene.Def;
 import com.lau.render.scene.Scene;
@@ -11,7 +12,7 @@ import com.lau.render.utils.LogUtil;
 /**
  * @author lyzirving
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
     private Scene mScene;
 
@@ -29,5 +30,10 @@ public class MainActivity extends AppCompatActivity {
         LogUtil.d(TAG, "onDestroy");
         mScene.detachView();
         mScene = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }

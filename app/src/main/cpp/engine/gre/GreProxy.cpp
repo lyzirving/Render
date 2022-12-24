@@ -69,5 +69,19 @@ namespace gre {
             LOG_DEBUG("success to detach view[%u]", id);
         }
     }
+
+    void PROXY_testInterface(int32_t id)
+    {
+        if(id >= GreContextId::CTX_COUNT || id < 0)
+        {
+            LOG_ERR("invalid input id[%d], context count[%u]", id, GreContextId::CTX_COUNT);
+            return;
+        }
+        if(m_arrayCtx[id])
+        {
+            m_arrayCtx[id]->testInterface();
+            LOG_DEBUG("success to test view[%u]", id);
+        }
+    }
 }
 

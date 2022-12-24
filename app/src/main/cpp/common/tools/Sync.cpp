@@ -32,15 +32,11 @@ void Sync::unlock()
 
 void Sync::signal()
 {
-    lock();
     pthread_cond_signal(&m_cond);
-    unlock();
 }
 
 void Sync::wait(int64_t timeoutUs)
 {
-    lock();
-
     if (timeoutUs <= 0)
     {
         pthread_cond_wait(&m_cond, &m_mutex);
@@ -54,12 +50,6 @@ void Sync::wait(int64_t timeoutUs)
         out.tv_sec = now.tv_sec;
         out.tv_nsec = (now.tv_usec + timeoutUs) * 1000;
 
-        int ret = pthread_cond_timedwait(&m_cond, &m_mutex, &out);
-        if (ret != 0)
-        {
-            LOG_ERR("err[%d] is returned", ret);
-        }
+        pthread_cond_timedwait(&m_cond, &m_mutex, &out);
     }
-
-    unlock();
 }

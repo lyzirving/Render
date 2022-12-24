@@ -27,14 +27,9 @@ namespace gre
                && m_priority == other.m_priority;
     }
 
-    void GreTimer::fire(PoolEvtArgType &&arg)
+    void GreTimer::fire(const PoolEvtArg &arg)
     {
-        slotCb(std::move(arg));
-    }
-
-    void GreTimer::fire(PoolSyncEvtArgType &&arg)
-    {
-        slotCb(std::move(arg));
+        slotCb(arg);
     }
 
     void GreTimer::startTimer()

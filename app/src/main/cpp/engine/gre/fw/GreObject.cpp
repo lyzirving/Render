@@ -4,80 +4,125 @@
 
 namespace gre
 {
-    GreEventArg::GreEventArg()
-    : argInt0(0), argInt1(0),
-      argObj(nullptr), argData(nullptr)
+    GreEventArg::GreEventArg() : m_type(GreEventType::EVT_TYPE_CNT),
+                                 m_id(GreEventId::NONE),
+                                 m_syncFlag(false), m_arg0(0), m_arg1(0),
+                                 m_obj(nullptr), m_data(nullptr),
+                                 m_sync(nullptr)
       {
       }
 
     GreEventArg::~GreEventArg()
     {
-        argObj = nullptr;
-        argData = nullptr;
+        clear();
+        delete m_sync;
     }
 
-    GreEventArg::GreEventArg(GreEventArg &&other)  noexcept
+    GreEventArg::GreEventArg(const GreEventArg &other)
     {
-        this->argInt0 = other.argInt0;
-        this->argInt1 = other.argInt1;
-        this->argObj = other.argObj;
-        this->argData = other.argData;
-        other.argObj = nullptr;
-        other.argData = nullptr;
+        this->m_type = other.m_type;
+        this->m_id = other.m_id;
+        this->m_syncFlag = other.m_syncFlag;
+        this->m_arg0 = other.m_arg0;
+        this->m_arg1 = other.m_arg1;
+        this->m_obj = other.m_obj;
+        this->m_data = other.m_data;
+        this->m_sync = other.m_sync;
+    }
+
+    GreEventArg & GreEventArg::operator=(const GreEventArg &other)
+    {
+        if(this != &other)
+        {
+            this->m_type = other.m_type;
+            this->m_id = other.m_id;
+            this->m_syncFlag = other.m_syncFlag;
+            this->m_arg0 = other.m_arg0;
+            this->m_arg1 = other.m_arg1;
+            this->m_obj = other.m_obj;
+            this->m_data = other.m_data;
+            this->m_sync = other.m_sync;
+        }
+        return *this;
+    }
+
+    GreEventArg::GreEventArg(GreEventArg &&other) noexcept
+    {
+        this->m_type = other.m_type;
+        this->m_id = other.m_id;
+        this->m_syncFlag = other.m_syncFlag;
+        this->m_arg0 = other.m_arg0;
+        this->m_arg1 = other.m_arg1;
+        this->m_obj = other.m_obj;
+        this->m_data = other.m_data;
+        this->m_sync = other.m_sync;
+        other.m_type = GreEventType::EVT_TYPE_CNT;
+        other.m_id = GreEventId::NONE;
+        other.m_obj = nullptr;
+        other.m_data = nullptr;
+        other.m_sync = nullptr;
     }
 
     GreEventArg & GreEventArg::operator=(GreEventArg &&other) noexcept
     {
         if(this != &other)
         {
-            this->argInt0 = other.argInt0;
-            this->argInt1 = other.argInt1;
-            this->argObj = other.argObj;
-            this->argData = other.argData;
-            other.argObj = nullptr;
-            other.argData = nullptr;
+            this->m_type = other.m_type;
+            this->m_id = other.m_id;
+            this->m_syncFlag = other.m_syncFlag;
+            this->m_arg0 = other.m_arg0;
+            this->m_arg1 = other.m_arg1;
+            this->m_obj = other.m_obj;
+            this->m_data = other.m_data;
+            this->m_sync = other.m_sync;
+            other.m_type = GreEventType::EVT_TYPE_CNT;
+            other.m_id = GreEventId::NONE;
+            other.m_obj = nullptr;
+            other.m_data = nullptr;
+            other.m_sync = nullptr;
         }
         return *this;
     }
 
-    GreSyncEventArg::GreSyncEventArg()
-    : GreEventArg(), sync(new Sync) {}
-
-    GreSyncEventArg::~GreSyncEventArg()
+    void GreEventArg::clear()
     {
-        if (sync)
+        m_type = GreEventType::EVT_TYPE_CNT;
+        m_id = GreEventId::NONE;
+        m_arg0 = 0;
+        m_arg1 = 0;
+        m_obj = nullptr;
+        m_data = nullptr;
+        markSync(false);
+    }
+
+    void GreEventArg::markSync(bool flag)
+    {
+        m_syncFlag = flag;
+        if(flag)
         {
-            delete sync;
-            sync = nullptr;
+            if (!m_sync)
+            {
+                m_sync = new Sync;
+            }
         }
     }
 
-    GreSyncEventArg::GreSyncEventArg(GreSyncEventArg &&other)  noexcept
+    void GreEventArg::wrap(GreEventType type, GreEventId id)
     {
-        this->argInt0 = other.argInt0;
-        this->argInt1 = other.argInt1;
-        this->argObj = other.argObj;
-        this->argData = other.argData;
-        this->sync = other.sync;
-        other.argObj = nullptr;
-        other.argData = nullptr;
-        other.sync = nullptr;
+        m_type = type;
+        m_id = id;
     }
 
-    GreSyncEventArg & GreSyncEventArg::operator=(GreSyncEventArg &&other) noexcept
+    void GreEventArg::set(GreObject *obj, void *data)
     {
-        if(this != &other)
-        {
-            this->argInt0 = other.argInt0;
-            this->argInt1 = other.argInt1;
-            this->argObj = other.argObj;
-            this->argData = other.argData;
-            this->sync = other.sync;
-            other.argObj = nullptr;
-            other.argData = nullptr;
-            other.sync = nullptr;
-        }
-        return *this;
+        m_obj = obj;
+        m_data = data;
+    }
+
+    void GreEventArg::set(int32_t arg0, int32_t arg1)
+    {
+        m_arg0 = arg0;
+        m_arg1 = arg1;
     }
 
     GreObject::GreObject() : m_ctx() {}
@@ -87,12 +132,7 @@ namespace gre
         m_ctx.reset();
     }
 
-    void GreObject::slotCb(PoolEvtArgType &&arg)
-    {
-        //no implementation in base class
-    }
-
-    void GreObject::slotCb(PoolSyncEvtArgType &&arg)
+    void GreObject::slotCb(const PoolEvtArg &arg)
     {
         //no implementation in base class
     }

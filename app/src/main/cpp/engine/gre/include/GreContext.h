@@ -22,6 +22,7 @@ namespace gre
     class GreThread;
     class GreWindow;
     class GreTimerMgr;
+    class GreEventMgr;
 
     class GreContext : public GreObject
     {
@@ -29,11 +30,14 @@ namespace gre
         GreContext(GreContextId id = GreContextId::CTX_MAIN);
         virtual ~GreContext();
 
+        virtual void slotCb(const PoolEvtArg &arg) override;
+
         bool attachSurface(ANativeWindow *surface);
         uint8_t init();
         void mainWork();
         void requestQuit();
         void release();
+        void testInterface();
 
     private:
         bool isMainThread();
@@ -47,6 +51,7 @@ namespace gre
         std::shared_ptr<GreThread> m_thread;
         std::shared_ptr<GreWindow> m_window;
         std::shared_ptr<GreTimerMgr> m_timerMgr;
+        std::shared_ptr<GreEventMgr> m_evtMgr;
     };
 }
 

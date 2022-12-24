@@ -33,7 +33,9 @@ namespace gre
 
     enum GreEventId : uint8_t
     {
-        REFRESH
+        REFRESH,
+        ATTACH_SURFACE,
+        NONE
     };
 
     enum GreContextId : uint8_t

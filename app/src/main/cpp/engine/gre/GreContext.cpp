@@ -6,6 +6,9 @@
 #include "GreThread.h"
 #include "GreTimerMgr.h"
 #include "GreWindow.h"
+#include "GreEventMgr.h"
+#include "GreEventPool.h"
+#include "Sync.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
@@ -30,7 +33,8 @@ namespace gre {
                                               m_tMap(),
                                               m_thread(nullptr),
                                               m_window(nullptr),
-                                              m_timerMgr(nullptr)
+                                              m_timerMgr(nullptr),
+                                              m_evtMgr(nullptr)
     {
         pthread_key_create(&m_kTid, nullptr);
     }
@@ -51,18 +55,33 @@ namespace gre {
         m_window.reset();
         m_timerMgr.reset();
         m_thread.reset();
+        m_evtMgr.reset();
     }
 
     bool GreContext::attachSurface(ANativeWindow *surface)
     {
-        if(m_window)
+        if (!m_window)
+        {
+            LOG_DEBUG("err, GreWindow is null");
+            return false;
+        }
+        if (isMainThread())
         {
             return m_window->attachSurface(surface);
         }
         else
         {
-            LOG_ERR("GreWindow is null");
-            return false;
+            if(!m_evtMgr)
+            {
+                LOG_ERR("GreEventMrg is null");
+                return false;
+            }
+            PoolEvtArg arg = GreEventPool::get()->getEvtArg();
+            arg->wrap(GreEventType::INSTANT, GreEventId::ATTACH_SURFACE);
+            arg->set(m_window.get(), surface);
+            arg->markSync(true);
+            m_evtMgr->addEvent(arg->type(), arg->id(), std::move(arg));
+            return true;
         }
     }
 
@@ -86,6 +105,8 @@ namespace gre {
 
         m_timerMgr = std::make_shared<GreTimerMgr>();
         m_timerMgr->addTimer(m_window);
+
+        m_evtMgr = std::make_shared<GreEventMgr>();
 
         m_thread = std::make_shared<GreThread>(CTX_ID_TO_STR(m_id));
         m_thread->setWeakCtx(m_ctx);
@@ -125,15 +146,17 @@ namespace gre {
             pthread_setspecific(m_kTid, m_pTid);
             LOG_DEBUG("main thread id[%ld]", *m_pTid);
         }
-        if (m_timerMgr)
+
+        if (!m_evtMgr || !m_timerMgr)
         {
-            m_timerMgr->process();
-        }
-        else
-        {
-            LOG_ERR("timer manager is null");
+            LOG_ERR("event manager is null[%s] or timer manager is null[%s]",
+                    m_evtMgr == nullptr ? "true" : "false",
+                    m_timerMgr == nullptr ? "true" : "false");
             assert(0);
         }
+
+        m_evtMgr->process(m_timerMgr->getTimeout());
+        m_timerMgr->process();
     }
 
     void GreContext::requestQuit()
@@ -152,6 +175,13 @@ namespace gre {
 
         if (m_window)
             m_window->release();
+    }
+
+    void GreContext::slotCb(const PoolEvtArg &arg) {}
+
+    void GreContext::testInterface()
+    {
+
     }
 }
 

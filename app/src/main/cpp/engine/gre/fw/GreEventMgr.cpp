@@ -1,29 +1,52 @@
 #include "GreEventMgr.h"
 #include "SystemUtil.h"
+#include "Sync.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "GreEventMgr"
 
 namespace gre
 {
-    GreEventMgr::GreEventMgr() : m_evtQueues() {}
+    GreEventMgr::GreEventMgr() : m_evtQueues(), m_sync(new Sync) {}
 
     GreEventMgr::~GreEventMgr() = default;
 
-    void GreEventMgr::addEvtCb(GreEventType type, GreEventId id, PoolEvtArgType &&arg)
+    void GreEventMgr::addEvent(GreEventType type, GreEventId id, PoolEvtArg &&arg)
     {
-        auto itr = m_evtQueues[type].find(id);
-        if(itr != m_evtQueues[type].end())
+        if(arg->syncFlag())
         {
-            itr->second.emplace_back(std::move(arg));
+            arg->m_sync->lock();
         }
-        else
+
         {
-            std::list<PoolEvtArgType> slotList;
-            slotList.emplace_back(std::move(arg));
-            m_evtQueues[type].insert(std::make_pair(id, std::move(slotList)));
+            m_sync->lock();
+            auto itr = m_evtQueues[type].find(id);
+            if(itr != m_evtQueues[type].end())
+            {
+                itr->second.push_back(arg);
+            }
+            else
+            {
+                std::list<PoolEvtArg> slotList;
+                slotList.push_back(arg);
+                m_evtQueues[type].insert(std::make_pair(id, std::move(slotList)));
+            }
+            m_sync->unlock();
+        }
+
+        if(arg->syncFlag())
+        {
+            arg->m_sync->wait();
+            arg->m_sync->unlock();
         }
     }
 
-    void GreEventMgr::process()
+    void GreEventMgr::process(int64_t timeoutMs)
     {
+        m_sync->lock();
+        m_sync->wait(timeoutMs * 1000);
         // 1. process all instant events, and remove them from list
         processAll(GreEventType::INSTANT, true);
         EVT_QUEUE_TYPE().swap(m_evtQueues[GreEventType::INSTANT]);
@@ -33,6 +56,7 @@ namespace gre
 
         // 3. process every render event
         processAll(GreEventType::RENDER, false);
+        m_sync->unlock();
     }
 
     void GreEventMgr::processAll(GreEventType type, bool remove)
@@ -45,21 +69,31 @@ namespace gre
                 auto listItr = itr->second.begin();
                 while(listItr != itr->second.end())
                 {
-                    PoolEvtArgType arg = std::move(*listItr);
-                    GreObject *obj = arg->argObj;
+                    GreObject *obj = (*listItr)->m_obj;
                     if(obj)
                     {
+                        if((*listItr)->syncFlag())
+                        {
+                            (*listItr)->m_sync->lock();
+                        }
                         int64_t start = systemTimeMs();
-                        obj->slotCb(std::move(arg));
+                        PoolEvtArg arg = (*listItr);
+                        obj->slotCb(arg);
                         int64_t end = systemTimeMs();
                         if((end - start) > 1 * 1000)
                         {
                             LOG_WARN("event[type(%u) id(%u)] executing-time[%ld] exceeds 1s",
                                      type, itr->first, (end - start));
                         }
+                        if((*listItr)->syncFlag())
+                        {
+                            (*listItr)->m_sync->signal();
+                            (*listItr)->m_sync->unlock();
+                        }
                     }
                     if (remove)
                     {
+                        (*listItr).reset();
                         listItr = itr->second.erase(listItr);
                     }
                     else
@@ -89,21 +123,31 @@ namespace gre
                 auto listItr = itr->second.begin();
                 while(listItr != itr->second.end())
                 {
-                    PoolEvtArgType arg = std::move(*listItr);
-                    GreObject *obj = arg->argObj;
+                    GreObject *obj = (*listItr)->m_obj;
                     if(obj)
                     {
+                        if((*listItr)->syncFlag())
+                        {
+                            (*listItr)->m_sync->lock();
+                        }
                         int64_t start = systemTimeMs();
-                        obj->slotCb(std::move(arg));
+                        PoolEvtArg arg = (*listItr);
+                        obj->slotCb(arg);
                         int64_t end = systemTimeMs();
                         if((end - start) > 1 * 1000)
                         {
                             LOG_WARN("event[type(%u) id(%u)] executing-time[%ld] exceeds 1s",
                                      type, itr->first, (end - start));
                         }
+                        if((*listItr)->syncFlag())
+                        {
+                            (*listItr)->m_sync->signal();
+                            (*listItr)->m_sync->unlock();
+                        }
                     }
                     if (remove)
                     {
+                        (*listItr).reset();
                         listItr = itr->second.erase(listItr);
                     }
                     else
