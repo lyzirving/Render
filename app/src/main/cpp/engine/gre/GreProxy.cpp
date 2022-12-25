@@ -19,40 +19,44 @@ namespace gre {
             m_arrayCtx[id] = std::make_shared<GreContext>(GreContextId(id));
             std::weak_ptr<GreContext> self = m_arrayCtx[id];
             m_arrayCtx[id]->setWeakCtx(self);
-            if(m_arrayCtx[id]->init() == GRE_SUCCESS)
-            {
+            if (m_arrayCtx[id]->init() == GRE_SUCCESS) {
                 LOG_DEBUG("success to attach view[%u]", id);
-            }
-            else
-            {
+            } else {
                 LOG_ERR("fail to attach view[%u]", id);
                 PROXY_detachView(id);
             }
-        }
-        else
-        {
+        } else {
             LOG_ERR("view[%u] already existed", id);
         }
     }
 
-    bool PROXY_attachSurface(int32_t id, ANativeWindow *window)
-    {
-        if(id >= GreContextId::CTX_COUNT || id < 0)
-        {
+    bool PROXY_attachSurface(int32_t id, ANativeWindow *window) {
+        if (id >= GreContextId::CTX_COUNT || id < 0) {
             LOG_ERR("invalid input id[%d], context count[%u]", id, GreContextId::CTX_COUNT);
             return false;
         }
-        if(!window)
-        {
+        if (!window) {
             LOG_ERR("window ptr is null");
             return false;
         }
-        if(!m_arrayCtx[id])
-        {
+        if (!m_arrayCtx[id]) {
             LOG_ERR("gre context is invalid");
             return false;
         }
         return m_arrayCtx[id]->attachSurface(window);
+    }
+
+    void PROXY_detachSurface(int32_t id)
+    {
+        if(id >= GreContextId::CTX_COUNT || id < 0)
+        {
+            LOG_ERR("invalid input id[%d], context count[%u]", id, GreContextId::CTX_COUNT);
+            return;
+        }
+        if(m_arrayCtx[id])
+        {
+            m_arrayCtx[id]->detachSurface();
+        }
     }
 
     void PROXY_detachView(int32_t id)

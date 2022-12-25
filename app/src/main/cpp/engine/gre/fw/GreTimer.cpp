@@ -10,9 +10,9 @@ namespace gre
 {
     static uint32_t gTimerId{0};
 
-    GreTimer::GreTimer(GreEventId key, int64_t intervalMs, GrePriority priority)
+    GreTimer::GreTimer(GreEventId evtId, int64_t intervalMs, GrePriority priority)
     : GreObject(),
-      m_key(key), m_priority(priority),
+      m_evtId(evtId), m_priority(priority),
       m_intervalMs(intervalMs), m_lastNotifyTime(0),
       m_timerId(gTimerId++), m_status(Status::IDLE)
       {
@@ -23,7 +23,7 @@ namespace gre
     bool GreTimer::operator==(const GreTimer &other) const
     {
         return m_timerId == other.m_timerId
-               && m_key == other.m_key
+               && m_evtId == other.m_evtId
                && m_priority == other.m_priority;
     }
 

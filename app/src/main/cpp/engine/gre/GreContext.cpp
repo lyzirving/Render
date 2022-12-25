@@ -41,6 +41,7 @@ namespace gre {
 
     GreContext::~GreContext()
     {
+        LOG_DEBUG("context[%u] deconstruct", m_id);
         auto itr = m_tMap.begin();
         while (itr != m_tMap.end())
         {
@@ -62,7 +63,7 @@ namespace gre {
     {
         if (!m_window)
         {
-            LOG_DEBUG("err, GreWindow is null");
+            LOG_DEBUG("err, gre window is null");
             return false;
         }
         if (isMainThread())
@@ -73,15 +74,39 @@ namespace gre {
         {
             if(!m_evtMgr)
             {
-                LOG_ERR("GreEventMrg is null");
+                LOG_ERR("gre evt mgr is null");
                 return false;
             }
             PoolEvtArg arg = GreEventPool::get()->getEvtArg();
             arg->wrap(GreEventType::INSTANT, GreEventId::ATTACH_SURFACE);
             arg->set(m_window.get(), surface);
-            arg->markSync(true);
             m_evtMgr->addEvent(arg->type(), arg->id(), std::move(arg));
             return true;
+        }
+    }
+
+    void GreContext::detachSurface()
+    {
+        if (!m_window)
+        {
+            LOG_DEBUG("err, gre window is null");
+            return;
+        }
+        if (isMainThread())
+        {
+            m_window->detachSurface();
+        }
+        else
+        {
+            if(!m_evtMgr)
+            {
+                LOG_ERR("gre evt mgr is null");
+                return;
+            }
+            PoolEvtArg arg = GreEventPool::get()->getEvtArg();
+            arg->wrap(GreEventType::INSTANT, GreEventId::DETACH_SURFACE);
+            arg->set(m_window.get());
+            m_evtMgr->addEvent(arg->type(), arg->id(), std::move(arg));
         }
     }
 
@@ -98,6 +123,7 @@ namespace gre {
             LOG_ERR("invalid context id[%u]", m_id);
             goto err;
         }
+        LOG_DEBUG("ctx id[%u]", m_id);
 
         m_window = std::make_shared<GreWindow>(m_id);
         m_window->setWeakCtx(m_ctx);

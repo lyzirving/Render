@@ -16,15 +16,18 @@
 
 #define CLASS_SCENE "com/lau/render/scene/Scene"
 
-static void nativeAttachView(JNIEnv *env, jclass clazz, jint id) {
+static void nativeAttachView(JNIEnv *env, jclass clazz, jint id)
+{
     gre::PROXY_attachView(id);
 }
 
-static void nativeDetachView(JNIEnv *env, jclass clazz, jint id) {
+static void nativeDetachView(JNIEnv *env, jclass clazz, jint id)
+{
     gre::PROXY_detachView(id);
 }
 
-static void nativeAttachSurface(JNIEnv *env, jclass clazz, jint id, jobject surface) {
+static void nativeAttachSurface(JNIEnv *env, jclass clazz, jint id, jobject surface)
+{
     ANativeWindow *window = ANativeWindow_fromSurface(env, surface);
     if(!gre::PROXY_attachSurface(id, window))
     {
@@ -32,7 +35,13 @@ static void nativeAttachSurface(JNIEnv *env, jclass clazz, jint id, jobject surf
     }
 }
 
-static void nativeTestInterface(JNIEnv *env, jclass clazz, jint id) {
+static void nativeDetachSurface(JNIEnv *env, jclass clazz, jint id)
+{
+    gre::PROXY_detachSurface(id);
+}
+
+static void nativeTestInterface(JNIEnv *env, jclass clazz, jint id)
+{
     gre::PROXY_testInterface(id);
 }
 
@@ -51,6 +60,11 @@ static JNINativeMethod methods[] = {
                 "nAttachSurface",
                 "(ILandroid/view/Surface;)V",
                 (void *) nativeAttachSurface
+        },
+        {
+                "nDetachSurface",
+                "(I)V",
+                (void *) nativeDetachSurface
         },
         {
                 "nTestInterface",

@@ -33,6 +33,7 @@ namespace gre
         virtual void slotCb(const PoolEvtArg &arg) override;
 
         bool attachSurface(ANativeWindow *surface);
+        void detachSurface();
         uint8_t init();
         void mainWork();
         void requestQuit();

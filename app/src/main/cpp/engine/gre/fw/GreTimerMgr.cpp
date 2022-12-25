@@ -62,7 +62,7 @@ namespace gre
         if (found)
         {
             LOG_DEBUG("timer[id[%u], key[%u], priority[%u]] has already been added",
-                      timer->getId(), timer->getKey(), timer->getPriority());
+                      timer->getId(), timer->getEvtId(), timer->getPriority());
         }
         else
         {
@@ -81,7 +81,7 @@ namespace gre
         if (m_tmpArray.empty())
         {
             LOG_DEBUG("mgr is ticking, add timer[key%u, id%u, priority%u] to tmp array",
-                      timer->getKey(), timer->getId(), timer->getPriority());
+                      timer->getEvtId(), timer->getId(), timer->getPriority());
             m_tmpArray.push_back(timer);
         }
         else
@@ -93,7 +93,7 @@ namespace gre
                 if((*itr).get() == timer.get())
                 {
                     LOG_DEBUG("mgr is ticking, and timer[key%u, id%u, priority%u] is already in tmp array",
-                              timer->getKey(), timer->getId(), timer->getPriority());
+                              timer->getEvtId(), timer->getId(), timer->getPriority());
                     found = true;
                     break;
                 }
@@ -148,7 +148,7 @@ namespace gre
         if (found && ind < m_timerArray.size())
         {
             LOG_DEBUG("timer[id[%u], key[%u], priority[%u]] is removed",
-                      timer->getId(), timer->getKey(), timer->getPriority());
+                      timer->getId(), timer->getEvtId(), timer->getPriority());
             m_timerArray[ind].reset();
             m_timerArray.erase(m_timerArray.begin() + ind, m_timerArray.begin() + ind + 1);
         }
@@ -177,6 +177,7 @@ namespace gre
                     if (timer->tick(timeMs))
                     {
                         PoolEvtArg arg = GreEventPool::get()->getEvtArg();
+                        arg->set(timer->getEvtId());
                         timer->fire(arg);
                     }
                     itr++;

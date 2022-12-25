@@ -26,6 +26,16 @@ public class Scene {
         nDetachView(mId);
     }
 
+    public void attachSurface(Surface surface)
+    {
+        nAttachSurface(mId, surface);
+    }
+
+    public void detachSurface()
+    {
+        nDetachSurface(mId);
+    }
+
     public void testInterface()
     {
         nTestInterface(mId);
@@ -33,6 +43,7 @@ public class Scene {
 
     private static native void nAttachView(int id);
     private static native void nAttachSurface(int id, Surface surface);
+    private static native void nDetachSurface(int id);
     private static native void nDetachView(int id);
     private static native void nTestInterface(int id);
 }

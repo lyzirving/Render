@@ -1,7 +1,9 @@
 #include <limits>
+#include <android/native_window_jni.h>
 
 #include "GreWindow.h"
 #include "GfxEglCore.h"
+#include "GfxWindowSurface.h"
 #include "SystemUtil.h"
 #include "LogUtil.h"
 
@@ -15,7 +17,7 @@ namespace gre
     GreWindow::GreWindow(GreContextId id)
     : GreTimer(GreEventId::REFRESH, 1000 / 60, GrePriority::TOP),
       m_id(id), m_totalFrame(0), m_lastRecTimeMs(0), m_fps(0),
-      m_egl(nullptr)
+      m_egl(nullptr), m_surface(nullptr)
     {
     }
 
@@ -28,13 +30,59 @@ namespace gre
             LOG_ERR("invalid surface ptr");
             return false;
         }
-        //todo switch this event into rendering thread
-        return true;
+
+        if(!m_egl)
+        {
+            m_egl = std::make_shared<gfx::GfxEglCore>();
+            m_egl->prepare();
+        }
+
+        if(!m_egl->isPrepared())
+        {
+            LOG_DEBUG("egl is not prepared");
+            assert(0);
+        }
+        if(m_surface && m_surface->isPrepared())
+        {
+            LOG_ERR("window surface already exists");
+            return false;
+        }
+        m_surface = std::make_shared<gfx::GfxWindowSurface>(m_egl, surface, m_id);
+        return m_surface->prepare();
+    }
+
+    void GreWindow::detachSurface()
+    {
+        m_surface.reset();
     }
 
     void GreWindow::slotCb(const PoolEvtArg &arg)
     {
-        printFps();
+        switch (arg->id())
+        {
+            case GreEventId::REFRESH:
+            {
+                printFps();
+                break;
+            }
+            case GreEventId::ATTACH_SURFACE:
+            {
+                LOG_DEBUG("event attach surface");
+                auto *window =  (ANativeWindow *)arg->data();
+                attachSurface(window);
+                break;
+            }
+            case GreEventId::DETACH_SURFACE:
+            {
+                LOG_DEBUG("event detach surface");
+                detachSurface();
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
     }
 
     void GreWindow::printFps()
@@ -67,8 +115,17 @@ namespace gre
 
     void GreWindow::release()
     {
+        if(m_surface)
+        {
+            m_surface->release();
+            m_surface.reset();
+        }
+
         if(m_egl)
+        {
             m_egl->release();
+            m_egl.reset();
+        }
     }
 
 }

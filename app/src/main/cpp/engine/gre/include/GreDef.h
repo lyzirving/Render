@@ -35,6 +35,7 @@ namespace gre
     {
         REFRESH,
         ATTACH_SURFACE,
+        DETACH_SURFACE,
         NONE
     };
 

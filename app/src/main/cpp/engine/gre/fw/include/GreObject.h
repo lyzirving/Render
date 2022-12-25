@@ -29,12 +29,14 @@ namespace gre
         void clear();
         void markSync(bool flag = true);
         void wrap(GreEventType type, GreEventId id);
+        void set(GreEventId id);
         void set(GreObject *obj, void *data = nullptr);
         void set(int32_t arg0, int32_t arg1);
 
         inline GreEventType type() { return m_type; }
         inline GreEventId id() { return m_id; }
         inline bool syncFlag() { return m_syncFlag; }
+        inline void *data() { return m_data; }
 
     private:
         GreEventType m_type;

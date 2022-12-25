@@ -14,6 +14,7 @@ namespace gfx
         inline EGLDisplay getDisplay() { return m_display; }
         inline EGLConfig  getConfig()  { return m_config; }
         inline EGLContext getContext() { return m_context; }
+        inline bool isPrepared() { return m_context != EGL_NO_CONTEXT; }
 
         bool makeCurrent(EGLSurface draw = EGL_NO_SURFACE, EGLSurface read = EGL_NO_SURFACE);
         void release();

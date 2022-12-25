@@ -113,6 +113,11 @@ namespace gre
         m_id = id;
     }
 
+    void GreEventArg::set(GreEventId id)
+    {
+        m_id = id;
+    }
+
     void GreEventArg::set(GreObject *obj, void *data)
     {
         m_obj = obj;

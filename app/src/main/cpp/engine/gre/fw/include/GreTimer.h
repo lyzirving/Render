@@ -20,7 +20,7 @@ namespace gre
             CNT
         };
 
-        GreTimer(GreEventId key, int64_t intervalMs,
+        GreTimer(GreEventId evtId, int64_t intervalMs,
                  GrePriority priority = GrePriority::NORMAL);
         GreTimer(const GreTimer &other) = delete;
 
@@ -32,7 +32,7 @@ namespace gre
 
         bool tick(int64_t sysTimeMs);
 
-        inline GreEventId getKey() { return m_key; }
+        inline GreEventId getEvtId() { return m_evtId; }
         inline GrePriority getPriority() { return m_priority; }
         inline uint32_t  getId() { return m_timerId; }
         inline int64_t getExpiration() { return m_lastNotifyTime + m_intervalMs; }
@@ -44,7 +44,7 @@ namespace gre
         inline void stop() { m_status = Status::STOPPED; }
 
     private:
-        GreEventId m_key;
+        GreEventId m_evtId;
         GrePriority m_priority;
         int64_t m_intervalMs;
         int64_t m_lastNotifyTime;

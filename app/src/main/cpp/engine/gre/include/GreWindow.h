@@ -13,6 +13,7 @@ struct ANativeWindow;
 namespace gfx
 {
     class GfxEglCore;
+    class GfxWindowSurface;
 }
 
 namespace gre
@@ -26,6 +27,7 @@ namespace gre
         virtual void slotCb(const PoolEvtArg &arg) override;
 
         bool attachSurface(ANativeWindow *surface);
+        void detachSurface();
         void release();
 
     private:
@@ -37,6 +39,7 @@ namespace gre
         uint8_t m_fps;
 
         std::shared_ptr<gfx::GfxEglCore> m_egl;
+        std::shared_ptr<gfx::GfxWindowSurface> m_surface;
     };
 }
 

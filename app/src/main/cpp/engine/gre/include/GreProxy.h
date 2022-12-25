@@ -11,6 +11,8 @@ namespace gre
 
     bool PROXY_attachSurface(int32_t id, ANativeWindow *window);
 
+    void PROXY_detachSurface(int32_t id);
+
     void PROXY_detachView(int32_t id);
 
     void PROXY_testInterface(int32_t id);
