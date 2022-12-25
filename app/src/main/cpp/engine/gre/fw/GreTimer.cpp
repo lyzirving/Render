@@ -14,7 +14,7 @@ namespace gre
     : GreObject(),
       m_key(key), m_priority(priority),
       m_intervalMs(intervalMs), m_lastNotifyTime(0),
-      m_isRunning(false), m_timerId(gTimerId++)
+      m_timerId(gTimerId++), m_status(Status::IDLE)
       {
       }
 
@@ -32,24 +32,9 @@ namespace gre
         slotCb(arg);
     }
 
-    void GreTimer::startTimer()
-    {
-        if(m_isRunning.load())
-        {
-            LOG_DEBUG("timer[%u] already start", m_key);
-            return;
-        }
-        m_isRunning.store(true);
-    }
-
-    void GreTimer::stopTimer()
-    {
-        m_isRunning.store(false);
-    }
-
     bool GreTimer::tick(int64_t sysTimeMs)
     {
-        if(!m_isRunning.load())
+        if(!isRunning())
         {
             return false;
         }

@@ -15,8 +15,9 @@ namespace gre
 {
     #define TIMEOUT_MS_MAX (30 * 1000)
 
-    GreTimerMgr::GreTimerMgr()
-    : m_timerArray(), m_tmpArray(), m_ticking(false), m_minExpiration(TIMEOUT_MS_MAX)
+    GreTimerMgr::GreTimerMgr() : m_timerArray(),
+                                 m_tmpArray(), m_ticking(false),
+                                 m_minExpiration(TIMEOUT_MS_MAX)
     {
     }
 
@@ -48,9 +49,11 @@ namespace gre
         {
             return;
         }
+        timer->start();
         bool found{false};
-        for (auto & item : m_timerArray) {
-            if((*timer) == (*item))
+        for (auto & item : m_timerArray)
+        {
+            if(timer.get() == item.get())
             {
                 found = true;
                 break;
@@ -63,8 +66,42 @@ namespace gre
         }
         else
         {
+            if(m_ticking.load())
+            {
+                addWhenTicking(timer);
+                return;
+            }
             m_timerArray.emplace_back(timer);
             std::sort(m_timerArray.begin(), m_timerArray.end(), GreTimerCmpObj);
+        }
+    }
+
+    void GreTimerMgr::addWhenTicking(const std::shared_ptr<GreTimer> &timer)
+    {
+        if (m_tmpArray.empty())
+        {
+            LOG_DEBUG("mgr is ticking, add timer[key%u, id%u, priority%u] to tmp array",
+                      timer->getKey(), timer->getId(), timer->getPriority());
+            m_tmpArray.push_back(timer);
+        }
+        else
+        {
+            bool found{false};
+            auto itr = m_tmpArray.begin();
+            while (itr != m_tmpArray.end())
+            {
+                if((*itr).get() == timer.get())
+                {
+                    LOG_DEBUG("mgr is ticking, and timer[key%u, id%u, priority%u] is already in tmp array",
+                              timer->getKey(), timer->getId(), timer->getPriority());
+                    found = true;
+                    break;
+                }
+            }
+            if(!found)
+            {
+                m_tmpArray.push_back(timer);
+            }
         }
     }
 
@@ -92,6 +129,12 @@ namespace gre
         {
             return;
         }
+        if(m_ticking.load())
+        {
+            LOG_DEBUG("timer mgr is ticking, stop it first");
+            timer->stop();
+            return;
+        }
         bool found{false};
         uint32_t ind{0};
         for (auto & item : m_timerArray) {
@@ -115,9 +158,9 @@ namespace gre
     {
         m_ticking.store(true);
         processTimer();
-        //todo logic: process timer-add motion when manager is ticking
-        computeMinExpiration();
         m_ticking.store(false);
+        processTmpArray();
+        computeMinExpiration();
     }
 
     void GreTimerMgr::processTimer()
@@ -128,7 +171,7 @@ namespace gre
             GreTimer *timer = itr->get();
             if(timer)
             {
-                if(timer->isStart())
+                if(timer->isRunning())
                 {
                     int64_t timeMs = systemTimeMs();
                     if (timer->tick(timeMs))
@@ -136,13 +179,37 @@ namespace gre
                         PoolEvtArg arg = GreEventPool::get()->getEvtArg();
                         timer->fire(arg);
                     }
+                    itr++;
                 }
-                itr++;
+                else if (timer->isStopped())
+                {
+                    (*itr).reset();
+                    itr = m_timerArray.erase(itr);
+                }
+                else
+                {   // paused timer
+                    itr++;
+                }
             }
             else
             {
                 itr = m_timerArray.erase(itr);
             }
+        }
+    }
+
+    void GreTimerMgr::processTmpArray()
+    {
+        if (!m_tmpArray.empty())
+        {
+            auto itr = m_tmpArray.begin();
+            while(itr != m_tmpArray.end())
+            {
+                m_timerArray.push_back(*itr);
+                (*itr).reset();
+                itr = m_tmpArray.erase(itr);
+            }
+            std::sort(m_timerArray.begin(), m_timerArray.end(), GreTimerCmpObj);
         }
     }
 }

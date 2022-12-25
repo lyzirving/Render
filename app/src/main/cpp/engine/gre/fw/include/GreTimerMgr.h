@@ -30,8 +30,10 @@ namespace gre
         void process();
 
     private:
+        void addWhenTicking(const std::shared_ptr<GreTimer>& timer);
         void computeMinExpiration();
         void processTimer();
+        void processTmpArray();
 
         std::vector<std::shared_ptr<GreTimer>> m_timerArray;
         std::vector<std::shared_ptr<GreTimer>> m_tmpArray;
