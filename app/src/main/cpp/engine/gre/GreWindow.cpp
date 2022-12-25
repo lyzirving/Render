@@ -2,8 +2,11 @@
 #include <android/native_window_jni.h>
 
 #include "GreWindow.h"
+#include "GreSceneRender.h"
+
 #include "GfxEglCore.h"
 #include "GfxWindowSurface.h"
+
 #include "SystemUtil.h"
 #include "LogUtil.h"
 
@@ -17,11 +20,20 @@ namespace gre
     GreWindow::GreWindow(GreContextId id)
     : GreTimer(GreEventId::REFRESH, 1000 / 60, GrePriority::TOP),
       m_id(id), m_totalFrame(0), m_lastRecTimeMs(0), m_fps(0),
+      m_render(new GreSceneRender),
       m_egl(nullptr), m_surface(nullptr)
     {
     }
 
-    GreWindow::~GreWindow() = default;
+    GreWindow::~GreWindow()
+    {
+        if (m_surface)
+            m_surface.reset();
+        if (m_egl)
+            m_egl.reset();
+        if (m_render)
+            m_render.reset();
+    }
 
     bool GreWindow::attachSurface(ANativeWindow *surface)
     {
@@ -62,7 +74,7 @@ namespace gre
         {
             case GreEventId::REFRESH:
             {
-                printFps();
+                update();
                 break;
             }
             case GreEventId::ATTACH_SURFACE:
@@ -126,6 +138,42 @@ namespace gre
             m_egl->release();
             m_egl.reset();
         }
+
+        if(m_render)
+        {
+            m_render.reset();
+        }
+    }
+
+    bool GreWindow::renderValid()
+    {
+        return m_egl != nullptr && m_surface != nullptr && m_render != nullptr;
+    }
+
+    void GreWindow::update()
+    {
+        if (renderValid())
+        {
+            onBeginRender();
+            onRender();
+            onEndRender();
+        }
+        printFps();
+    }
+
+    void GreWindow::onBeginRender()
+    {
+        m_surface->makeCurrent();
+    }
+
+    void GreWindow::onRender()
+    {
+        m_render->update();
+    }
+
+    void GreWindow::onEndRender()
+    {
+        m_surface->swapBuffer();
     }
 
 }
