@@ -24,9 +24,11 @@ namespace gre
     {
     public:
         GreSceneRender();
-        virtual ~GreSceneRender();
 
+        virtual ~GreSceneRender();
         virtual void update() override;
+
+        void setViewport(int32_t x, int32_t y, int32_t width, int32_t height);
 
     private:
         std::shared_ptr<view::Scene> m_scene;

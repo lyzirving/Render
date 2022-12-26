@@ -163,6 +163,7 @@ namespace gre
 
     void GreWindow::onBeginRender()
     {
+        m_render->setViewport(0, 0, m_surface->getWidth(), m_surface->getHeight());
         m_surface->makeCurrent();
     }
 

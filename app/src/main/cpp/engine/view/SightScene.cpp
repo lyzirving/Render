@@ -1,4 +1,6 @@
 #include "SightScene.h"
+#include "ClearLayer.h"
+#include "ObjLayer.h"
 
 #include "LogUtil.h"
 
@@ -11,7 +13,7 @@ namespace view
 {
     SightScene::SightScene() : Scene()
     {
-        createLayers();
+        SightScene::createLayers();
         sortLayer();
     }
 
@@ -19,14 +21,18 @@ namespace view
 
     void SightScene::createLayers()
     {
+        std::shared_ptr<Layer> clearLayer = std::make_shared<ClearLayer>(0);
+        std::shared_ptr<Layer> objLayer = std::make_shared<ObjLayer>(1);
 
+        m_layers.push_back(clearLayer);
+        m_layers.push_back(objLayer);
     }
 
     void SightScene::update()
     {
         for (auto &layer : m_layers)
         {
-            layer->update();
+            layer->update(m_conv);
         }
     }
 }

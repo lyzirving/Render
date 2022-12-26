@@ -9,25 +9,19 @@
 
 namespace view
 {
+    class ViewConv;
+
     class Scene
     {
     public:
-        Scene() : m_layers() {}
+        Scene();
 
-        virtual ~Scene()
-        {
-            auto itr = m_layers.begin();
-            while(itr != m_layers.end())
-            {
-                (*itr).reset();
-                itr = m_layers.erase(itr);
-            }
-        }
-
+        virtual ~Scene();
         virtual void update() = 0;
 
-    protected:
+        void setViewport(int32_t x, int32_t y, int32_t width, int32_t height);
 
+    protected:
         struct
         {
             bool operator() (const std::shared_ptr<Layer>& lhs, const std::shared_ptr<Layer>& rhs)
@@ -38,15 +32,11 @@ namespace view
             }
         } LayerSorter;
 
-        void sortLayer()
-        {
-            if (!m_layers.empty())
-            {
-                std::sort(m_layers.begin(), m_layers.end(), LayerSorter);
-            }
-        }
+        virtual void createLayers() = 0;
+        void sortLayer();
 
         std::vector<std::shared_ptr<Layer>> m_layers;
+        std::shared_ptr<ViewConv> m_conv;
     };
 }
 

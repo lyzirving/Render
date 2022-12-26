@@ -13,8 +13,8 @@ namespace view
         virtual ~SightScene();
         virtual void update() override;
 
-    private:
-        void createLayers();
+    protected:
+        virtual void createLayers() override;
 
     };
 }

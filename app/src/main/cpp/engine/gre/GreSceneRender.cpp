@@ -19,6 +19,11 @@ namespace gre
         m_scene.reset();
     }
 
+    void GreSceneRender::setViewport(int32_t x, int32_t y, int32_t width, int32_t height)
+    {
+        m_scene->setViewport(x, y, width, height);
+    }
+
     void GreSceneRender::update()
     {
         m_scene->update();
