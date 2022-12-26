@@ -1,10 +1,14 @@
 #ifndef RENDER_VIEWCONV_H
 #define RENDER_VIEWCONV_H
 
+#include <memory>
+
 #include "glm/glm.hpp"
 
 namespace view
 {
+    class Camera;
+
     struct Viewport
     {
         int32_t x, y;
@@ -33,6 +37,8 @@ namespace view
 
     private:
         glm::mat4 m_model, m_view, m_project;
+
+        std::shared_ptr<Camera> m_camera;
         Viewport m_port;
     };
 }

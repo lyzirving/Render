@@ -1,4 +1,5 @@
 #include "ViewConv.h"
+#include "Camera.h"
 
 #include "LogUtil.h"
 
@@ -9,13 +10,16 @@
 
 namespace view
 {
-    ViewConv::ViewConv() : m_model(1.f),
-                           m_view(1.f),
-                           m_project(1.f)
+    ViewConv::ViewConv() : m_model(1.f), m_view(1.f), m_project(1.f),
+                           m_camera(new Camera),
+                           m_port()
     {
     }
 
-    ViewConv::~ViewConv() = default;
+    ViewConv::~ViewConv()
+    {
+        m_camera.reset();
+    }
 
     void ViewConv::setViewport(int32_t x, int32_t y, int32_t width, int32_t height)
     {
