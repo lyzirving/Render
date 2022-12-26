@@ -1,6 +1,6 @@
 #include "GreSceneRender.h"
 
-#include "Scene.h"
+#include "SightScene.h"
 
 #include "LogUtil.h"
 
@@ -11,7 +11,7 @@
 
 namespace gre
 {
-    GreSceneRender::GreSceneRender() : m_scene(new view::Scene)
+    GreSceneRender::GreSceneRender() : m_scene(new view::SightScene)
     {}
 
     GreSceneRender::~GreSceneRender()

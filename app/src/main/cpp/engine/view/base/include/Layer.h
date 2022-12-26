@@ -1,6 +1,10 @@
 #ifndef RENDER_LAYER_H
 #define RENDER_LAYER_H
 
+#include <vector>
+#include <memory>
+
+#include "LayerItem.h"
 #include "ViewDef.h"
 
 namespace view
@@ -8,8 +12,10 @@ namespace view
     class Layer
     {
     public:
-        Layer() : m_type(LayerType::BASIC), m_order(0) {}
-        Layer(LayerType type, uint8_t order) : m_type(type), m_order(order) {}
+        Layer() : m_type(LayerType::BASIC), m_order(0), m_items() {}
+        Layer(LayerType type, uint8_t order) : m_type(type),
+                                               m_order(order),
+                                               m_items() {}
 
         virtual ~Layer() {}
         virtual void update() = 0;
@@ -20,6 +26,8 @@ namespace view
     protected:
         LayerType m_type;
         uint8_t m_order;
+
+        std::vector<std::shared_ptr<LayerItem>> m_items;
     };
 }
 
