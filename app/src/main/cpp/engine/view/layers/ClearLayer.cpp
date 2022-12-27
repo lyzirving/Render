@@ -1,7 +1,7 @@
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 
-#include "ClearLayer.h"
+#include "include/ClearLayer.h"
 #include "ViewConv.h"
 #include "LogUtil.h"
 
