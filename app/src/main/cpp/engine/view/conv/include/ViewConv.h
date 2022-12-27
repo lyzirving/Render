@@ -28,6 +28,12 @@ namespace view
         inline const glm::mat4 &mtView() { return m_view; }
         inline const glm::mat4 &mtProject() { return m_project; }
         inline const Viewport &viewport() { return m_port; }
+        /**
+         * const std::shared_ptr<Camera> references to *ptr const
+         * @return return a const pointer. content pointed by this ptr can be modified,
+         *         but the pointer itself can not.
+         */
+        inline const std::shared_ptr<Camera> &getCamera() { return m_camera; }
 
         inline void setModelMt(const glm::mat4 &model) { m_model = model; }
         inline void setViewMt(const glm::mat4 &view) { m_view = view; }
