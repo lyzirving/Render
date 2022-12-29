@@ -26,6 +26,7 @@ namespace gfx
         inline std::vector<Vertex> &getVertex() { return m_vertex; }
         inline std::vector<uint32_t> &getIndices() { return m_indices; }
         inline std::vector<std::shared_ptr<Texture>> &getTextures() { return m_textures; }
+        inline const std::shared_ptr<Material> &getMaterial() { return m_material; }
 
         void release();
 

@@ -16,7 +16,7 @@ namespace gfx
 {
     Mesh::Mesh() : VideoMem(),
                    m_vertex(), m_indices(), m_textures(),
-                   m_material(nullptr),
+                   m_material(new Material),
                    m_drawMode(DrawMode::MODE_TRIANGLE), m_initialized(false)
     {
     }
@@ -134,6 +134,7 @@ namespace gfx
             std::vector<std::shared_ptr<Texture>> tmp;
             m_textures.swap(tmp);
         }
+        m_material.reset();
         destroyMem();
     }
 

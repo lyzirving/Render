@@ -1,9 +1,12 @@
 #ifndef RENDER_GFXMEM_H
 #define RENDER_GFXMEM_H
 
+#include <string>
 #include <cstdint>
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
+
+#include "GfxPicMgr.h"
 
 namespace gfx
 {
@@ -43,30 +46,36 @@ namespace gfx
     class PicMem
     {
     public:
-        PicMem() : m_width(0), m_height(0), m_channel(0), m_id(0) {};
+        friend class GfxPicMgr;
+        PicMem() : m_width(0), m_height(0), m_channel(0), m_id(0), m_path() {}
+        PicMem(const char *path) : m_width(0), m_height(0), m_channel(0), m_id(0), m_path(path) {}
+
         virtual ~PicMem()
         {
             destroyMem();
         }
 
-        inline uint32_t getWidth() { return m_width; }
-        inline uint32_t getHeight() { return m_height; }
-        inline uint8_t getChannel() { return m_channel; }
-        inline uint8_t getId() { return m_id; }
+        inline int32_t getWidth() { return m_width; }
+        inline int32_t getHeight() { return m_height; }
+        inline int32_t getChannel() { return m_channel; }
+        inline uint32_t getId() { return m_id; }
+        inline const std::string &getPath() { return m_path; }
+
+        void createMem()
+        {
+            GfxPicMgr::get()->loadTex(m_path, m_id, m_width, m_height, m_channel);
+        }
 
         void destroyMem()
         {
-            if (m_id != 0)
-            {
-                glDeleteTextures(1, &m_id);
-                m_id = 0;
-            }
+            GfxPicMgr::get()->release(m_path, m_id);
         }
 
     protected:
-        uint32_t m_width, m_height;
-        uint8_t m_channel;
+        int32_t m_width, m_height, m_channel;
         uint32_t m_id;
+        std::string m_path;
+
     };
 }
 

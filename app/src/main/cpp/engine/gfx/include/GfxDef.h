@@ -16,6 +16,12 @@ namespace gfx
         MODE_DOT
     };
 
+    enum TextureType : uint8_t
+    {
+        DIFFUSE,
+        SPECULAR
+    };
+
     struct Vertex
     {
         glm::vec3 m_pos;
@@ -28,14 +34,12 @@ namespace gfx
     class Texture : public PicMem
     {
     public:
-        Texture(const char *path) : m_path(path), m_type() {}
+        Texture() : PicMem() {}
+        Texture(const char *path, TextureType type) : PicMem(path), m_type(type) {}
         virtual ~Texture() = default;
 
-        inline const std::string &getPath() { return m_path; }
-
     protected:
-        std::string m_path;
-        std::string m_type;
+        TextureType m_type;
     };
 
     class Material
