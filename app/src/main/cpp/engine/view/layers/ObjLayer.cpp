@@ -1,5 +1,5 @@
 #include "include/ObjLayer.h"
-#include "LayerItem.h"
+#include "ModelItem.h"
 #include "ViewConv.h"
 
 #include "LogUtil.h"

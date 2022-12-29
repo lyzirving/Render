@@ -15,8 +15,10 @@ namespace view
 
         virtual void draw(const std::shared_ptr<ViewConv> &conv) override;
 
-    private:
-        std::string m_srcPath;
+    protected:
+        bool loadModel();
+
+        std::string m_srcPath, m_srcDirectory;
     };
 }
 
