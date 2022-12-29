@@ -41,5 +41,31 @@ namespace view
         //todo make the model meshes;
         return true;
     }
+
+    void ModelItem::processNode(aiNode *node, const aiScene *scene)
+    {
+        // note that Node only contains index of object
+        // Scene contains all the meshes and elements which are needed for rendering
+        // so we need to get objects from Scene by their index
+
+        // process mesh for current node if the node has any meshes
+        /*for(unsigned int i = 0; i < node->mNumMeshes; i++)
+        {
+            aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
+            if(mesh != nullptr)
+                mMeshes.push_back(std::move(processMesh(mesh, scene)));
+        }
+
+        // process the children for current node
+        for(unsigned int i = 0; i < node->mNumChildren; i++)
+        {
+            processNode(node->mChildren[i], scene);
+        }*/
+    }
+
+    /*gfx::Mesh ModelItem::processMesh(aiMesh *mesh, const aiScene *scene)
+    {
+
+    }*/
 }
 

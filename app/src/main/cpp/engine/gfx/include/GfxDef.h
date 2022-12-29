@@ -16,26 +16,13 @@ namespace gfx
         MODE_DOT
     };
 
-    class Vertex
+    struct Vertex
     {
-    public:
-        Vertex() : m_pos(0.f), m_normal(0.f), m_tex(0.f) {}
-        virtual ~Vertex() = default;
-
-        inline void setPos(const glm::vec3 & pos) { m_pos = pos; }
-        inline void setPos(float x, float y, float z) { m_pos.x = x; m_pos.y = y; m_pos.z = z; }
-        inline void setNormal(const glm::vec3 & normal) { m_normal = normal; }
-        inline void setNormal(float x, float y, float z) { m_normal.x = x; m_normal.y = y; m_normal.z = z; }
-        inline void setTex(const glm::vec2 & tex) { m_tex = tex; }
-        inline void setTex(float u, float v) { m_tex.x = u; m_tex.y = v; }
-        inline const glm::vec3 &getPos() { return m_pos; }
-        inline const glm::vec3 &getNormal() { return m_normal; }
-        inline const glm::vec2 &getTex() { return m_tex; }
-
-    protected:
         glm::vec3 m_pos;
         glm::vec3 m_normal;
         glm::vec2 m_tex;
+
+        Vertex() : m_pos(0.f), m_normal(0.f), m_tex(0.f) {}
     };
 
     class Texture : public PicMem

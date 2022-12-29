@@ -1,9 +1,10 @@
 #ifndef RENDER_MODELITEM_H
 #define RENDER_MODELITEM_H
 
-#include "LayerItem.h"
-
 #include <string>
+
+#include "LayerItem.h"
+#include "Mesh.h"
 
 namespace view
 {
@@ -17,6 +18,8 @@ namespace view
 
     protected:
         bool loadModel();
+        void processNode(aiNode *node, const aiScene *scene);
+        //gfx::Mesh processMesh(aiMesh *mesh, const aiScene *scene);
 
         std::string m_srcPath, m_srcDirectory;
     };

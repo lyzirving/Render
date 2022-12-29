@@ -62,12 +62,48 @@ namespace gfx
 
     Mesh::~Mesh()
     {
-
+        release();
     }
 
-    void Mesh::setupMesh(bool force)
+    void Mesh::bind(bool force)
     {
+        if(force)
+            goto setup;
 
+        if(m_initialized)
+            return;
+
+        if(m_vertex.empty() || m_indices.empty())
+            return;
+
+     setup:
+        createMem();
+
+        // load vertex data into array buffer
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+        glBufferData(GL_ARRAY_BUFFER, m_vertex.size() * sizeof(Vertex), &m_vertex[0], GL_STATIC_DRAW);
+        // load indices data into element buffer
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned int), &m_indices[0], GL_STATIC_DRAW);
+        // **********finish create buffer **********
+
+        glBindVertexArray(m_vao);
+        // bind buffer to vao
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+        // set the vertex attribute pointer, vertex position
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)nullptr);
+        // vertex normal
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, m_normal));
+        // texture coordinates
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, m_tex));
+
+        glBindVertexArray(0);
+
+        m_initialized = true;
     }
 
     void Mesh::draw(const std::shared_ptr<Shader> &shader)
@@ -77,7 +113,28 @@ namespace gfx
 
     void Mesh::release()
     {
-
+        if (!m_vertex.empty())
+        {
+            std::vector<Vertex> tmp;
+            m_vertex.swap(tmp);
+        }
+        if (!m_indices.empty())
+        {
+            std::vector<uint32_t> tmp;
+            m_indices.swap(tmp);
+        }
+        if (!m_textures.empty())
+        {
+            auto itr = m_textures.begin();
+            while (itr != m_textures.end())
+            {
+                (*itr).reset();
+                itr = m_textures.erase(itr);
+            }
+            std::vector<std::shared_ptr<Texture>> tmp;
+            m_textures.swap(tmp);
+        }
+        destroyMem();
     }
 
 }
