@@ -21,11 +21,11 @@ namespace view
 
     void SightScene::createLayers()
     {
-        std::shared_ptr<Layer> clearLayer = std::make_shared<ClearLayer>(0);
-        std::shared_ptr<Layer> objLayer = std::make_shared<ObjLayer>(1);
+        std::shared_ptr<Layer> clearLayer = std::make_shared<ClearLayer>(LayerOrder::LOW);
+        std::shared_ptr<Layer> objLayer = std::make_shared<ObjLayer>(LayerOrder::MID);
 
-        m_layers.push_back(clearLayer);
-        m_layers.push_back(objLayer);
+        addLayer(clearLayer);
+        addLayer(objLayer);
     }
 
     void SightScene::update()

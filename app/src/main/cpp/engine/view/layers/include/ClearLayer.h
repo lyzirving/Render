@@ -8,7 +8,7 @@ namespace view
     class ClearLayer : public Layer
     {
     public:
-        ClearLayer(uint8_t order = 0);
+        ClearLayer(LayerOrder order = LayerOrder::LOW);
         virtual ~ClearLayer();
 
         virtual void update(const std::shared_ptr<ViewConv> &conv) override;

@@ -3,10 +3,17 @@
 
 namespace view
 {
-    Layer::Layer() : m_type(LayerType::BASIC), m_order(0), m_items() {}
+    Layer::Layer() : m_type(LayerType::BASIC), m_order(LayerOrder::LOW),
+                     m_key(m_type, m_order), m_items()
+    {
 
-    Layer::Layer(LayerType type, uint8_t order) : m_type(type), m_order(order),
-                                                  m_items() {}
+    }
+
+    Layer::Layer(LayerType type, LayerOrder order) : m_type(type), m_order(order),
+                                                     m_key(type, order), m_items()
+    {
+
+    }
 
     Layer::~Layer()
     {

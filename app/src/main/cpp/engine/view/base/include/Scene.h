@@ -1,6 +1,7 @@
 #ifndef RENDER_SCENE_H
 #define RENDER_SCENE_H
 
+#include <map>
 #include <vector>
 #include <memory>
 #include <algorithm>
@@ -19,6 +20,8 @@ namespace view
         virtual ~Scene();
         virtual void update() = 0;
 
+        void addLayer(const std::shared_ptr<Layer> &layer);
+        void removeLayer(const std::shared_ptr<Layer> &layer);
         void setViewport(int32_t x, int32_t y, int32_t width, int32_t height);
 
     protected:
@@ -36,6 +39,7 @@ namespace view
         void sortLayer();
 
         std::vector<std::shared_ptr<Layer>> m_layers;
+        std::map<LayerKey, std::shared_ptr<Layer>> m_existence;
         std::shared_ptr<ViewConv> m_conv;
     };
 }

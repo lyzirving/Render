@@ -14,6 +14,14 @@ namespace view
         OBJ_LAYER,
         CNT
     };
+
+    enum LayerOrder : uint8_t
+    {
+        LOW,
+        MID,
+        MID_1,
+        TOP
+    };
 }
 
 #endif //RENDER_VIEWDEF_H

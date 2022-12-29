@@ -12,8 +12,8 @@
 
 namespace view
 {
-    ClearLayer::ClearLayer(uint8_t order) : Layer(LayerType::BASIC, order),
-                                            m_clearColor(0xffffffff)
+    ClearLayer::ClearLayer(LayerOrder order) : Layer(LayerType::BASIC, order),
+                                               m_clearColor(0xffffffff)
     {
     }
 

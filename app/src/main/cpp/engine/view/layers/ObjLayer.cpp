@@ -11,7 +11,7 @@
 
 namespace view
 {
-    ObjLayer::ObjLayer(uint8_t order) : Layer(LayerType::OBJ_LAYER, order)
+    ObjLayer::ObjLayer(LayerOrder order) : Layer(LayerType::OBJ_LAYER, order)
     {
         ObjLayer::createItems();
     }

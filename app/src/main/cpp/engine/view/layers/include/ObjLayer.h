@@ -8,7 +8,7 @@ namespace view
     class ObjLayer : public Layer
     {
     public:
-        ObjLayer(uint8_t order = 0);
+        ObjLayer(LayerOrder order = LayerOrder::MID);
 
         virtual ~ObjLayer();
         virtual void update(const std::shared_ptr<ViewConv> &conv) override;
