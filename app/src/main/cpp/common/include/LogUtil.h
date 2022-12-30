@@ -35,4 +35,13 @@
                                                     LIB_TAG, "[%s][%s][%d] " format, \
                                                     LOCAL_TAG, __FUNCTION__,         \
                                                     __LINE__, ##__VA_ARGS__)
+
+#define LOG_FUNC_ENTER          __android_log_print(ANDROID_LOG_DEBUG, LIB_TAG,      \
+                                                    "[%s][%s][%d]: enter",           \
+                                                    LOCAL_TAG, __FUNCTION__, __LINE__)
+
+#define LOG_FUNC_EXIT           __android_log_print(ANDROID_LOG_DEBUG, LIB_TAG,      \
+                                                    "[%s][%s][%d]: exit",            \
+                                                    LOCAL_TAG, __FUNCTION__, __LINE__)
+
 #endif

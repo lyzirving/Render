@@ -168,6 +168,8 @@ namespace view
         LOG_DEBUG("vertex size[%lu], indices size[%lu], texture size[%lu]",
                   vertexList.size(), indices.size(), textures.size());
 
+        result->bind(false);
+
         return result;
     }
 

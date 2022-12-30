@@ -11,7 +11,7 @@ namespace view
         SightScene();
 
         virtual ~SightScene();
-        virtual void update() override;
+        virtual void update(const std::shared_ptr<ViewConv> &conv) override;
 
     protected:
         virtual void createLayers() override;

@@ -8,6 +8,7 @@
 namespace view
 {
     class Camera;
+    class Frustum;
 
     struct Viewport
     {
@@ -35,16 +36,13 @@ namespace view
          */
         inline const std::shared_ptr<Camera> &getCamera() { return m_camera; }
 
-        inline void setModelMt(const glm::mat4 &model) { m_model = model; }
-        inline void setViewMt(const glm::mat4 &view) { m_view = view; }
-        inline void setProjectMt(const glm::mat4 &project) { m_project = project; }
-
         void setViewport(int32_t x, int32_t y, int32_t width, int32_t height);
 
     private:
         glm::mat4 m_model, m_view, m_project;
 
         std::shared_ptr<Camera> m_camera;
+        std::shared_ptr<Frustum> m_frustum;
         Viewport m_port;
     };
 }

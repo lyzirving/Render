@@ -28,11 +28,11 @@ namespace view
         addLayer(objLayer);
     }
 
-    void SightScene::update()
+    void SightScene::update(const std::shared_ptr<ViewConv> &conv)
     {
         for (auto &layer : m_layers)
         {
-            layer->update(m_conv);
+            layer->update(conv);
         }
     }
 }

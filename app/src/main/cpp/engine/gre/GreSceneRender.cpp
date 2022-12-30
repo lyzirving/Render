@@ -21,12 +21,17 @@ namespace gre
 
     void GreSceneRender::setViewport(int32_t x, int32_t y, int32_t width, int32_t height)
     {
-        m_scene->setViewport(x, y, width, height);
+        m_conv->setViewport(x, y, width, height);
     }
 
     void GreSceneRender::update()
     {
-        m_scene->update();
+        if (!m_conv)
+        {
+            LOG_ERR("ViewConv is empty");
+            assert(0);
+        }
+        m_scene->update(m_conv);
     }
 }
 
