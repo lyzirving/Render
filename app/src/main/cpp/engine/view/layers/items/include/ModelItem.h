@@ -27,6 +27,7 @@ namespace view
         virtual ~ModelItem();
 
         virtual void draw(const std::shared_ptr<ViewConv> &conv) override;
+        virtual void release() override;
 
     protected:
         bool loadModel();

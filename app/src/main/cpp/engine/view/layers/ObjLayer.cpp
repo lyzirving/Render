@@ -1,6 +1,8 @@
 #include "include/ObjLayer.h"
 #include "ModelItem.h"
 #include "ViewConv.h"
+#include "ModelItem.h"
+#include "AssetsMgr.h"
 
 #include "LogUtil.h"
 
@@ -20,7 +22,9 @@ namespace view
 
     void ObjLayer::createItems()
     {
-
+        std::string objName = AssetsMgr::getObj("Marry");
+        std::shared_ptr<LayerItem> modelItem = std::make_shared<ModelItem>(objName.c_str());
+        m_items.push_back(std::move(modelItem));
     }
 
     void ObjLayer::update(const std::shared_ptr<ViewConv> &conv)

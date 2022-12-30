@@ -68,7 +68,10 @@ namespace gfx
 
         void destroyMem()
         {
-            GfxPicMgr::get()->release(m_path, m_id);
+            if (!m_path.empty())
+            {
+                GfxPicMgr::get()->release(m_path, m_id);
+            }
         }
 
     protected:

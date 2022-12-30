@@ -18,41 +18,19 @@ enum SRC_TYPE : uint8_t
     TEXTURE
 };
 
-namespace assets
+class AssetsMgr
 {
-    std::string getPath(const std::string& path, SRC_TYPE type)
-    {
-        switch (type) {
-            case TEXTURE:
-            {
-                return ROOT + std::string("/") + "textures" + "/" + path;
-            }
-            case MODEL:
-            default:
-            {
-                return ROOT + std::string("/") + "model" + "/" + path;
-            }
-        }
-    }
+public:
+    static AssetsMgr *get();
 
-    std::string getObj(const std::string &name)
-    {
-        std::string path(name);
-        path.append("/");
-        path.append(name);
-        path.append(".obj");
-        return getPath(path, SRC_TYPE::MODEL);
-    }
+    static std::string getObj(const std::string &name);
+    static std::string getTexture(const std::string &name, PIC_TYPE type = PIC_TYPE::PNG);
 
-    std::string getTexture(const std::string &name, PIC_TYPE type = PIC_TYPE::PNG)
-    {
-        std::string path(name);
-        if (type == PIC_TYPE::JPG)
-            path.append(".jpg");
-        else
-            path.append(".png");
-        return getPath(path, SRC_TYPE::TEXTURE);
-    }
-}
+private:
+    AssetsMgr();
+    ~AssetsMgr();
+
+    static std::string getPath(const std::string& path, SRC_TYPE type);
+};
 
 #endif //RENDER_ASSETSMGR_H

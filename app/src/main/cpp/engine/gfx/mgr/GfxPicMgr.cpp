@@ -76,7 +76,7 @@ namespace gfx
                 channel = tex.m_channel;
                 m_texMap.insert(std::pair<std::string, Texture>(path, tex));
                 ret = true;
-                LOG_DEBUG("size[%d, %d], channel[%d], path[%s]", width, height, channel, path.c_str());
+                LOG_DEBUG("size[%d, %d], channel[%d], path[%s], id[%u]", width, height, channel, path.c_str(), texId);
             }
         }
         else

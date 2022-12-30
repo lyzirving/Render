@@ -14,6 +14,7 @@ namespace view
         virtual ~LayerItem() = default;
 
         virtual void draw(const std::shared_ptr<ViewConv> &conv) = 0;
+        virtual void release() {}
     };
 }
 

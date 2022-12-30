@@ -23,9 +23,13 @@ namespace view
                                              m_srcPath(path), m_srcDirectory(),
                                              m_minPos(FLT_MAX), m_maxPos(FLT_MIN)
     {
+        loadModel();
     }
 
-    ModelItem::~ModelItem() = default;
+    ModelItem::~ModelItem()
+    {
+        ModelItem::release();
+    }
 
     void ModelItem::draw(const std::shared_ptr<ViewConv> &conv) {}
 
@@ -165,6 +169,16 @@ namespace view
                   vertexList.size(), indices.size(), textures.size());
 
         return result;
+    }
+
+    void ModelItem::release()
+    {
+        auto itr = m_mesh.begin();
+        while(itr != m_mesh.end())
+        {
+            (*itr).reset();
+            itr = m_mesh.erase(itr);
+        }
     }
 
     void ModelItem::updateMinMax(const glm::vec3 &pos)
