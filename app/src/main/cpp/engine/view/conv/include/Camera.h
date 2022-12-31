@@ -2,7 +2,7 @@
 #define RENDER_CAMERA_H
 
 #include <atomic>
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
 namespace view
 {
@@ -13,14 +13,9 @@ namespace view
                float pitch = 0.f, float yaw = -90.f);
         virtual ~Camera();
 
-        inline float getCamNear() { return m_camNear; }
-        inline float getCamFar() { return m_camFar; }
-        inline float getFov() { return m_fov; }
-        inline void setCamNear(float near) { m_camNear = near; }
-        inline void setCamFar(float far) { m_camFar = far; }
-        inline void setFov(float fov) { m_fov = fov; }
+        inline bool isChanged() { return m_change.load(); }
 
-        const glm::mat4 &getViewMt();
+        const glm::mat4 &getViewMat();
         const glm::vec3 &getCamPos();
         void setPosition(const glm::vec3 &pos);
         void setPosition(float r, float theta, float phi);
@@ -59,11 +54,6 @@ namespace view
          *        yaw will decide the rotation between camera and +z-axis.
          */
         float m_viewDirYaw;
-        /**
-         * @brief field of view in y direction, and it's valued in degree
-         */
-        float m_fov;
-        float m_camNear, m_camFar;
 
         /*************************** spherical coordinate ***************************/
         /**

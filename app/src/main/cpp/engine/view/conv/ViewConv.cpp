@@ -11,7 +11,7 @@
 
 namespace view
 {
-    ViewConv::ViewConv() : m_model(1.f), m_view(1.f), m_project(1.f),
+    ViewConv::ViewConv() : m_viewMat(1.f), m_projectMat(1.f),
                            m_camera(new Camera), m_frustum(new Frustum),
                            m_port()
     {
@@ -23,11 +23,30 @@ namespace view
         m_frustum.reset();
     }
 
+    const glm::mat4 & ViewConv::getViewMat()
+    {
+        if(m_camera->isChanged())
+            m_viewMat = m_camera->getViewMat();
+
+        return m_viewMat;
+    }
+
+    const glm::mat4 & ViewConv::getProjectMat()
+    {
+        if(m_frustum->isChanged())
+            m_projectMat = m_frustum->getProjectMat();
+
+        return m_projectMat;
+    }
+
     void ViewConv::setViewport(int32_t x, int32_t y, int32_t width, int32_t height)
     {
         m_port.x = x;
         m_port.y = y;
         m_port.width = width;
         m_port.height = height;
+
+        m_frustum->setWidth(width);
+        m_frustum->setHeight(height);
     }
 }

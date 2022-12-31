@@ -1,6 +1,7 @@
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "Camera.h"
 #include "ViewLib.h"
-#include "glm/gtc/matrix_transform.hpp"
 
 namespace view
 {
@@ -8,7 +9,6 @@ namespace view
     m_worldUp(0, 1.f, 0),
     m_camPos(0.f), m_camRight(0.f), m_camUp(0.f),
     m_viewDir(0.f), m_viewDirPitch(pitch), m_viewDirYaw(yaw),
-    m_fov(45.f), m_camNear(0.1f), m_camFar(10.f),
     m_theta(theta), m_phi(phi), m_radius(radius),
     m_viewMt(1.f), m_change(true)
     {
@@ -88,7 +88,7 @@ namespace view
         }
     }
 
-    const glm::mat4 & Camera::getViewMt()
+    const glm::mat4 & Camera::getViewMat()
     {
         calcViewMt();
         return m_viewMt;

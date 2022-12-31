@@ -1,33 +1,39 @@
 #ifndef RENDER_FRUSTUM_H
 #define RENDER_FRUSTUM_H
 
+#include <atomic>
+#include <glm/glm.hpp>
+
 namespace view
 {
     class Frustum
     {
     public:
         Frustum();
-        Frustum(float left, float right, float top, float bottom, float near, float far);
+        Frustum(float width, float height, float near, float far);
         virtual ~Frustum();
 
-        inline float left() { return m_left; }
-        inline float right() { return m_right; }
-        inline float top() { return m_top; }
-        inline float bottom() { return m_bottom; }
         inline float near() { return m_near; }
         inline float far() { return m_far; }
+        inline float fov() { return glm::degrees(m_fov); }
+        inline float aspect() { return m_aspect; };
+        inline bool isChanged() { return m_change.load(); }
 
-        inline void setLeft(float left) { m_left = left; }
-        inline void setRight(float right) { m_right = right; }
-        inline void setTop(float top) { m_top = top; }
-        inline void setBottom(float bottom) { m_bottom = bottom; }
-        inline void setNear(float near) { m_near = near; }
-        inline void setFar(float far) { m_far = far; }
+        const glm::mat4 &getProjectMat();
+        void setWidth(float width);
+        void setHeight(float height);
+        void setNear(float near);
+        void setFar(float far);
 
     private:
+        void calcProjectMat();
+
         float m_left, m_right;
         float m_top, m_bottom;
         float m_near, m_far;
+        float m_fov, m_aspect;
+        std::atomic_bool m_change;
+        glm::mat4 m_projectMat;
     };
 }
 
