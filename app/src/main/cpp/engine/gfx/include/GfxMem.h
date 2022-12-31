@@ -7,13 +7,15 @@
 #include <GLES3/gl3ext.h>
 
 #include "GfxPicMgr.h"
+#include "LogUtil.h"
 
 namespace gfx
 {
     class VideoMem
     {
     public:
-        VideoMem() : m_vao(0), m_vbo(0), m_ebo(0) {};
+        VideoMem() : m_vao(0), m_vbo(0), m_ebo(0), m_name() {};
+        VideoMem(const char *name) : m_vao(0), m_vbo(0), m_ebo(0), m_name(name) {};
 
         inline uint32_t getVAO() { return m_vao; }
         inline uint32_t getVBO() { return m_vbo; }
@@ -21,26 +23,23 @@ namespace gfx
 
         void createMem()
         {
-            if(m_vao != 0)
-                glGenVertexArrays(1, &m_vao);
-            if(m_vbo != 0)
-                glGenBuffers(1, &m_vbo);
-            if(m_ebo != 0)
-                glGenBuffers(1, &m_ebo);
+            if(m_vao == 0) glGenVertexArrays(1, &m_vao);
+            if(m_vbo == 0) glGenBuffers(1, &m_vbo);
+            if(m_ebo == 0) glGenBuffers(1, &m_ebo);
+            __android_log_print(ANDROID_LOG_DEBUG, LIB_TAG, "[%s][%s] vao[%u], vbo[%u], ebo[%u]",
+                                __FUNCTION__, m_name.c_str(), m_vao, m_vbo, m_ebo);
         }
 
         void destroyMem()
         {
-            if(m_vbo != 0)
-                glDeleteBuffers(1, &m_vbo);
-            if(m_ebo != 0)
-                glDeleteBuffers(1, &m_ebo);
-            if(m_vao != 0)
-                glDeleteVertexArrays(1, &m_vao);
+            if(m_vbo != 0) glDeleteBuffers(1, &m_vbo);
+            if(m_ebo != 0) glDeleteBuffers(1, &m_ebo);
+            if(m_vao != 0) glDeleteVertexArrays(1, &m_vao);
         }
 
     protected:
         uint32_t m_vao, m_vbo, m_ebo;
+        std::string m_name;
     };
 
     class PicMem
@@ -68,7 +67,7 @@ namespace gfx
 
         void destroyMem()
         {
-            if (!m_path.empty())
+            if (!m_path.empty() && m_id != 0)
             {
                 GfxPicMgr::get()->release(m_path, m_id);
             }

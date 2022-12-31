@@ -9,7 +9,7 @@
 
 namespace view
 {
-    Viewport::Viewport() : m_start(0.f), m_size(0.f), m_dist(1.f), m_viewportMat(1.f), m_change(true) {}
+    Viewport::Viewport() : m_start(0.f), m_size(0.f), m_dist(0.f), m_viewportMat(1.f), m_change(true) {}
     Viewport::Viewport(float startX, float startY, float width, float height, float dist)
     : m_start(startX, startY), m_size(width, height), m_dist(dist), m_viewportMat(1.f),
       m_change(true)

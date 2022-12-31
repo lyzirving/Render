@@ -22,7 +22,7 @@ namespace gre {
         if (arg)
         {
             auto *ctx = static_cast<GreContext *>(arg);
-            ctx->mainWork();
+            ctx->onLoop();
         }
     }
 
@@ -162,16 +162,8 @@ namespace gre {
         return *ptr == *m_pTid;
     }
 
-    void GreContext::mainWork()
+    void GreContext::onLoop()
     {
-        if (!m_pTid)
-        {
-            m_pTid = (int64_t *)std::malloc(sizeof(int64_t));
-            *m_pTid = syscall(SYS_gettid);
-            pthread_setspecific(m_kTid, m_pTid);
-            LOG_DEBUG("main thread id[%ld]", *m_pTid);
-        }
-
         if (!m_evtMgr || !m_timerMgr)
         {
             LOG_ERR("event manager is null[%s] or timer manager is null[%s]",
@@ -179,9 +171,27 @@ namespace gre {
                     m_timerMgr == nullptr ? "true" : "false");
             assert(0);
         }
-
         m_evtMgr->process(m_timerMgr->getTimeout());
         m_timerMgr->process();
+    }
+
+    void GreContext::onLoopStart()
+    {
+        m_pTid = (int64_t *)std::malloc(sizeof(int64_t));
+        *m_pTid = syscall(SYS_gettid);
+        pthread_setspecific(m_kTid, m_pTid);
+        LOG_DEBUG("main thread id[%ld]", *m_pTid);
+
+        if (!m_window->prepare())
+        {
+            LOG_ERR("GreWindow fails to prepare");
+            assert(0);
+        }
+    }
+
+    void GreContext::onLoopEnd()
+    {
+        release();
     }
 
     void GreContext::requestQuit()

@@ -13,7 +13,7 @@ namespace gfx
     {
         MODE_TRIANGLE,
         MODE_LINE,
-        MODE_DOT
+        MODE_POINT
     };
 
     enum TextureType : uint8_t

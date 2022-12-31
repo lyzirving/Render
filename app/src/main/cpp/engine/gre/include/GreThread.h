@@ -20,8 +20,9 @@ namespace gre
         GreThread(const char *name);
 
         virtual ~GreThread();
+        virtual void onFirst() override;
         virtual void onQuit() override;
-        virtual void work() override;
+        virtual void onLoop() override;
 
         void setFunc(void (*pFunc)(void*), void *arg);
 

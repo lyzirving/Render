@@ -6,7 +6,7 @@
 
 #include "ModelItem.h"
 #include "AssetsMgr.h"
-#include "Mesh.h"
+#include "GfxMesh.h"
 
 #include "LogUtil.h"
 
@@ -20,8 +20,9 @@ namespace view
     using namespace gfx;
 
     ModelItem::ModelItem(const char *path) : m_mesh(),
-                                             m_srcPath(path), m_srcDirectory(),
-                                             m_minPos(FLT_MAX), m_maxPos(FLT_MIN)
+                                             m_srcPath(path), m_srcDirectory(), m_name(),
+                                             m_minPos(FLT_MAX), m_maxPos(FLT_MIN),
+                                             m_meshInd(0)
     {
         loadModel();
     }
@@ -31,7 +32,10 @@ namespace view
         ModelItem::release();
     }
 
-    void ModelItem::draw(const std::shared_ptr<ViewConv> &conv) {}
+    void ModelItem::draw(const std::shared_ptr<ViewConv> &conv)
+    {
+
+    }
 
     bool ModelItem::loadModel()
     {
@@ -50,7 +54,10 @@ namespace view
             LOG_ERR("fail to load model from [%s], reason[%s]", m_srcPath.c_str(), importer.GetErrorString());
             return false;
         }
-        m_srcDirectory = m_srcPath.substr(0, m_srcPath.find_last_of('/'));
+        int pos0 = m_srcPath.find_last_of('/');
+        int pos1 = m_srcPath.find_last_of('.');
+        m_srcDirectory = m_srcPath.substr(0, pos0);
+        m_name = m_srcPath.substr(pos0 + 1, std::max(0, pos1 - pos0 - 1));
         LOG_DEBUG("load from[%s], parse", m_srcPath.c_str());
         LOG_DEBUG("********************************");
         processNode(scene->mRootNode, scene);
@@ -97,9 +104,10 @@ namespace view
         }
     }
 
-    std::shared_ptr<Mesh> ModelItem::processMesh(aiMesh *mesh, const aiScene *scene)
+    std::shared_ptr<GfxMesh> ModelItem::processMesh(aiMesh *mesh, const aiScene *scene)
     {
-        std::shared_ptr<Mesh> result = std::make_shared<Mesh>();
+        std::string meshName = m_name + "@Mesh@" + std::to_string(m_meshInd++);
+        std::shared_ptr<GfxMesh> result = std::make_shared<GfxMesh>(meshName.c_str());
 
         std::vector<Vertex> &vertexList = result->getVertex();
         std::vector<uint32_t> &indices = result->getIndices();

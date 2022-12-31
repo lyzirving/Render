@@ -42,10 +42,10 @@ namespace view
 
     void ViewConv::setViewport(int32_t x, int32_t y, int32_t width, int32_t height)
     {
-        m_viewport->setStart(x, y);
-        m_viewport->setSize(width, height);
+        m_viewport->setStart(float(x), float(y));
+        m_viewport->setSize(float(width), float(height));
 
-        m_frustum->setWidth(width);
-        m_frustum->setHeight(height);
+        m_frustum->setWidth(float(width));
+        m_frustum->setHeight(float(height));
     }
 }

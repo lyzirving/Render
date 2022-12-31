@@ -18,8 +18,9 @@ public:
     Thread(const char* name, bool loop = true);
 
     virtual ~Thread();
+    virtual void onFirst() = 0;
     virtual void onQuit() = 0;
-    virtual void work() = 0;
+    virtual void onLoop() = 0;
 
     void interrupt();
     bool isInterrupted();

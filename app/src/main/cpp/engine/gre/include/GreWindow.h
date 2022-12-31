@@ -30,6 +30,7 @@ namespace gre
 
         bool attachSurface(ANativeWindow *surface);
         void detachSurface();
+        bool prepare();
         void release();
 
     private:

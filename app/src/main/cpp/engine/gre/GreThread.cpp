@@ -17,15 +17,13 @@ namespace gre
 
     GreThread::~GreThread() = default;
 
-    void GreThread::onQuit()
+    void GreThread::onFirst()
     {
-        LOG_DEBUG("enter");
-        m_pFunc = nullptr;
-        m_arg = nullptr;
+        LOG_FUNC_ENTER;
         std::shared_ptr<GreContext> ctx = m_ctx.lock();
         if (ctx)
         {
-            ctx->release();
+            ctx->onLoopStart();
         }
         else
         {
@@ -34,7 +32,24 @@ namespace gre
         }
     }
 
-    void GreThread::work()
+    void GreThread::onQuit()
+    {
+        LOG_FUNC_ENTER;
+        m_pFunc = nullptr;
+        m_arg = nullptr;
+        std::shared_ptr<GreContext> ctx = m_ctx.lock();
+        if (ctx)
+        {
+            ctx->onLoopEnd();
+        }
+        else
+        {
+            LOG_ERR("context is null from weak ptr");
+            assert(0);
+        }
+    }
+
+    void GreThread::onLoop()
     {
         if(!m_pFunc)
         {

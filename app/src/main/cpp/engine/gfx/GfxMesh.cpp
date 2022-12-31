@@ -1,27 +1,35 @@
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 #include <cmath>
 
-#include "Mesh.h"
+#include "GfxMesh.h"
+#include "GfxHelper.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "Mesh"
+#define LOCAL_TAG "GfxMesh"
 
 namespace gfx
 {
-    Mesh::Mesh() : VideoMem(),
-                   m_vertex(), m_indices(), m_textures(),
-                   m_material(new Material),
-                   m_drawMode(DrawMode::MODE_TRIANGLE), m_initialized(false)
+    GfxMesh::GfxMesh() : VideoMem(),
+                         m_vertex(), m_indices(), m_textures(),
+                         m_material(new Material),
+                         m_drawMode(DrawMode::MODE_TRIANGLE),
+                         m_initialized(false)
     {
     }
 
-    Mesh::Mesh(Mesh &&other) noexcept
+    GfxMesh::GfxMesh(const char *name) : VideoMem(name),
+                                         m_vertex(), m_indices(), m_textures(),
+                                         m_material(new Material),
+                                         m_drawMode(DrawMode::MODE_TRIANGLE),
+                                         m_initialized(false)
+    {
+    }
+
+    GfxMesh::GfxMesh(GfxMesh &&other) noexcept
     {
         if (this != &other) {
             this->m_vertex = std::move(other.m_vertex);
@@ -31,6 +39,7 @@ namespace gfx
             this->m_vao = other.m_vao;
             this->m_vbo = other.m_vbo;
             this->m_ebo = other.m_ebo;
+            this->m_name = std::move(other.m_name);
             this->m_drawMode = other.m_drawMode;
             this->m_initialized = other.m_initialized;
             other.m_initialized = false;
@@ -40,7 +49,7 @@ namespace gfx
         }
     }
 
-    Mesh &Mesh::operator=(Mesh &&other) noexcept
+    GfxMesh &GfxMesh::operator=(GfxMesh &&other) noexcept
     {
         if (this != &other) {
             this->m_vertex = std::move(other.m_vertex);
@@ -50,6 +59,7 @@ namespace gfx
             this->m_vao = other.m_vao;
             this->m_vbo = other.m_vbo;
             this->m_ebo = other.m_ebo;
+            this->m_name = std::move(other.m_name);
             this->m_drawMode = other.m_drawMode;
             this->m_initialized = other.m_initialized;
             other.m_initialized = false;
@@ -60,12 +70,12 @@ namespace gfx
         return *this;
     }
 
-    Mesh::~Mesh()
+    GfxMesh::~GfxMesh()
     {
         release();
     }
 
-    void Mesh::bind(bool force)
+    void GfxMesh::bind(bool force)
     {
         if(force)
             goto setup;
@@ -106,12 +116,35 @@ namespace gfx
         m_initialized = true;
     }
 
-    void Mesh::draw(const std::shared_ptr<Shader> &shader)
+    void GfxMesh::draw(const std::shared_ptr<Shader> &shader)
     {
-
+        for (int32_t i = 0; i < m_textures.size(); i++)
+        {
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(GL_TEXTURE_2D, m_textures[i]->getId());
+            //todo bind texture to shader
+        }
+        glBindVertexArray(m_vao);
+        glDrawElements(getGlDrawMode(), m_indices.size(), GL_UNSIGNED_INT, nullptr);
+        GfxHelper::checkGlErr("mesh[%s] draw err", m_name.c_str());
+        glBindVertexArray(0);
     }
 
-    void Mesh::release()
+    uint32_t GfxMesh::getGlDrawMode()
+    {
+        switch (m_drawMode)
+        {
+            case DrawMode::MODE_LINE:
+                return GL_LINES;
+            case DrawMode::MODE_POINT:
+                return GL_POINTS;
+            case DrawMode::MODE_TRIANGLE:
+            default:
+                return GL_TRIANGLES;
+        }
+    }
+
+    void GfxMesh::release()
     {
         if (!m_vertex.empty())
         {

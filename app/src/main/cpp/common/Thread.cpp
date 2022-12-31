@@ -51,14 +51,15 @@ void Thread::run()
     LOG_DEBUG("thread[%s] start", m_name.c_str());
     if (m_loop)
     {
+        onFirst();
         while(!m_interrupted.load())
         {
-            work();
+            onLoop();
         }
     }
     else
     {
-        work();
+        onLoop();
     }
     m_isRunning.store(false);
     onQuit();

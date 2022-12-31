@@ -35,7 +35,9 @@ namespace gre
         bool attachSurface(ANativeWindow *surface);
         void detachSurface();
         uint8_t init();
-        void mainWork();
+        void onLoop();
+        void onLoopStart();
+        void onLoopEnd();
         void requestQuit();
         void release();
         void testInterface();

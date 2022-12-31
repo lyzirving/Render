@@ -20,8 +20,7 @@ namespace gre
     GreWindow::GreWindow(GreContextId id)
     : GreTimer(GreEventId::REFRESH, 1000 / 60, GrePriority::TOP),
       m_id(id), m_totalFrame(0), m_lastRecTimeMs(0), m_fps(0),
-      m_render(new GreSceneRender),
-      m_egl(nullptr), m_surface(nullptr)
+      m_render(nullptr), m_egl(nullptr), m_surface(nullptr)
     {
     }
 
@@ -41,12 +40,6 @@ namespace gre
         {
             LOG_ERR("invalid surface ptr");
             return false;
-        }
-
-        if(!m_egl)
-        {
-            m_egl = std::make_shared<gfx::GfxEglCore>();
-            m_egl->prepare();
         }
 
         if(!m_egl->isPrepared())
@@ -95,6 +88,15 @@ namespace gre
                 break;
             }
         }
+    }
+
+    bool GreWindow::prepare()
+    {
+        bool ret{false};
+        m_egl = std::make_shared<gfx::GfxEglCore>();
+        ret = m_egl->prepare();
+        m_render = std::make_shared<GreSceneRender>();
+        return ret;
     }
 
     void GreWindow::printFps()

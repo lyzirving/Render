@@ -1,5 +1,5 @@
-#ifndef RENDER_MESH_H
-#define RENDER_MESH_H
+#ifndef RENDER_GFXMESH_H
+#define RENDER_GFXMESH_H
 
 #include <memory>
 #include <vector>
@@ -10,14 +10,15 @@ namespace gfx
 {
     class Shader;
 
-    class Mesh : public VideoMem
+    class GfxMesh : public VideoMem
     {
     public:
-        Mesh();
-        Mesh(Mesh &&other) noexcept;
-        Mesh& operator =(Mesh &&other) noexcept;
+        GfxMesh();
+        GfxMesh(const char *name);
+        GfxMesh(GfxMesh &&other) noexcept;
+        GfxMesh& operator =(GfxMesh &&other) noexcept;
 
-        virtual ~Mesh();
+        virtual ~GfxMesh();
         virtual void bind(bool force);
         virtual void draw(const std::shared_ptr<Shader> &shader);
 
@@ -39,7 +40,10 @@ namespace gfx
 
         DrawMode m_drawMode;
         bool m_initialized;
+
+    private:
+        uint32_t getGlDrawMode();
     };
 }
 
-#endif //RENDER_MESH_H
+#endif //RENDER_GFXMESH_H

@@ -10,7 +10,7 @@
 
 namespace gfx
 {
-    class Mesh;
+    class GfxMesh;
     class Texture;
 }
 
@@ -33,12 +33,15 @@ namespace view
         bool loadModel();
         std::vector<std::shared_ptr<gfx::Texture>> loadTexture(aiMaterial *mt, aiTextureType type, uint8_t texType);
         void processNode(aiNode *node, const aiScene *scene);
-        std::shared_ptr<gfx::Mesh> processMesh(aiMesh *mesh, const aiScene *scene);
+        std::shared_ptr<gfx::GfxMesh> processMesh(aiMesh *mesh, const aiScene *scene);
 
-        std::vector<std::shared_ptr<gfx::Mesh>> m_mesh;
+        std::vector<std::shared_ptr<gfx::GfxMesh>> m_mesh;
         std::string m_srcPath, m_srcDirectory;
+        std::string m_name;
 
         glm::vec3 m_minPos, m_maxPos;
+
+        uint32_t m_meshInd;
 
     private:
         void updateMinMax(const glm::vec3 &pos);
