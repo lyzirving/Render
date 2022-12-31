@@ -12,6 +12,7 @@ include_directories(${CMAKE_SOURCE_DIR}/engine/gre/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gre/fw/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gfx/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gfx/egl/include)
+include_directories(${CMAKE_SOURCE_DIR}/engine/gfx/shader/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gfx/mgr/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/view/base/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/view/conv/include)
@@ -26,6 +27,7 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gre SRC_GRE)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gre/fw SRC_FW)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gfx SRC_GFX)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gfx/egl SRC_EGL)
+aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gfx/shader SRC_SHADER)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gfx/mgr SRC_GFX_MGR)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view/base SRC_BASE_VIEW)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view/conv SRC_CONV_VIEW)
@@ -55,6 +57,7 @@ add_library( # Sets the name of the library.
              ${SRC_FW}
              ${SRC_GFX}
              ${SRC_EGL}
+             ${SRC_SHADER}
              ${SRC_GFX_MGR}
              ${SRC_VIEW}
              ${SRC_BASE_VIEW}

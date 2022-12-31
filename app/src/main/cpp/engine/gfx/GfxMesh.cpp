@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "GfxMesh.h"
+#include "Shader.h"
 #include "GfxHelper.h"
 #include "LogUtil.h"
 

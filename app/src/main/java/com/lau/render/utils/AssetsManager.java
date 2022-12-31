@@ -31,7 +31,8 @@ public class AssetsManager {
         /**
          * resources for rendering, such as .png, .jpg etc.
          */
-        TEXTURES
+        TEXTURE,
+        SHADER
     }
 
     private ThreadPoolExecutor mCachedThreadPool;
@@ -71,7 +72,8 @@ public class AssetsManager {
                     if (!root.exists()) { ret = root.mkdirs(); }
                     if (ret) {
                         copyAssets(ctx, Type.MODEL, root.getAbsolutePath());
-                        copyAssets(ctx, Type.TEXTURES, root.getAbsolutePath());
+                        copyAssets(ctx, Type.TEXTURE, root.getAbsolutePath());
+                        copyAssets(ctx, Type.SHADER, root.getAbsolutePath());
                         if (!Objects.isNull(mListener)) {
                             mListener.onCopyFinish();
                         }
@@ -171,8 +173,10 @@ public class AssetsManager {
         switch (type) {
             case MODEL:
                 return "model";
-            case TEXTURES:
-                return "textures";
+            case TEXTURE:
+                return "texture";
+            case SHADER:
+                return "shader";
             default:
                 return "";
         }
@@ -183,8 +187,10 @@ public class AssetsManager {
             case MODEL:
                 return name.contains(".obj") || name.contains(".png") || name.contains(".mtl")
                         || name.contains(".blend") || name.contains(".txt");
-            case TEXTURES:
+            case TEXTURE:
                 return name.contains(".png") || name.contains(".jpg");
+            case SHADER:
+                return name.contains(".vert") || name.contains(".frag");
             default:
                 return false;
         }

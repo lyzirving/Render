@@ -15,7 +15,8 @@ enum PIC_TYPE : uint8_t
 enum SRC_TYPE : uint8_t
 {
     MODEL,
-    TEXTURE
+    TEXTURE,
+    SHADER
 };
 
 class AssetsMgr
@@ -25,6 +26,8 @@ public:
 
     static std::string getObj(const std::string &name);
     static std::string getTexture(const std::string &name, PIC_TYPE type = PIC_TYPE::PNG);
+    static std::string getVert(const std::string &name);
+    static std::string getFrag(const std::string &name);
 
 private:
     AssetsMgr();

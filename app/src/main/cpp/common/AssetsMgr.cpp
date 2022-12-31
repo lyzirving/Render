@@ -23,9 +23,13 @@ std::string AssetsMgr::getPath(const std::string &path, SRC_TYPE type)
 {
     switch (type)
     {
+        case SHADER:
+        {
+            return ROOT + std::string("/") + "shader" + "/" + path;
+        }
         case TEXTURE:
         {
-            return ROOT + std::string("/") + "textures" + "/" + path;
+            return ROOT + std::string("/") + "texture" + "/" + path;
         }
         case MODEL:
         default:
@@ -52,5 +56,19 @@ std::string AssetsMgr::getTexture(const std::string &name, PIC_TYPE type)
     else
         path.append(".png");
     return getPath(path, SRC_TYPE::TEXTURE);
+}
+
+std::string AssetsMgr::getVert(const std::string &name)
+{
+    std::string path(name);
+    path.append(".vert");
+    return getPath(path, SRC_TYPE::SHADER);
+}
+
+std::string AssetsMgr::getFrag(const std::string &name)
+{
+    std::string path(name);
+    path.append(".frag");
+    return getPath(path, SRC_TYPE::SHADER);
 }
 
