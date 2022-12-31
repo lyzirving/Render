@@ -1,8 +1,9 @@
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 
-#include "include/ClearLayer.h"
+#include "ClearLayer.h"
 #include "ViewConv.h"
+#include "Viewport.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
@@ -21,8 +22,8 @@ namespace view
 
     void ClearLayer::update(const std::shared_ptr<ViewConv> &conv)
     {
-        const Viewport& port = conv->viewport();
-        glViewport(port.x, port.y, port.width, port.height);
+        auto& viewport = conv->viewport();
+        glViewport(viewport->x(), viewport->y(), viewport->width(), viewport->height());
         glClearColor(RED_CHANNEL(m_clearColor), GREEN_CHANNEL(m_clearColor),
                      BLUE_CHANNEL(m_clearColor), ALPHA_CHANNEL(m_clearColor));
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -1,6 +1,7 @@
 #include "ViewConv.h"
 #include "Camera.h"
 #include "Frustum.h"
+#include "Viewport.h"
 
 #include "LogUtil.h"
 
@@ -12,8 +13,7 @@
 namespace view
 {
     ViewConv::ViewConv() : m_viewMat(1.f), m_projectMat(1.f),
-                           m_camera(new Camera), m_frustum(new Frustum),
-                           m_port()
+                           m_camera(new Camera), m_frustum(new Frustum), m_viewport(new Viewport)
     {
     }
 
@@ -21,6 +21,7 @@ namespace view
     {
         m_camera.reset();
         m_frustum.reset();
+        m_viewport.reset();
     }
 
     const glm::mat4 & ViewConv::getViewMat()
@@ -41,10 +42,8 @@ namespace view
 
     void ViewConv::setViewport(int32_t x, int32_t y, int32_t width, int32_t height)
     {
-        m_port.x = x;
-        m_port.y = y;
-        m_port.width = width;
-        m_port.height = height;
+        m_viewport->setStart(x, y);
+        m_viewport->setSize(width, height);
 
         m_frustum->setWidth(width);
         m_frustum->setHeight(height);
