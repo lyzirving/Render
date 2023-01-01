@@ -20,6 +20,7 @@ namespace view
 
 namespace gre
 {
+    //todo add illumination
     class GreSceneRender : public GreRender
     {
     public:

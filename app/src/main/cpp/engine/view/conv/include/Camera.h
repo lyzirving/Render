@@ -6,6 +6,7 @@
 
 namespace view
 {
+    //todo optimize view direction coordinate into spherical coordinate.
     class Camera
     {
     public:
