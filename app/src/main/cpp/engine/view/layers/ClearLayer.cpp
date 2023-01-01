@@ -14,7 +14,7 @@
 namespace view
 {
     ClearLayer::ClearLayer(LayerOrder order) : Layer(LayerType::BASIC, order),
-                                               m_clearColor(0xffffffff)
+                                               m_clearColor(0xc6c6c6ff)
     {
     }
 
@@ -22,8 +22,6 @@ namespace view
 
     void ClearLayer::update(const std::shared_ptr<ViewConv> &conv)
     {
-        auto& viewport = conv->viewport();
-        glViewport(viewport->x(), viewport->y(), viewport->width(), viewport->height());
         glClearColor(RED_CHANNEL(m_clearColor), GREEN_CHANNEL(m_clearColor),
                      BLUE_CHANNEL(m_clearColor), ALPHA_CHANNEL(m_clearColor));
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

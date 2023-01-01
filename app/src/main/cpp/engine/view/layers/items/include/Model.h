@@ -1,10 +1,9 @@
-#ifndef RENDER_MODELITEM_H
-#define RENDER_MODELITEM_H
+#ifndef RENDER_MODEL_H
+#define RENDER_MODEL_H
 
 #include <string>
 #include <vector>
 #include <assimp/material.h>
-#include <glm/glm.hpp>
 
 #include "LayerItem.h"
 
@@ -20,20 +19,26 @@ class aiMesh;
 
 namespace view
 {
-    class ModelItem : public LayerItem
+    class Model : public LayerItem
     {
     public:
-        ModelItem(const char *path);
-        virtual ~ModelItem();
+        Model();
+        Model(const char *path);
+        virtual ~Model();
+
+        void fitCenter(bool set);
+        void fitScale(bool set);
 
         virtual void draw(const std::shared_ptr<ViewConv> &conv) override;
         virtual void release() override;
 
     protected:
+        void calcCentral();
         bool loadModel();
         std::vector<std::shared_ptr<gfx::Texture>> loadTexture(aiMaterial *mt, aiTextureType type, uint8_t texType);
         void processNode(aiNode *node, const aiScene *scene);
         std::shared_ptr<gfx::GfxMesh> processMesh(aiMesh *mesh, const aiScene *scene);
+        void updateMinMax(const glm::vec3 &pos);
 
         std::vector<std::shared_ptr<gfx::GfxMesh>> m_mesh;
         std::string m_srcPath, m_srcDirectory;
@@ -43,9 +48,8 @@ namespace view
 
         uint32_t m_meshInd;
 
-    private:
-        void updateMinMax(const glm::vec3 &pos);
+        uint8_t m_adjFlag;
     };
 }
 
-#endif //RENDER_MODELITEM_H
+#endif //RENDER_MODEL_H

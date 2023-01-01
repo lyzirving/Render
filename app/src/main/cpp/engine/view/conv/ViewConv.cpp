@@ -45,7 +45,6 @@ namespace view
         m_viewport->setStart(float(x), float(y));
         m_viewport->setSize(float(width), float(height));
 
-        m_frustum->setWidth(float(width));
-        m_frustum->setHeight(float(height));
+        m_frustum->setAspect(float(width) / float(height));
     }
 }

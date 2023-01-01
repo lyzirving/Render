@@ -26,7 +26,9 @@ namespace gre
         GreSceneRender();
 
         virtual ~GreSceneRender();
+        virtual void preUpd() override;
         virtual void update() override;
+        virtual void postUpd() override;
 
         void setViewport(int32_t x, int32_t y, int32_t width, int32_t height);
 

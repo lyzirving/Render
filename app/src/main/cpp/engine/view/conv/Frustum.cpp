@@ -11,18 +11,10 @@
 
 namespace view
 {
-    Frustum::Frustum() : m_left(0.f), m_right(0.f), m_top(0.f), m_bottom(0.f),
-                         m_near(0.1f), m_far(10.f), m_fov(0.f), m_aspect(0.f),
-                         m_change(true), m_projectMat(1.f)
-    {
-    }
-
-    Frustum::Frustum(float width, float height, float near, float far)
-    : m_left(-width / 2.f), m_right(width / 2.f), m_top(height / 2.f), m_bottom(-height / 2.f),
-      m_near(near), m_far(far), m_fov(0.f), m_aspect(0.f),
+    Frustum::Frustum(float fov, float aspect, float near, float far)
+    : m_fov(fov), m_aspect(aspect), m_near(near), m_far(far),
       m_change(true), m_projectMat(1.f)
     {
-        calcProjectMat();
     }
 
     Frustum::~Frustum() = default;
@@ -31,16 +23,12 @@ namespace view
     {
         if (m_change.load())
         {
-            if (m_right == 0.f || m_top == 0.f || m_near <= 0.f || m_far <= 0.f)
+            if (m_near <= 0.f || m_far <= 0.f)
             {
-                LOG_ERR("err, invalid value for frustum, left[%f], right[%f], top[%f], bottom[%f], "
-                        "near[%f] and far[%f]", m_left, m_right, m_top, m_bottom, m_near, m_far);
+                LOG_ERR("err, invalid value, near[%.2f] and far[%.2f]", m_near, m_far);
                 assert(0);
             }
-
-            m_fov = std::abs(std::atan(m_top / m_near));
-            m_aspect = std::abs(m_right / m_top);
-            m_projectMat = glm::perspective(m_fov, m_aspect, m_near, m_far);
+            m_projectMat = glm::perspective(glm::radians(m_fov), m_aspect, m_near, m_far);
             m_change.store(false);
         }
     }
@@ -51,45 +39,34 @@ namespace view
         return m_projectMat;
     }
 
-    void Frustum::setWidth(float width)
+    void Frustum::setFov(float fov)
     {
-        if(width / 2.f != m_right)
+        if(fov != m_fov)
         {
-            m_right = width / 2.f;
-            m_left = -m_right;
+            m_fov = fov;
             m_change.store(true);
-            LOG_DEBUG("left[%.2f] and right[%.2f] changes", m_left, m_right);
+            LOG_DEBUG("fov[%.2f] changes", m_fov);
         }
     }
 
-    void Frustum::setHeight(float height)
+    void Frustum::setAspect(float aspect)
     {
-        if(height / 2.f != m_top)
+        if(aspect != m_aspect)
         {
-            m_top = height / 2.f;
-            m_bottom = -m_top;
+            m_aspect = aspect;
             m_change.store(true);
-            LOG_DEBUG("bottom[%.2f] and top[%.2f] changes", m_bottom, m_top);
+            LOG_DEBUG("aspect[%.2f] changes", m_aspect);
         }
     }
 
-    void Frustum::setNear(float near)
+    void Frustum::setNearFar(float near, float far)
     {
-        if (near != m_near)
+        if (near != m_near || far != m_far)
         {
             m_near = near;
-            m_change.store(true);
-            LOG_DEBUG("near[%.2f] changes", m_near);
-        }
-    }
-
-    void Frustum::setFar(float far)
-    {
-        if (far != m_far)
-        {
             m_far = far;
             m_change.store(true);
-            LOG_DEBUG("far[%f] changes", m_far);
+            LOG_DEBUG("near[%.2f] and far[%.2f] changes", m_near, m_far);
         }
     }
 }

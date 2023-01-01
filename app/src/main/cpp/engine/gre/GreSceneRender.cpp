@@ -1,6 +1,10 @@
+#include <GLES3/gl3.h>
+#include <GLES3/gl3ext.h>
+
 #include "GreSceneRender.h"
 
 #include "SightScene.h"
+#include "Viewport.h"
 
 #include "LogUtil.h"
 
@@ -11,6 +15,8 @@
 
 namespace gre
 {
+    using namespace view;
+
     GreSceneRender::GreSceneRender() : m_scene(new view::SightScene)
     {}
 
@@ -24,14 +30,31 @@ namespace gre
         m_conv->setViewport(x, y, width, height);
     }
 
+    void GreSceneRender::preUpd()
+    {
+        auto& viewport = m_conv->viewport();
+        glViewport(viewport->x(), viewport->y(), viewport->width(), viewport->height());
+
+        glEnable(GL_DEPTH_TEST);
+
+        glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CCW);
+        glCullFace(GL_BACK);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
     void GreSceneRender::update()
     {
-        if (!m_conv)
-        {
-            LOG_ERR("ViewConv is empty");
-            assert(0);
-        }
         m_scene->update(m_conv);
+    }
+
+    void GreSceneRender::postUpd()
+    {
+        glDisable(GL_BLEND);
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
     }
 }
 

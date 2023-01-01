@@ -15,8 +15,9 @@ namespace gfx
     static std::mutex g_mutex{};
     static GfxShaderMgr *g_mgr{nullptr};
 
-    static const char *STR_NONE = "none";
-    static const char *STR_OBJ = "obj";
+    static const char *STR_NONE   = "none";
+    static const char *STR_OBJ    = "obj";
+    static const char *STR_SPHERE = "sphere";
 
     GfxShaderMgr * GfxShaderMgr::get()
     {
@@ -50,9 +51,13 @@ namespace gfx
 
     void GfxShaderMgr::init()
     {
-        std::string name(STR_OBJ);
-        std::shared_ptr<GfxShader> objShader = std::make_shared<GfxShader>(name.c_str(), name.c_str(), name.c_str());
-        m_shaders.insert(std::pair<std::string, std::shared_ptr<GfxShader>>(name, objShader));
+        std::string key = STR_OBJ;
+        std::shared_ptr<GfxShader> objShader = std::make_shared<GfxShader>(STR_OBJ, STR_OBJ, STR_OBJ);
+        m_shaders.insert(std::pair<std::string, std::shared_ptr<GfxShader>>(key, objShader));
+
+        key = STR_SPHERE;
+        std::shared_ptr<GfxShader> sphereShader = std::make_shared<GfxShader>(STR_SPHERE, STR_OBJ, STR_SPHERE);
+        m_shaders.insert(std::pair<std::string, std::shared_ptr<GfxShader>>(key, sphereShader));
     }
 
     void GfxShaderMgr::release()
@@ -72,6 +77,10 @@ namespace gfx
             case ShaderType::OBJ:
             {
                 return STR_OBJ;
+            }
+            case ShaderType::SPHERE:
+            {
+                return STR_SPHERE;
             }
             default:
             {

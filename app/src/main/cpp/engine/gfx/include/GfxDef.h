@@ -9,9 +9,17 @@
 
 namespace gfx
 {
+    static const std::string U_MT_MODEL  = std::string("u_mtModel");
+    static const std::string U_MT_VIEW   = std::string("u_mtView");
+    static const std::string U_MT_PROJ   = std::string("u_mtPrj");
+    static const std::string U_SMP_DIFF  = std::string("u_diffuse");
+    static const std::string U_SMP_SPEC  = std::string("u_spec");
+    static const std::string U_COLOR     = std::string("u_color");
+
     enum ShaderType : uint8_t
     {
         OBJ,
+        SPHERE,
         SHADER_CNT
     };
 
@@ -43,6 +51,8 @@ namespace gfx
         Texture() : PicMem() {}
         Texture(const char *path, TextureType type) : PicMem(path), m_type(type) {}
         virtual ~Texture() = default;
+
+        inline TextureType type() { return m_type; }
 
     protected:
         TextureType m_type;

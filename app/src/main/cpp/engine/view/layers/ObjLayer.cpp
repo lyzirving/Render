@@ -1,7 +1,7 @@
-#include "include/ObjLayer.h"
-#include "ModelItem.h"
+#include "ObjLayer.h"
 #include "ViewConv.h"
-#include "ModelItem.h"
+#include "Sphere.h"
+
 #include "AssetsMgr.h"
 
 #include "LogUtil.h"
@@ -23,8 +23,13 @@ namespace view
     void ObjLayer::createItems()
     {
         std::string objName = AssetsMgr::getObj("Marry");
-        std::shared_ptr<LayerItem> modelItem = std::make_shared<ModelItem>(objName.c_str());
-        m_items.push_back(std::move(modelItem));
+        std::shared_ptr<LayerItem> model = std::make_shared<Model>(objName.c_str());
+        ((Model *)model.get())->fitCenter(true);
+        ((Model *)model.get())->fitScale(true);
+        m_items.push_back(std::move(model));
+
+        /*std::shared_ptr<LayerItem> sphere = std::make_shared<Sphere>("sphere");
+        m_items.push_back(std::move(sphere));*/
     }
 
     void ObjLayer::update(const std::shared_ptr<ViewConv> &conv)

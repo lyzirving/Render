@@ -3,6 +3,13 @@
 #include "Camera.h"
 #include "ViewLib.h"
 
+#include "LogUtil.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "Camera"
+
 namespace view
 {
     Camera::Camera(float radius, float theta, float phi, float pitch, float yaw) :
@@ -12,7 +19,6 @@ namespace view
     m_theta(theta), m_phi(phi), m_radius(radius),
     m_viewMt(1.f), m_change(true)
     {
-        calcViewMt();
     }
 
     Camera::~Camera() = default;
@@ -36,7 +42,6 @@ namespace view
             sphericalToCartesian(m_radius, m_theta, m_phi, m_camPos);
 
             m_viewMt = glm::lookAt(m_camPos, m_camPos + m_viewDir, m_camUp);
-
             m_change.store(false);
         }
     }

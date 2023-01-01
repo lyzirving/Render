@@ -57,14 +57,14 @@ namespace gfx
 
     void GfxShader::init()
     {
+        if (isInit())
+        {
+            return;
+        }
         if (m_vert.empty() || m_frag.empty())
         {
             LOG_ERR("shader[%s] is empty\n[%s] \n[%s]", m_name.c_str(), m_vert.c_str(), m_frag.c_str());
             assert(0);
-        }
-        if (isInit())
-        {
-            return;
         }
         m_program = GfxHelper::createProgram(m_vert.c_str(), m_frag.c_str());
         if(m_program == 0)
@@ -78,7 +78,8 @@ namespace gfx
 
     void GfxShader::use(bool active)
     {
-        if(isInit()) glUseProgram(active ? m_program : 0);
+        if(active && !isInit()) init();
+        glUseProgram(active ? m_program : 0);
     }
 
     void GfxShader::setFloat(const std::string &name, float value) const

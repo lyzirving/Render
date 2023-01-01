@@ -14,7 +14,9 @@ namespace gre
             m_conv.reset();
         }
 
+        virtual void preUpd() = 0;
         virtual void update() = 0;
+        virtual void postUpd() = 0;
 
     protected:
         std::shared_ptr<view::ViewConv> m_conv;

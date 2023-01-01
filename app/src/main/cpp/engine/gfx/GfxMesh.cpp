@@ -123,7 +123,9 @@ namespace gfx
         {
             glActiveTexture(GL_TEXTURE0 + i);
             glBindTexture(GL_TEXTURE_2D, m_textures[i]->getId());
-            //todo bind texture to shader
+            TextureType type = m_textures[i]->type();
+            std::string sampler = (type == TextureType::DIFFUSE ? U_SMP_DIFF : U_SMP_SPEC);
+            shader->setInt(sampler, i);
         }
         glBindVertexArray(m_vao);
         glDrawElements(getGlDrawMode(), m_indices.size(), GL_UNSIGNED_INT, nullptr);

@@ -22,6 +22,12 @@ namespace view
         MID_1,
         TOP
     };
+
+    enum AdjFlag : uint8_t
+    {
+        ADJ_CENTER = 0b00000001,
+        ADJ_SCALE  = 0b00000010
+    };
 }
 
 #endif //RENDER_VIEWDEF_H

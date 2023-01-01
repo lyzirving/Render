@@ -4,40 +4,114 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <limits>
 
-#include "ModelItem.h"
-#include "AssetsMgr.h"
-#include "GfxMesh.h"
+#include "Model.h"
+#include "ViewConv.h"
+#include "ViewDef.h"
 
+#include "GfxMesh.h"
+#include "GfxShader.h"
+#include "GfxShaderMgr.h"
+
+#include "AssetsMgr.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "ModelItem"
+#define LOCAL_TAG "Model"
 
 namespace view
 {
     using namespace gfx;
 
-    ModelItem::ModelItem(const char *path) : m_mesh(),
-                                             m_srcPath(path), m_srcDirectory(), m_name(),
-                                             m_minPos(FLT_MAX), m_maxPos(FLT_MIN),
-                                             m_meshInd(0)
+    Model::Model() : LayerItem(), m_mesh(),
+                     m_srcPath(), m_srcDirectory(), m_name(),
+                     m_minPos(FLT_MAX), m_maxPos(FLT_MIN),
+                     m_meshInd(0), m_adjFlag(0)
+    {
+    }
+
+    Model::Model(const char *path) : LayerItem(), m_mesh(),
+                                     m_srcPath(path), m_srcDirectory(), m_name(),
+                                     m_minPos(FLT_MAX), m_maxPos(FLT_MIN),
+                                     m_meshInd(0), m_adjFlag(0)
     {
         loadModel();
     }
 
-    ModelItem::~ModelItem()
+    Model::~Model()
     {
-        ModelItem::release();
+        Model::release();
     }
 
-    void ModelItem::draw(const std::shared_ptr<ViewConv> &conv)
+    void Model::calcCentral()
     {
+        bool adjCenter = (m_adjFlag & AdjFlag::ADJ_CENTER);
+        bool adjScale = (m_adjFlag & AdjFlag::ADJ_SCALE);
 
+        glm::mat4 mtTrans{1.f}, mtScale{1.f};
+
+        if(adjCenter)
+        {
+            glm::vec3 center = (m_maxPos + m_minPos) * 0.5f;
+            mtTrans = glm::translate(mtTrans, -center);
+        }
+
+        if(adjScale)
+        {
+            glm::vec3 interval = m_maxPos - m_minPos;
+            float scale = 2.f / std::max(std::max(interval.x, interval.y), interval.z);
+            mtScale = glm::scale(mtScale, glm::vec3(scale));
+        }
+
+        m_mtCenter = mtScale * mtTrans;
     }
 
-    bool ModelItem::loadModel()
+    void Model::fitCenter(bool set)
+    {
+        if (set)
+        {
+            m_adjFlag |= AdjFlag::ADJ_CENTER;
+        }
+        else
+        {
+            m_adjFlag &= ~AdjFlag::ADJ_CENTER;
+        }
+        calcCentral();
+    }
+
+    void Model::fitScale(bool set)
+    {
+        if (set)
+        {
+            m_adjFlag |= AdjFlag::ADJ_SCALE;
+        }
+        else
+        {
+            m_adjFlag &= ~AdjFlag::ADJ_SCALE;
+        }
+        calcCentral();
+    }
+
+    void Model::draw(const std::shared_ptr<ViewConv> &conv)
+    {
+        const glm::mat4 &viewMt = conv->getViewMat();
+        const glm::mat4 &prjMt = conv->getProjectMat();
+
+        const std::shared_ptr<gfx::GfxShader> &shader = GfxShaderMgr::get()->getShader(ShaderType::OBJ);
+        shader->use(true);
+        shader->setMat4(U_MT_VIEW, viewMt);
+        shader->setMat4(U_MT_PROJ, prjMt);
+        shader->setMat4(U_MT_MODEL, m_mtModel * m_mtCenter);
+
+        for(auto &item : m_mesh)
+        {
+            item->draw(shader);
+        }
+        shader->use(false);
+    }
+
+    bool Model::loadModel()
     {
         if(m_srcPath.empty())
         {
@@ -61,13 +135,14 @@ namespace view
         LOG_DEBUG("load from[%s], parse", m_srcPath.c_str());
         LOG_DEBUG("********************************");
         processNode(scene->mRootNode, scene);
+        calcCentral();
         LOG_DEBUG("********************************");
         LOG_DEBUG("finish parsing");
         return true;
     }
 
-    std::vector<std::shared_ptr<Texture>> ModelItem::loadTexture(aiMaterial *mt, aiTextureType type,
-                                                                      uint8_t texType)
+    std::vector<std::shared_ptr<Texture>> Model::loadTexture(aiMaterial *mt, aiTextureType type,
+                                                             uint8_t texType)
     {
         std::vector<std::shared_ptr<Texture>> result;
         unsigned int count = mt->GetTextureCount(type);
@@ -83,7 +158,7 @@ namespace view
         return result;
     }
 
-    void ModelItem::processNode(aiNode *node, const aiScene *scene)
+    void Model::processNode(aiNode *node, const aiScene *scene)
     {
         // note that Node only contains index of object
         // Scene contains all the meshes and elements which are needed for rendering
@@ -104,7 +179,7 @@ namespace view
         }
     }
 
-    std::shared_ptr<GfxMesh> ModelItem::processMesh(aiMesh *mesh, const aiScene *scene)
+    std::shared_ptr<GfxMesh> Model::processMesh(aiMesh *mesh, const aiScene *scene)
     {
         std::string meshName = m_name + "@Mesh@" + std::to_string(m_meshInd++);
         std::shared_ptr<GfxMesh> result = std::make_shared<GfxMesh>(meshName.c_str());
@@ -181,7 +256,7 @@ namespace view
         return result;
     }
 
-    void ModelItem::release()
+    void Model::release()
     {
         auto itr = m_mesh.begin();
         while(itr != m_mesh.end())
@@ -191,7 +266,7 @@ namespace view
         }
     }
 
-    void ModelItem::updateMinMax(const glm::vec3 &pos)
+    void Model::updateMinMax(const glm::vec3 &pos)
     {
         m_maxPos = glm::max(pos, m_maxPos);
         m_minPos = glm::min(pos, m_minPos);
