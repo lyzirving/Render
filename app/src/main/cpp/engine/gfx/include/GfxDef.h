@@ -9,6 +9,12 @@
 
 namespace gfx
 {
+    enum ShaderType : uint8_t
+    {
+        OBJ,
+        SHADER_CNT
+    };
+
     enum DrawMode : uint8_t
     {
         MODE_TRIANGLE,

@@ -8,7 +8,7 @@
 
 namespace gfx
 {
-    class Shader;
+    class GfxShader;
 
     class GfxMesh : public VideoMem
     {
@@ -20,7 +20,7 @@ namespace gfx
 
         virtual ~GfxMesh();
         virtual void bind(bool force);
-        virtual void draw(const std::shared_ptr<Shader> &shader);
+        virtual void draw(const std::shared_ptr<GfxShader> &shader);
 
         inline void setDrawMode(DrawMode mode) { m_drawMode = mode; }
         inline DrawMode getDrawMode() { return m_drawMode; }

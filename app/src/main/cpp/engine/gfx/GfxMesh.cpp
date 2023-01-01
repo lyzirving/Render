@@ -3,7 +3,7 @@
 #include <cmath>
 
 #include "GfxMesh.h"
-#include "Shader.h"
+#include "GfxShader.h"
 #include "GfxHelper.h"
 #include "LogUtil.h"
 
@@ -117,7 +117,7 @@ namespace gfx
         m_initialized = true;
     }
 
-    void GfxMesh::draw(const std::shared_ptr<Shader> &shader)
+    void GfxMesh::draw(const std::shared_ptr<GfxShader> &shader)
     {
         for (int32_t i = 0; i < m_textures.size(); i++)
         {

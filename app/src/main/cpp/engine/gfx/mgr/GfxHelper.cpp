@@ -84,7 +84,6 @@ namespace gfx
             glDeleteProgram(program);
             goto err;
         }
-        LOG_DEBUG("succeed to build shader program");
         glDeleteShader(vertShader);
         glDeleteShader(fragShader);
         if(compileGeo)

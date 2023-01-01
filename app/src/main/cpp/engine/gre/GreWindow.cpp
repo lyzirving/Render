@@ -6,6 +6,7 @@
 
 #include "GfxEglCore.h"
 #include "GfxWindowSurface.h"
+#include "GfxShaderMgr.h"
 
 #include "SystemUtil.h"
 #include "LogUtil.h"
@@ -26,12 +27,9 @@ namespace gre
 
     GreWindow::~GreWindow()
     {
-        if (m_surface)
-            m_surface.reset();
-        if (m_egl)
-            m_egl.reset();
-        if (m_render)
-            m_render.reset();
+        m_surface.reset();
+        m_egl.reset();
+        m_render.reset();
     }
 
     bool GreWindow::attachSurface(ANativeWindow *surface)
@@ -95,7 +93,11 @@ namespace gre
         bool ret{false};
         m_egl = std::make_shared<gfx::GfxEglCore>();
         ret = m_egl->prepare();
-        m_render = std::make_shared<GreSceneRender>();
+        if (ret)
+        {
+            m_render = std::make_shared<GreSceneRender>();
+            gfx::GfxShaderMgr::get()->init();
+        }
         return ret;
     }
 
@@ -135,15 +137,17 @@ namespace gre
             m_surface.reset();
         }
 
+        if(m_render)
+        {
+            m_render.reset();
+        }
+
+        gfx::GfxShaderMgr::get()->release();
+
         if(m_egl)
         {
             m_egl->release();
             m_egl.reset();
-        }
-
-        if(m_render)
-        {
-            m_render.reset();
         }
     }
 

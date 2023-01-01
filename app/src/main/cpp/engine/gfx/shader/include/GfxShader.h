@@ -1,18 +1,16 @@
-#ifndef RENDER_SHADER_H
-#define RENDER_SHADER_H
+#ifndef RENDER_GFXSHADER_H
+#define RENDER_GFXSHADER_H
 
 #include <string>
 #include <glm/glm.hpp>
 
-//todo make ShaderManager
-
 namespace gfx
 {
-    class Shader
+    class GfxShader
     {
     public:
-        Shader(const char *name, const char *vertPath, const char *fragPath);
-        virtual ~Shader();
+        GfxShader(const char *name, const char *vertPath, const char *fragPath);
+        virtual ~GfxShader();
 
         void init();
 
@@ -38,4 +36,4 @@ namespace gfx
     };
 }
 
-#endif //RENDER_SHADER_H
+#endif //RENDER_GFXSHADER_H
