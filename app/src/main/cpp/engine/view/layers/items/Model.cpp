@@ -44,7 +44,15 @@ namespace view
         Model::release();
     }
 
-    void Model::calcCentral()
+    float Model::bottom()
+    {
+        calcAdj();
+        glm::vec4 ret = glm::vec4(m_minPos, 1.f);
+        ret = m_mtAdj * ret;
+        return ret.y;
+    }
+
+    void Model::calcAdj()
     {
         bool adjCenter = (m_adjFlag & AdjFlag::ADJ_CENTER);
         bool adjScale = (m_adjFlag & AdjFlag::ADJ_SCALE);
@@ -64,7 +72,12 @@ namespace view
             mtScale = glm::scale(mtScale, glm::vec3(scale));
         }
 
-        m_mtCenter = mtScale * mtTrans;
+        m_mtAdj = mtScale * mtTrans;
+    }
+
+    void Model::calcMtModel()
+    {
+        m_mtModel = m_mtTrans * m_mtScale * m_mtRotate;
     }
 
     void Model::fitCenter(bool set)
@@ -77,7 +90,7 @@ namespace view
         {
             m_adjFlag &= ~AdjFlag::ADJ_CENTER;
         }
-        calcCentral();
+        calcAdj();
     }
 
     void Model::fitScale(bool set)
@@ -90,7 +103,7 @@ namespace view
         {
             m_adjFlag &= ~AdjFlag::ADJ_SCALE;
         }
-        calcCentral();
+        calcAdj();
     }
 
     void Model::draw(const std::shared_ptr<ViewConv> &conv)
@@ -102,7 +115,7 @@ namespace view
         shader->use(true);
         shader->setMat4(U_MT_VIEW, viewMt);
         shader->setMat4(U_MT_PROJ, prjMt);
-        shader->setMat4(U_MT_MODEL, m_mtModel * m_mtCenter);
+        shader->setMat4(U_MT_MODEL, m_mtModel * m_mtAdj);
 
         for(auto &item : m_mesh)
         {
@@ -135,7 +148,7 @@ namespace view
         LOG_DEBUG("load from[%s], parse", m_srcPath.c_str());
         LOG_DEBUG("********************************");
         processNode(scene->mRootNode, scene);
-        calcCentral();
+        calcAdj();
         LOG_DEBUG("********************************");
         LOG_DEBUG("finish parsing");
         return true;
@@ -246,6 +259,12 @@ namespace view
                 ret = mt->Get(AI_MATKEY_COLOR_AMBIENT, color);
                 if(ret == aiReturn::aiReturn_SUCCESS)
                     material->setKa(color.r, color.g, color.b);
+
+                ai_real val;
+                ret = mt->Get(AI_MATKEY_SHININESS, val);
+                if(ret == aiReturn::aiReturn_SUCCESS)
+                    material->setShine(val);
+
             }
         }
         LOG_DEBUG("vertex size[%lu], indices size[%lu], texture size[%lu]",
@@ -264,6 +283,13 @@ namespace view
             (*itr).reset();
             itr = m_mesh.erase(itr);
         }
+    }
+
+    void Model::translate(float x, float y, float z)
+    {
+        glm::mat4 mt{1.f};
+        m_mtTrans = glm::translate(mt, glm::vec3(x, y, z));
+        calcMtModel();
     }
 
     void Model::updateMinMax(const glm::vec3 &pos)

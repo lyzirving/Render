@@ -28,8 +28,6 @@ namespace view
         void setViewport(int32_t x, int32_t y, int32_t width, int32_t height);
 
     private:
-        glm::mat4 m_viewMat, m_projectMat;
-
         std::shared_ptr<Camera> m_camera;
         std::shared_ptr<Frustum> m_frustum;
         std::shared_ptr<Viewport> m_viewport;

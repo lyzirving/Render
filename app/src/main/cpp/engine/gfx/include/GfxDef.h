@@ -61,7 +61,7 @@ namespace gfx
     class Material
     {
     public:
-        Material() : m_ka(0.f), m_kd(0.f), m_ks(0.f) {}
+        Material() : m_ka(0.f), m_kd(0.f), m_ks(0.f), m_shine(100.f) {}
         virtual ~Material() = default;
 
         inline void setKa(const glm::vec3 & ka) { m_ka = ka; }
@@ -70,12 +70,15 @@ namespace gfx
         inline void setKd(float x, float y, float z) { m_kd.x = x; m_kd.y = y; m_kd.z = z; }
         inline void setKs(const glm::vec3 & ks) { m_ks = ks; }
         inline void setKs(float x, float y, float z) { m_ks.x = x; m_ks.y = y; m_ks.z = z; }
+        inline void setShine(float shine) { m_shine = shine; }
         inline const glm::vec3 &getKa() { return m_ka; }
         inline const glm::vec3 &getKd() { return m_kd; }
         inline const glm::vec3 &getKs() { return m_ks; }
+        inline const float getShine() { return m_shine; }
 
     protected:
         glm::vec3 m_ka, m_kd, m_ks;
+        float m_shine;
     };
 }
 

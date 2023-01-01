@@ -5,6 +5,7 @@
 
 #include "SightScene.h"
 #include "Viewport.h"
+#include "Camera.h"
 
 #include "LogUtil.h"
 
@@ -43,6 +44,9 @@ namespace gre
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        const std::shared_ptr<Camera> &cam = m_conv->camera();
+        cam->setPosition(6, 75.f, 20.f);
     }
 
     void GreSceneRender::update()

@@ -23,7 +23,7 @@ namespace view
     {
         m_name = name;
         build();
-        calcCentral();
+        calcAdj();
     }
 
     Sphere::~Sphere() = default;
@@ -113,7 +113,7 @@ namespace view
         }
 
         mesh->bind(true);
-        calcCentral();
+        calcAdj();
         m_mesh.push_back(std::move(mesh));
     }
 
@@ -139,7 +139,7 @@ namespace view
         shader->use(true);
         shader->setMat4(U_MT_VIEW, viewMt);
         shader->setMat4(U_MT_PROJ, prjMt);
-        shader->setMat4(U_MT_MODEL, m_mtModel * m_mtCenter);
+        shader->setMat4(U_MT_MODEL, m_mtModel * m_mtAdj);
         shader->setVec4(U_COLOR, glm::vec4(RED_CHANNEL(m_color), GREEN_CHANNEL(m_color),
                                            BLUE_CHANNEL(m_color), ALPHA_CHANNEL(m_color)));
 

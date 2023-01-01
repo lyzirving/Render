@@ -24,8 +24,11 @@ namespace view
     {
         std::string objName = AssetsMgr::getObj("Marry");
         std::shared_ptr<LayerItem> model = std::make_shared<Model>(objName.c_str());
-        ((Model *)model.get())->fitCenter(true);
-        ((Model *)model.get())->fitScale(true);
+        auto *ptr = (Model *)model.get();
+        ptr->fitCenter(true);
+        ptr->fitScale(true);
+        float bottom = ptr->bottom();
+        ptr->translate(0.f, -bottom, 0.f);
         m_items.push_back(std::move(model));
 
         /*std::shared_ptr<LayerItem> sphere = std::make_shared<Sphere>("sphere");

@@ -26,14 +26,18 @@ namespace view
         Model(const char *path);
         virtual ~Model();
 
+        float bottom();
         void fitCenter(bool set);
         void fitScale(bool set);
 
         virtual void draw(const std::shared_ptr<ViewConv> &conv) override;
         virtual void release() override;
 
+        void translate(float x, float y, float z);
+
     protected:
-        void calcCentral();
+        void calcAdj();
+        void calcMtModel();
         bool loadModel();
         std::vector<std::shared_ptr<gfx::Texture>> loadTexture(aiMaterial *mt, aiTextureType type, uint8_t texType);
         void processNode(aiNode *node, const aiScene *scene);
