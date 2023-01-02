@@ -3,6 +3,7 @@
 
 #include "GreWindow.h"
 #include "GreSceneRender.h"
+#include "GreRayTraceRender.h"
 
 #include "GfxEglCore.h"
 #include "GfxWindowSurface.h"
@@ -93,10 +94,14 @@ namespace gre
         bool ret{false};
         m_egl = std::make_shared<gfx::GfxEglCore>();
         ret = m_egl->prepare();
-        if (ret)
+        gfx::GfxShaderMgr::get()->init();
+        if (m_id == GreContextId::CTX_MAIN)
         {
             m_render = std::make_shared<GreSceneRender>();
-            gfx::GfxShaderMgr::get()->init();
+        }
+        else
+        {
+            m_render = std::make_shared<GreRayTraceRender>();
         }
         return ret;
     }

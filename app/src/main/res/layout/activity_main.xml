@@ -7,10 +7,27 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <SurfaceView
-        android:id="@+id/view_surface"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible" />
+    <Button
+        android:id="@+id/btn_shadow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:textAllCaps="false"
+        android:text="shadow"
+        android:enabled="false" />
+
+    <Button
+        android:id="@+id/btn_ray_trace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/btn_shadow"
+        app:layout_constraintTop_toTopOf="@+id/btn_shadow"
+        android:layout_marginStart="5dp"
+        android:textAllCaps="false"
+        android:text="ray trace"
+        android:enabled="false" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

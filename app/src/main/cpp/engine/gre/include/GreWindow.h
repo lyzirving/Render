@@ -18,7 +18,7 @@ namespace gfx
 
 namespace gre
 {
-    class GreSceneRender;
+    class GreRender;
 
     class GreWindow : public GreTimer
     {
@@ -47,7 +47,7 @@ namespace gre
         int64_t m_lastRecTimeMs;
         uint8_t m_fps;
 
-        std::shared_ptr<GreSceneRender> m_render;
+        std::shared_ptr<GreRender> m_render;
 
         std::shared_ptr<gfx::GfxEglCore> m_egl;
         std::shared_ptr<gfx::GfxWindowSurface> m_surface;

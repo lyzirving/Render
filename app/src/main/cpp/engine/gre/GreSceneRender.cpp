@@ -18,18 +18,12 @@ namespace gre
 {
     using namespace view;
 
-    GreSceneRender::GreSceneRender() : m_scene(new view::SightScene)
-    {}
-
-    GreSceneRender::~GreSceneRender()
+    GreSceneRender::GreSceneRender() : GreRender()
     {
-        m_scene.reset();
+        m_scene = std::make_shared<SightScene>();
     }
 
-    void GreSceneRender::setViewport(int32_t x, int32_t y, int32_t width, int32_t height)
-    {
-        m_conv->setViewport(x, y, width, height);
-    }
+    GreSceneRender::~GreSceneRender() = default;
 
     void GreSceneRender::preUpd()
     {

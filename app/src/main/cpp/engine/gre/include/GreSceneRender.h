@@ -5,11 +5,6 @@
 
 #include "GreRender.h"
 
-namespace view
-{
-    class Scene;
-}
-
 /**
  * @author  lyzirving
  * @date    2022-12-25
@@ -30,11 +25,6 @@ namespace gre
         virtual void preUpd() override;
         virtual void update() override;
         virtual void postUpd() override;
-
-        void setViewport(int32_t x, int32_t y, int32_t width, int32_t height);
-
-    private:
-        std::shared_ptr<view::Scene> m_scene;
     };
 }
 

@@ -5,34 +5,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
-import android.view.WindowManager;
 
-import com.lau.render.scene.Def;
-import com.lau.render.scene.Scene;
+import com.lau.render.ui.RayTraceActivity;
+import com.lau.render.ui.ShadowActivity;
 import com.lau.render.utils.AssetsManager;
 import com.lau.render.utils.LogUtil;
-
-import java.util.Objects;
 
 /**
  * @author lyzirving
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
-                                                               SurfaceHolder.Callback,
-                                                               AssetsManager.AssetsListener
-{
+                                                               AssetsManager.AssetsListener {
     private static final int CODE_REQUEST_READ_WRITE_PERMISSION = 0x01;
     private static final String TAG = "MainActivity";
-    private Scene mScene;
-    private SurfaceView mSurfaceView;
     private MyHandler mHandler;
 
     private class MyHandler extends Handler {
@@ -46,8 +38,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             super.handleMessage(msg);
             switch (msg.what) {
                 case 0: {
-                    mScene = new Scene(Def.MAIN);
-                    mSurfaceView.setVisibility(View.VISIBLE);
+                    enableBtn(true);
+                    break;
+                }
+                case 1: {
+                    enableBtn(false);
                     break;
                 }
                 default: {
@@ -62,15 +57,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LogUtil.d(TAG, "onCreate");
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                             WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
         mHandler = new MyHandler(Looper.getMainLooper());
         AssetsManager.get().setListener(this);
-
-        mSurfaceView = findViewById(R.id.view_surface);
-        mSurfaceView.getHolder().addCallback(this);
+        findViewById(R.id.btn_shadow).setOnClickListener(this);
+        findViewById(R.id.btn_ray_trace).setOnClickListener(this);
 
         requestUserPermission(CODE_REQUEST_READ_WRITE_PERMISSION);
     }
@@ -97,33 +89,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         LogUtil.d(TAG, "onDestroy");
         AssetsManager.get().destroy();
-        if(!Objects.isNull(mScene)) {
-            mScene.detachView();
-            mScene = null;
-        }
     }
 
     @Override
-    public void onClick(View v) { }
-
-    @Override
-    public void surfaceCreated(@NonNull SurfaceHolder holder) {
-        LogUtil.d(TAG, "surfaceCreated");
-    }
-
-    @Override
-    public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-        LogUtil.d(TAG, "surfaceChanged, width = " + width + ", height = " + height);
-        if(!Objects.isNull(mScene)) {
-            mScene.attachSurface(holder.getSurface());
-        }
-    }
-
-    @Override
-    public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-        LogUtil.d(TAG, "surfaceDestroyed");
-        if(!Objects.isNull(mScene)) {
-            mScene.detachSurface();
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_shadow: {
+                startActivity(ShadowActivity.class);
+                break;
+            }
+            case R.id.btn_ray_trace: {
+                startActivity(RayTraceActivity.class);
+                break;
+            }
+            default: {
+                break;
+            }
         }
     }
 
@@ -133,8 +114,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 int permissionState = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 if (permissionState != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this,
-                                                      new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-                                                      CODE_REQUEST_READ_WRITE_PERMISSION);
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                            CODE_REQUEST_READ_WRITE_PERMISSION);
                 } else {
                     onPermissionGranted();
                 }
@@ -158,6 +139,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onCopyFail() {
+        mHandler.sendEmptyMessage(1);
+    }
 
+    private void enableBtn(boolean enable) {
+        findViewById(R.id.btn_shadow).setEnabled(enable);
+        findViewById(R.id.btn_ray_trace).setEnabled(enable);
+    }
+
+    private void startActivity(Class<?> activityClass) {
+        Intent intent = new Intent();
+        intent.setClass(getApplicationContext(), activityClass);
+        startActivity(intent);
     }
 }
