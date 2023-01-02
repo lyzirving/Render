@@ -59,6 +59,7 @@ namespace gfx
     {
         if (isInit())
         {
+            LOG_DEBUG("shader[%s] already init", m_name.c_str());
             return;
         }
         if (m_vert.empty() || m_frag.empty())

@@ -20,6 +20,7 @@ namespace gfx
     {
         OBJ,
         SPHERE,
+        CANVAS,
         SHADER_CNT
     };
 
@@ -34,6 +35,13 @@ namespace gfx
     {
         DIFFUSE,
         SPECULAR
+    };
+
+    struct CasVert
+    {
+        glm::vec3 m_pos;
+
+        CasVert() : m_pos(0.f) {}
     };
 
     struct Vertex

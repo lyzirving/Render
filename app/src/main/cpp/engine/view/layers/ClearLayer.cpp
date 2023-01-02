@@ -22,8 +22,7 @@ namespace view
 
     void ClearLayer::update(const std::shared_ptr<ViewConv> &conv)
     {
-        glClearColor(RED_CHANNEL(m_clearColor), GREEN_CHANNEL(m_clearColor),
-                     BLUE_CHANNEL(m_clearColor), ALPHA_CHANNEL(m_clearColor));
+        glClearColor(R_COMP(m_clearColor), G_COMP(m_clearColor), B_COMP(m_clearColor), A_COMP(m_clearColor));
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 

@@ -140,8 +140,7 @@ namespace view
         shader->setMat4(U_MT_VIEW, viewMt);
         shader->setMat4(U_MT_PROJ, prjMt);
         shader->setMat4(U_MT_MODEL, m_mtModel * m_mtAdj);
-        shader->setVec4(U_COLOR, glm::vec4(RED_CHANNEL(m_color), GREEN_CHANNEL(m_color),
-                                           BLUE_CHANNEL(m_color), ALPHA_CHANNEL(m_color)));
+        shader->setVec4(U_COLOR, glm::vec4(R_COMP(m_color), G_COMP(m_color), B_COMP(m_color), A_COMP(m_color)));
 
         for(auto &item : m_mesh)
         {

@@ -18,6 +18,7 @@ namespace gfx
     static const char *STR_NONE   = "none";
     static const char *STR_OBJ    = "obj";
     static const char *STR_SPHERE = "sphere";
+    static const char *STR_CANVAS = "cas";
 
     GfxShaderMgr * GfxShaderMgr::get()
     {
@@ -58,6 +59,10 @@ namespace gfx
         key = STR_SPHERE;
         std::shared_ptr<GfxShader> sphereShader = std::make_shared<GfxShader>(STR_SPHERE, STR_OBJ, STR_SPHERE);
         m_shaders.insert(std::pair<std::string, std::shared_ptr<GfxShader>>(key, sphereShader));
+
+        key = STR_CANVAS;
+        std::shared_ptr<GfxShader> casShader = std::make_shared<GfxShader>(STR_CANVAS, STR_CANVAS, STR_CANVAS);
+        m_shaders.insert(std::pair<std::string, std::shared_ptr<GfxShader>>(key, casShader));
     }
 
     void GfxShaderMgr::release()
@@ -81,6 +86,10 @@ namespace gfx
             case ShaderType::SPHERE:
             {
                 return STR_SPHERE;
+            }
+            case ShaderType::CANVAS:
+            {
+                return STR_CANVAS;
             }
             default:
             {
