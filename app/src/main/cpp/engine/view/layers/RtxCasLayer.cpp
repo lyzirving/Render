@@ -3,6 +3,7 @@
 
 #include "RtxCasLayer.h"
 #include "ViewDef.h"
+#include "RtxStruct.h"
 
 #include "GfxShader.h"
 #include "GfxShaderMgr.h"
