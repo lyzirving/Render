@@ -1,5 +1,5 @@
-#ifndef RENDER_RAYTRACECANVASLAYER_H
-#define RENDER_RAYTRACECANVASLAYER_H
+#ifndef RENDER_RTXCASLAYER_H
+#define RENDER_RTXCASLAYER_H
 
 #include "Layer.h"
 #include "GfxDef.h"
@@ -11,12 +11,12 @@ namespace gfx
 
 namespace view
 {
-    class RayTraceCanvasLayer : public Layer
+    class RtxCasLayer : public Layer
     {
     public:
-        RayTraceCanvasLayer();
+        RtxCasLayer();
 
-        virtual ~RayTraceCanvasLayer();
+        virtual ~RtxCasLayer();
 
         virtual void update(const std::shared_ptr<ViewConv> &conv) override;
 
@@ -36,4 +36,4 @@ namespace view
     };
 }
 
-#endif //RENDER_RAYTRACECANVASLAYER_H
+#endif //RENDER_RTXCASLAYER_H

@@ -1,7 +1,7 @@
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 
-#include "RayTraceCanvasLayer.h"
+#include "RtxCasLayer.h"
 #include "ViewDef.h"
 
 #include "GfxShader.h"
@@ -12,15 +12,15 @@
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "RayTraceCanvasLayer"
+#define LOCAL_TAG "RtxCasLayer"
 
 using namespace gfx;
 
 namespace view
 {
-    RayTraceCanvasLayer::RayTraceCanvasLayer() : Layer(LayerType::CANVAS, LayerOrder::LOW),
-                                                 m_vao(0) ,m_vbo(0), m_ebo(0), m_bgColor(0xffffffff),
-                                                 m_shader(nullptr)
+    RtxCasLayer::RtxCasLayer() : Layer(LayerType::CANVAS, LayerOrder::LOW),
+                                         m_vao(0) , m_vbo(0), m_ebo(0), m_bgColor(0xffffffff),
+                                         m_shader(nullptr)
     {
         m_canvas[0].m_pos = glm::vec3(-1.f, 1.f, 0.f);
         m_canvas[1].m_pos = glm::vec3(-1.f, -1.f, 0.f);
@@ -32,7 +32,7 @@ namespace view
         m_shader = GfxShaderMgr::get()->getShader(ShaderType::CANVAS);
     }
 
-    RayTraceCanvasLayer::~RayTraceCanvasLayer()
+    RtxCasLayer::~RtxCasLayer()
     {
         m_shader.reset();
         glDeleteBuffers(1, &m_vbo);
@@ -40,16 +40,16 @@ namespace view
         glDeleteVertexArrays(1, &m_vao);
     }
 
-    void RayTraceCanvasLayer::update(const std::shared_ptr<ViewConv> &conv)
+    void RtxCasLayer::update(const std::shared_ptr<ViewConv> &conv)
     {
         m_shader->use(true);
         drawCall();
         m_shader->use(false);
     }
 
-    void RayTraceCanvasLayer::createItems() {}
+    void RtxCasLayer::createItems() {}
 
-    void RayTraceCanvasLayer::drawCall()
+    void RtxCasLayer::drawCall()
     {
         m_shader->setVec4(U_COLOR, R_COMP(m_bgColor), G_COMP(m_bgColor), B_COMP(m_bgColor), A_COMP(m_bgColor));
         glBindVertexArray(m_vao);
@@ -57,7 +57,7 @@ namespace view
         glBindVertexArray(0);
     }
 
-    void RayTraceCanvasLayer::initVideoMem()
+    void RtxCasLayer::initVideoMem()
     {
         glGenVertexArrays(1, &m_vao);
         glGenBuffers(1, &m_vbo);

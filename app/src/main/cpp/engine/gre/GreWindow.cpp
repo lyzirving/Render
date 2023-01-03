@@ -3,7 +3,7 @@
 
 #include "GreWindow.h"
 #include "GreSceneRender.h"
-#include "GreRayTraceRender.h"
+#include "GreRtxRender.h"
 
 #include "GfxEglCore.h"
 #include "GfxWindowSurface.h"
@@ -101,7 +101,7 @@ namespace gre
         }
         else
         {
-            m_render = std::make_shared<GreRayTraceRender>();
+            m_render = std::make_shared<GreRtxRender>();
         }
         return ret;
     }
