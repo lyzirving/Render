@@ -3,7 +3,7 @@
 
 #include "RtxCasLayer.h"
 #include "ViewDef.h"
-#include "RtxStruct.h"
+#include "RtxTriBuf.h"
 
 #include "GfxShader.h"
 #include "GfxShaderMgr.h"
@@ -21,7 +21,7 @@ namespace view
 {
     RtxCasLayer::RtxCasLayer() : Layer(LayerType::CANVAS, LayerOrder::LOW),
                                          m_vao(0) , m_vbo(0), m_ebo(0), m_bgColor(0xffffffff),
-                                         m_shader(nullptr)
+                                         m_shader(nullptr), m_triBuf(new RtxTriBuf)
     {
         m_canvas[0].m_pos = glm::vec3(-1.f, 1.f, 0.f);
         m_canvas[1].m_pos = glm::vec3(-1.f, -1.f, 0.f);
@@ -31,10 +31,22 @@ namespace view
         initVideoMem();
 
         m_shader = GfxShaderMgr::get()->getShader(ShaderType::CANVAS);
+
+        RtxTriangle tri{};
+        tri.p0 = glm::vec3(0.f, 0.5f, 0.f);
+        tri.p1 = glm::vec3(-0.5f, 0.f, 0.f);
+        tri.p2 = glm::vec3(0.5f, -0.5f, 0.f);
+        tri.color = glm::vec3(1.f, 0.f, 0.f);
+
+        std::vector<RtxTriangle> triangles{};
+        triangles.push_back(tri);
+
+        m_triBuf->addTriangles(triangles);
     }
 
     RtxCasLayer::~RtxCasLayer()
     {
+        m_triBuf.reset();
         m_shader.reset();
         glDeleteBuffers(1, &m_vbo);
         glDeleteBuffers(1, &m_ebo);
@@ -44,6 +56,8 @@ namespace view
     void RtxCasLayer::update(const std::shared_ptr<ViewConv> &conv)
     {
         m_shader->use(true);
+        m_triBuf->bind(m_shader, 0);
+        m_shader->setInt(U_TRI_CNT, m_triBuf->triangleCnt());
         drawCall();
         m_shader->use(false);
     }
@@ -52,7 +66,8 @@ namespace view
 
     void RtxCasLayer::drawCall()
     {
-        m_shader->setVec4(U_COLOR, R_COMP(m_bgColor), G_COMP(m_bgColor), B_COMP(m_bgColor), A_COMP(m_bgColor));
+        m_shader->setVec4(U_BG_COLOR, R_COMP(m_bgColor), G_COMP(m_bgColor), B_COMP(m_bgColor), A_COMP(m_bgColor));
+        m_shader->setVec3(U_EYS_POS, glm::vec3(0.f, 0.f , 5.f));
         glBindVertexArray(m_vao);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
         glBindVertexArray(0);

@@ -10,8 +10,8 @@ namespace view
     // make sure every field is vec3
     struct RtxTriangle
     {
-        glm::vec3 pos;
-        glm::vec3 normal;
+        glm::vec3 p0, p1, p2;
+        glm::vec3 n0, n1, n2;
         glm::vec3 color;
     };
 }

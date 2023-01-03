@@ -11,6 +11,8 @@ namespace gfx
 
 namespace view
 {
+    class RtxTriBuf;
+
     class RtxCasLayer : public Layer
     {
     public:
@@ -33,6 +35,7 @@ namespace view
         uint32_t m_bgColor;
 
         std::shared_ptr<gfx::GfxShader> m_shader;
+        std::shared_ptr<RtxTriBuf> m_triBuf;
     };
 }
 

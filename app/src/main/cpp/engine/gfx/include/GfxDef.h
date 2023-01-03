@@ -15,6 +15,9 @@ namespace gfx
     static const std::string U_SMP_DIFF  = std::string("u_diffuse");
     static const std::string U_SMP_SPEC  = std::string("u_spec");
     static const std::string U_COLOR     = std::string("u_color");
+    static const std::string U_BG_COLOR  = std::string("u_bgColor");
+    static const std::string U_EYS_POS   = std::string("u_eysPos");
+    static const std::string U_TRI_CNT   = std::string("u_triCnt");
 
     enum ShaderType : uint8_t
     {
