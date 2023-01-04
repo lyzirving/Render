@@ -1,20 +1,20 @@
-#ifndef RENDER_RTXSCENE_H
-#define RENDER_RTXSCENE_H
+#ifndef RENDER_RRTSCENE_H
+#define RENDER_RRTSCENE_H
 
 #include "Scene.h"
 
 namespace view
 {
-    class RtxScene : public Scene
+    class RrtScene : public Scene
     {
     public:
-        RtxScene();
+        RrtScene();
 
-        virtual ~RtxScene();
+        virtual ~RrtScene();
         virtual void update(const std::shared_ptr<ViewConv> &conv) override;
     protected:
         virtual void createLayers() override;
     };
 }
 
-#endif //RENDER_RTXSCENE_H
+#endif //RENDER_RRTSCENE_H

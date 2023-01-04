@@ -1,18 +1,18 @@
-#ifndef RENDER_RTXTRIBUF_H
-#define RENDER_RTXTRIBUF_H
+#ifndef RENDER_RRTTRIBUF_H
+#define RENDER_RRTTRIBUF_H
 
 #include <vector>
 
-#include "RtxBuffer.h"
-#include "RtxStruct.h"
+#include "RrtBuffer.h"
+#include "RrtStruct.h"
 
 namespace view
 {
-    class RtxTriBuf : public RtxBuffer
+    class RrtTriBuf : public RrtBuffer
     {
     public:
-        RtxTriBuf();
-        virtual ~RtxTriBuf();
+        RrtTriBuf();
+        virtual ~RrtTriBuf();
 
         void addTriangles(const std::vector<RtxTriangle> &input);
         virtual void bind(const std::shared_ptr<gfx::GfxShader> &shader, int texUnit) override;
@@ -24,4 +24,4 @@ namespace view
     };
 }
 
-#endif //RENDER_RTXTRIBUF_H
+#endif //RENDER_RRTTRIBUF_H

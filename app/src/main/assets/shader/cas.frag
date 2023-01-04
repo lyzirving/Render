@@ -5,7 +5,7 @@ in vec3 i_pixel;
 out vec4 o_color;
 
 /******************* uniform fields **************************/
-uniform samplerBuffer u_triangles;
+uniform highp samplerBuffer u_triangles;
 
 uniform vec4 u_bgColor;
 uniform vec3 u_eysPos;

@@ -1,7 +1,7 @@
 #include <GLES3/gl3.h>
 #include <GLES3/gl32.h>
 
-#include "RtxBuffer.h"
+#include "RrtBuffer.h"
 
 #include "GfxShader.h"
 
@@ -10,13 +10,13 @@
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "RtxBuffer"
+#define LOCAL_TAG "RrtBuffer"
 
 namespace view
 {
-    RtxBuffer::RtxBuffer() : m_slot(), m_texId(0), m_bufId(0) {}
+    RrtBuffer::RrtBuffer() : m_slot(), m_texId(0), m_bufId(0) {}
 
-    RtxBuffer::~RtxBuffer()
+    RrtBuffer::~RrtBuffer()
     {
         if (m_bufId != 0)
             glDeleteBuffers(1, &m_bufId);
@@ -28,7 +28,7 @@ namespace view
         m_texId = 0;
     }
 
-    void RtxBuffer::initBuf()
+    void RrtBuffer::initBuf()
     {
         if(m_bufId == 0)
             glGenBuffers(1, &m_bufId);
@@ -36,7 +36,7 @@ namespace view
             glGenTextures(1, &m_texId);
     }
 
-    void RtxBuffer::bind(const std::shared_ptr<gfx::GfxShader> &shader, int texUnit)
+    void RrtBuffer::bind(const std::shared_ptr<gfx::GfxShader> &shader, int texUnit)
     {
         if(!shader)
         {

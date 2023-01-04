@@ -2,7 +2,7 @@
 #include <GLES3/gl3ext.h>
 
 #include "GreRtxRender.h"
-#include "RtxScene.h"
+#include "RrtScene.h"
 #include "Viewport.h"
 
 #include "LogUtil.h"
@@ -18,7 +18,7 @@ namespace gre
 
     GreRtxRender::GreRtxRender() : GreRender()
     {
-        m_scene = std::make_shared<RtxScene>();
+        m_scene = std::make_shared<RrtScene>();
     }
 
     GreRtxRender::~GreRtxRender() = default;

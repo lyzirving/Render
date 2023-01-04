@@ -1,9 +1,9 @@
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 
-#include "RtxCasLayer.h"
+#include "RrtCasLayer.h"
 #include "ViewDef.h"
-#include "RtxTriBuf.h"
+#include "RrtTriBuf.h"
 
 #include "GfxShader.h"
 #include "GfxShaderMgr.h"
@@ -13,15 +13,15 @@
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "RtxCasLayer"
+#define LOCAL_TAG "RrtCasLayer"
 
 using namespace gfx;
 
 namespace view
 {
-    RtxCasLayer::RtxCasLayer() : Layer(LayerType::CANVAS, LayerOrder::LOW),
-                                         m_vao(0) , m_vbo(0), m_ebo(0), m_bgColor(0xffffffff),
-                                         m_shader(nullptr), m_triBuf(new RtxTriBuf)
+    RrtCasLayer::RrtCasLayer() : Layer(LayerType::CANVAS, LayerOrder::LOW),
+                                 m_vao(0) , m_vbo(0), m_ebo(0), m_bgColor(0xffffffff),
+                                 m_shader(nullptr), m_triBuf(new RrtTriBuf)
     {
         m_canvas[0].m_pos = glm::vec3(-1.f, 1.f, 0.f);
         m_canvas[1].m_pos = glm::vec3(-1.f, -1.f, 0.f);
@@ -44,7 +44,7 @@ namespace view
         m_triBuf->addTriangles(triangles);
     }
 
-    RtxCasLayer::~RtxCasLayer()
+    RrtCasLayer::~RrtCasLayer()
     {
         m_triBuf.reset();
         m_shader.reset();
@@ -53,7 +53,7 @@ namespace view
         glDeleteVertexArrays(1, &m_vao);
     }
 
-    void RtxCasLayer::update(const std::shared_ptr<ViewConv> &conv)
+    void RrtCasLayer::update(const std::shared_ptr<ViewConv> &conv)
     {
         m_shader->use(true);
         m_triBuf->bind(m_shader, 0);
@@ -62,9 +62,9 @@ namespace view
         m_shader->use(false);
     }
 
-    void RtxCasLayer::createItems() {}
+    void RrtCasLayer::createItems() {}
 
-    void RtxCasLayer::drawCall()
+    void RrtCasLayer::drawCall()
     {
         m_shader->setVec4(U_BG_COLOR, R_COMP(m_bgColor), G_COMP(m_bgColor), B_COMP(m_bgColor), A_COMP(m_bgColor));
         m_shader->setVec3(U_EYS_POS, glm::vec3(0.f, 0.f , 5.f));
@@ -73,7 +73,7 @@ namespace view
         glBindVertexArray(0);
     }
 
-    void RtxCasLayer::initVideoMem()
+    void RrtCasLayer::initVideoMem()
     {
         glGenVertexArrays(1, &m_vao);
         glGenBuffers(1, &m_vbo);

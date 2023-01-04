@@ -1,5 +1,5 @@
-#ifndef RENDER_RTXBUFFER_H
-#define RENDER_RTXBUFFER_H
+#ifndef RENDER_RRTBUFFER_H
+#define RENDER_RRTBUFFER_H
 
 #include <string>
 #include <memory>
@@ -11,11 +11,11 @@ namespace gfx
 
 namespace view
 {
-    class RtxBuffer
+    class RrtBuffer
     {
     public:
-        RtxBuffer();
-        virtual ~RtxBuffer();
+        RrtBuffer();
+        virtual ~RrtBuffer();
 
         virtual void bind(const std::shared_ptr<gfx::GfxShader> &shader, int texUnit);
 
@@ -27,4 +27,4 @@ namespace view
     };
 }
 
-#endif //RENDER_RTXBUFFER_H
+#endif //RENDER_RRTBUFFER_H

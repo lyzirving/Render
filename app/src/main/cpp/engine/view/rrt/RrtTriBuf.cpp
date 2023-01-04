@@ -1,7 +1,7 @@
 #include <GLES3/gl3.h>
 #include <GLES3/gl32.h>
 
-#include "RtxTriBuf.h"
+#include "RrtTriBuf.h"
 
 #include "GfxShader.h"
 
@@ -10,23 +10,23 @@
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "RtxTriBuf"
+#define LOCAL_TAG "RrtTriBuf"
 
 using namespace gfx;
 
 namespace view
 {
-    RtxTriBuf::RtxTriBuf() : RtxBuffer(), m_triangles()
+    RrtTriBuf::RrtTriBuf() : RrtBuffer(), m_triangles()
     {
         m_slot = RTX_SLOT_TRI;
     }
 
-    RtxTriBuf::~RtxTriBuf()
+    RrtTriBuf::~RrtTriBuf()
     {
         std::vector<RtxTriangle>().swap(m_triangles);
     }
 
-    void RtxTriBuf::addTriangles(const std::vector<RtxTriangle> &input)
+    void RrtTriBuf::addTriangles(const std::vector<RtxTriangle> &input)
     {
         if (!input.empty())
         {
@@ -42,14 +42,14 @@ namespace view
         }
     }
 
-    void RtxTriBuf::bind(const std::shared_ptr<GfxShader> &shader, int texUnit)
+    void RrtTriBuf::bind(const std::shared_ptr<GfxShader> &shader, int texUnit)
     {
         if (m_triangles.empty())
         {
             LOG_ERR("array is empty");
             return;
         }
-        RtxBuffer::bind(shader, texUnit);
+        RrtBuffer::bind(shader, texUnit);
     }
 }
 

@@ -1,5 +1,5 @@
-#ifndef RENDER_RTXSTRUCT_H
-#define RENDER_RTXSTRUCT_H
+#ifndef RENDER_RRTSTRUCT_H
+#define RENDER_RRTSTRUCT_H
 
 #include <glm/glm.hpp>
 
@@ -16,4 +16,4 @@ namespace view
     };
 }
 
-#endif //RENDER_RTXSTRUCT_H
+#endif //RENDER_RRTSTRUCT_H

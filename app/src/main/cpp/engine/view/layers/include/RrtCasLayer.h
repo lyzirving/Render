@@ -1,5 +1,5 @@
-#ifndef RENDER_RTXCASLAYER_H
-#define RENDER_RTXCASLAYER_H
+#ifndef RENDER_RRTCASLAYER_H
+#define RENDER_RRTCASLAYER_H
 
 #include "Layer.h"
 #include "GfxDef.h"
@@ -11,14 +11,14 @@ namespace gfx
 
 namespace view
 {
-    class RtxTriBuf;
+    class RrtTriBuf;
 
-    class RtxCasLayer : public Layer
+    class RrtCasLayer : public Layer
     {
     public:
-        RtxCasLayer();
+        RrtCasLayer();
 
-        virtual ~RtxCasLayer();
+        virtual ~RrtCasLayer();
 
         virtual void update(const std::shared_ptr<ViewConv> &conv) override;
 
@@ -35,8 +35,8 @@ namespace view
         uint32_t m_bgColor;
 
         std::shared_ptr<gfx::GfxShader> m_shader;
-        std::shared_ptr<RtxTriBuf> m_triBuf;
+        std::shared_ptr<RrtTriBuf> m_triBuf;
     };
 }
 
-#endif //RENDER_RTXCASLAYER_H
+#endif //RENDER_RRTCASLAYER_H
