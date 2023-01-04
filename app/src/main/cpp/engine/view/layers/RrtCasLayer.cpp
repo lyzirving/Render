@@ -33,13 +33,13 @@ namespace view
 
         m_shader = GfxShaderMgr::get()->getShader(ShaderType::CANVAS);
 
-        RtxTriangle tri{};
+        RrtTriangle tri{};
         tri.p0 = glm::vec3(0.f, 0.5f, 0.f);
         tri.p1 = glm::vec3(-0.5f, 0.f, 0.f);
-        tri.p2 = glm::vec3(0.5f, -0.5f, 0.f);
+        tri.p2 = glm::vec3(0.5f, 0.f, 0.f);
         tri.color = glm::vec3(1.f, 0.f, 0.f);
 
-        std::vector<RtxTriangle> triangles{};
+        std::vector<RrtTriangle> triangles{};
         triangles.push_back(tri);
 
         m_triBuf->addTriangles(triangles);

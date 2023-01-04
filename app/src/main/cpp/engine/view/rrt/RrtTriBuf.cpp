@@ -18,15 +18,15 @@ namespace view
 {
     RrtTriBuf::RrtTriBuf() : RrtBuffer(), m_triangles()
     {
-        m_slot = RTX_SLOT_TRI;
+        m_slot = RRT_SLOT_TRI;
     }
 
     RrtTriBuf::~RrtTriBuf()
     {
-        std::vector<RtxTriangle>().swap(m_triangles);
+        std::vector<RrtTriangle>().swap(m_triangles);
     }
 
-    void RrtTriBuf::addTriangles(const std::vector<RtxTriangle> &input)
+    void RrtTriBuf::addTriangles(const std::vector<RrtTriangle> &input)
     {
         if (!input.empty())
         {
@@ -35,7 +35,7 @@ namespace view
             initBuf();
 
             glBindBuffer(GL_TEXTURE_BUFFER, m_bufId);
-            glBufferData(GL_TEXTURE_BUFFER, m_triangles.size() * sizeof(RtxTriangle),
+            glBufferData(GL_TEXTURE_BUFFER, m_triangles.size() * sizeof(RrtTriangle),
                          &m_triangles[0], GL_STATIC_DRAW);
             glBindTexture(GL_TEXTURE_BUFFER, m_texId);
             glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, m_bufId);

@@ -2,12 +2,18 @@
 #define RENDER_BVHNODE_H
 
 #include <memory>
+#include <vector>
 #include <string>
 #include <glm/glm.hpp>
 
 class aiScene;
 class aiNode;
 class aiMesh;
+
+namespace view
+{
+    struct RrtTriangle;
+}
 
 namespace gfx
 {
@@ -33,19 +39,21 @@ namespace gfx
         glm::vec3 m_AA, m_BB;
     };
 
-    class BVNBuilder
+    class BVHBuilder
     {
     public:
-        BVNBuilder(const char *path);
+        BVHBuilder(const char *path);
 
-        virtual ~BVNBuilder();
+        virtual ~BVHBuilder();
 
     protected:
         void load();
         void processNode(aiNode *node, const aiScene *scene);
+        void processMesh(aiMesh *mesh, const aiScene *scene);
 
         std::string m_srcPath, m_srcDirectory;
         std::string m_name;
+        std::vector<view::RrtTriangle> m_triangles;
     };
 }
 

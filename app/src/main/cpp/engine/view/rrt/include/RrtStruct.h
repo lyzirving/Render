@@ -5,10 +5,10 @@
 
 namespace view
 {
-    const static char *RTX_SLOT_TRI = "u_triangles";
+    const static char *RRT_SLOT_TRI = "u_triangles";
 
     // make sure every field is vec3
-    struct RtxTriangle
+    struct RrtTriangle
     {
         glm::vec3 p0, p1, p2;
         glm::vec3 n0, n1, n2;

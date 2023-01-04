@@ -131,6 +131,7 @@ namespace view
             LOG_ERR("src path is empty");
             return false;
         }
+        m_srcPath = AssetsMgr::getObj(m_srcPath);
         // use assimp load model and get aiScene
         Assimp::Importer importer;
         // aiProcess_Triangulate forces all primitive into triangles

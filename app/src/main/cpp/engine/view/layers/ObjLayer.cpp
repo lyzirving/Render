@@ -2,8 +2,6 @@
 #include "ViewConv.h"
 #include "Sphere.h"
 
-#include "AssetsMgr.h"
-
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
@@ -22,8 +20,7 @@ namespace view
 
     void ObjLayer::createItems()
     {
-        std::string objName = AssetsMgr::getObj("Marry");
-        std::shared_ptr<LayerItem> model = std::make_shared<Model>(objName.c_str());
+        std::shared_ptr<LayerItem> model = std::make_shared<Model>("Marry");
         auto *ptr = (Model *)model.get();
         ptr->fitCenter(true);
         ptr->fitScale(true);
