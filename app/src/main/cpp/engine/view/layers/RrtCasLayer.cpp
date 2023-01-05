@@ -7,7 +7,6 @@
 
 #include "GfxShader.h"
 #include "GfxShaderMgr.h"
-#include "BVHNode.h"
 
 #include "LogUtil.h"
 

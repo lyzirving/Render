@@ -1,16 +1,16 @@
-#ifndef RENDER_GRERTXRENDER_H
-#define RENDER_GRERTXRENDER_H
+#ifndef RENDER_GRERRTRENDER_H
+#define RENDER_GRERRTRENDER_H
 
 #include "GreRender.h"
 
 namespace gre
 {
-    class GreRtxRender : public GreRender
+    class GreRrtRender : public GreRender
     {
     public:
-        GreRtxRender();
+        GreRrtRender();
 
-        virtual ~GreRtxRender();
+        virtual ~GreRrtRender();
         virtual void preUpd() override;
         virtual void update() override;
         virtual void postUpd() override;
@@ -19,4 +19,4 @@ namespace gre
     };
 }
 
-#endif //RENDER_GRERTXRENDER_H
+#endif //RENDER_GRERRTRENDER_H

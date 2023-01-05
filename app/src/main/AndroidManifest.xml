@@ -26,6 +26,8 @@
 
         <activity android:name=".ui.RayTraceActivity" android:launchMode="singleTask" />
 
+        <activity android:name=".ui.BVHActivity" android:launchMode="singleTask" />
+
     </application>
 
 </manifest>

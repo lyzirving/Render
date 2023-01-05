@@ -2,8 +2,9 @@
 #include <android/native_window_jni.h>
 
 #include "GreWindow.h"
-#include "GreSceneRender.h"
-#include "GreRtxRender.h"
+#include "../render/include/GreSceneRender.h"
+#include "../render/include/GreRrtRender.h"
+#include "../render/include/GreBVHRender.h"
 
 #include "GfxEglCore.h"
 #include "GfxWindowSurface.h"
@@ -99,9 +100,13 @@ namespace gre
         {
             m_render = std::make_shared<GreSceneRender>();
         }
+        else if (m_id == GreContextId::CTX_SUB)
+        {
+            m_render = std::make_shared<GreRrtRender>();
+        }
         else
         {
-            m_render = std::make_shared<GreRtxRender>();
+            m_render = std::make_shared<GreBVHRender>();
         }
         return ret;
     }

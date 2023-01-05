@@ -7,19 +7,19 @@ project("render")
 include_directories(${CMAKE_SOURCE_DIR}/third/include)
 include_directories(${CMAKE_SOURCE_DIR}/common/include)
 include_directories(${CMAKE_SOURCE_DIR}/common/tools/include)
-include_directories(${CMAKE_SOURCE_DIR}/engine/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gre/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gre/fw/include)
+include_directories(${CMAKE_SOURCE_DIR}/engine/gre/render/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gfx/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gfx/egl/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gfx/shader/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gfx/mgr/include)
+include_directories(${CMAKE_SOURCE_DIR}/engine/gfx/structure/include)
+include_directories(${CMAKE_SOURCE_DIR}/engine/gfx/rrt/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/view/base/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/view/conv/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/view/layers/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/view/layers/items/include)
-include_directories(${CMAKE_SOURCE_DIR}/engine/view/rrt/include)
-include_directories(${CMAKE_SOURCE_DIR}/engine/view/structure/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/view/include)
 
 aux_source_directory(${CMAKE_SOURCE_DIR}/common SRC_COMMON)
@@ -27,16 +27,17 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/common/tools SRC_TOOLS)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine SRC_ENGINE)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gre SRC_GRE)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gre/fw SRC_FW)
+aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gre/render SRC_RENDER)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gfx SRC_GFX)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gfx/egl SRC_EGL)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gfx/shader SRC_SHADER)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gfx/mgr SRC_GFX_MGR)
+aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gfx/structure SRC_STRUCTURE)
+aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gfx/rrt SRC_RRT)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view/base SRC_BASE_VIEW)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view/conv SRC_CONV_VIEW)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view/layers SRC_LAYERS_VIEW)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view/layers/items SRC_ITEMS_VIEW)
-aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view/rrt SRC_RRT)
-aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view/structure SRC_STRUCTURE)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view SRC_VIEW)
 
 add_library(lib-assimp
@@ -59,6 +60,7 @@ add_library( # Sets the name of the library.
              ${SRC_ENGINE}
              ${SRC_GRE}
              ${SRC_FW}
+             ${SRC_RENDER}
              ${SRC_GFX}
              ${SRC_EGL}
              ${SRC_SHADER}

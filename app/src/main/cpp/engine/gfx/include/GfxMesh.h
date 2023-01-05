@@ -32,6 +32,8 @@ namespace gfx
         void release();
 
     protected:
+        uint32_t getGlDrawMode();
+
         std::vector<Vertex> m_vertex;
         std::vector<uint32_t> m_indices;
         std::vector<std::shared_ptr<Texture>> m_textures;
@@ -41,8 +43,6 @@ namespace gfx
         DrawMode m_drawMode;
         bool m_initialized;
 
-    private:
-        uint32_t getGlDrawMode();
     };
 }
 

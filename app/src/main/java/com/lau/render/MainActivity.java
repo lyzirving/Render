@@ -13,6 +13,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 
+import com.lau.render.ui.BVHActivity;
 import com.lau.render.ui.RayTraceActivity;
 import com.lau.render.ui.ShadowActivity;
 import com.lau.render.utils.AssetsManager;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AssetsManager.get().setListener(this);
         findViewById(R.id.btn_shadow).setOnClickListener(this);
         findViewById(R.id.btn_ray_trace).setOnClickListener(this);
+        findViewById(R.id.btn_bvh).setOnClickListener(this);
 
         requestUserPermission(CODE_REQUEST_READ_WRITE_PERMISSION);
     }
@@ -96,6 +98,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.btn_shadow: {
                 startActivity(ShadowActivity.class);
+                break;
+            }
+            case R.id.btn_bvh: {
+                startActivity(BVHActivity.class);
                 break;
             }
             case R.id.btn_ray_trace: {
@@ -144,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void enableBtn(boolean enable) {
         findViewById(R.id.btn_shadow).setEnabled(enable);
+        findViewById(R.id.btn_bvh).setEnabled(enable);
         findViewById(R.id.btn_ray_trace).setEnabled(enable);
     }
 

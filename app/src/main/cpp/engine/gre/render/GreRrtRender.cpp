@@ -1,7 +1,7 @@
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 
-#include "GreRtxRender.h"
+#include "GreRrtRender.h"
 #include "RrtScene.h"
 #include "Viewport.h"
 
@@ -10,30 +10,30 @@
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "GreRtxRender"
+#define LOCAL_TAG "GreRrtRender"
+
+using namespace view;
 
 namespace gre
 {
-    using namespace view;
-
-    GreRtxRender::GreRtxRender() : GreRender()
+    GreRrtRender::GreRrtRender() : GreRender()
     {
         m_scene = std::make_shared<RrtScene>();
     }
 
-    GreRtxRender::~GreRtxRender() = default;
+    GreRrtRender::~GreRrtRender() = default;
 
-    void GreRtxRender::preUpd()
+    void GreRrtRender::preUpd()
     {
         auto& viewport = m_conv->viewport();
         glViewport(viewport->x(), viewport->y(), viewport->width(), viewport->height());
     }
 
-    void GreRtxRender::update()
+    void GreRrtRender::update()
     {
         m_scene->update(m_conv);
     }
 
-    void GreRtxRender::postUpd() {}
+    void GreRrtRender::postUpd() {}
 }
 

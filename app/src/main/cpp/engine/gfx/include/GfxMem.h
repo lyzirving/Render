@@ -21,7 +21,7 @@ namespace gfx
         inline uint32_t getVBO() { return m_vbo; }
         inline uint32_t getEBO() { return m_ebo; }
 
-        void createMem()
+        virtual void createMem()
         {
             if(m_vao == 0) glGenVertexArrays(1, &m_vao);
             if(m_vbo == 0) glGenBuffers(1, &m_vbo);

@@ -1,7 +1,7 @@
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 
-#include "GreSceneRender.h"
+#include "include/GreSceneRender.h"
 
 #include "SightScene.h"
 #include "Viewport.h"
