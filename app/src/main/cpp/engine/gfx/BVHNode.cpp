@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "BVHNode.h"
+#include "GfxMesh.h"
 
 #include "RrtStruct.h"
 
@@ -31,8 +32,10 @@ namespace gfx
         m_right.reset();
     }
 
-    BVHBuilder::BVHBuilder(const char *name) : m_name(name), m_srcPath(),
-                                               m_triangles()
+    BVHBuilder::BVHBuilder(const char *name, bool debug) : m_name(name), m_srcPath(), m_triangles(),
+                                                           m_debugFlag(debug), m_debugMesh(),
+                                                           m_debugMax(FLT_MIN), m_debugMin(FLT_MAX),
+                                                           m_debugId(0)
     {
         load();
     }
@@ -40,6 +43,15 @@ namespace gfx
     BVHBuilder::~BVHBuilder()
     {
         std::vector<RrtTriangle>().swap(m_triangles);
+        if (!m_debugMesh.empty())
+        {
+            auto itr = m_debugMesh.begin();
+            while(itr != m_debugMesh.end())
+            {
+                (*itr).reset();
+                itr = m_debugMesh.erase(itr);
+            }
+        }
     }
 
     std::shared_ptr<BVHNode> BVHBuilder::build()
@@ -272,6 +284,41 @@ namespace gfx
             }
 
             m_triangles.push_back(tri);
+        }
+
+        dealDebugMesh(mesh, scene);
+    }
+
+    void BVHBuilder::dealDebugMesh(aiMesh *mesh, const aiScene *scene)
+    {
+        if(m_debugFlag && mesh && scene)
+        {
+            std::string meshName = m_name + "@Mesh@" + std::to_string(m_debugId++);
+            std::shared_ptr<GfxMesh> result = std::make_shared<GfxMesh>(meshName.c_str());
+
+            std::vector<Vertex> &vertList = result->getVertex();
+            std::vector<uint32_t> &indices = result->getIndices();
+
+            for(uint32_t i = 0; i < mesh->mNumVertices; i++)
+            {
+                Vertex vert{};
+                aiVector3D aiVert = mesh->mVertices[i];
+                vert.m_pos = glm::vec3(aiVert.x, aiVert.y, aiVert.z);
+                m_debugMax = glm::max(m_debugMax, vert.m_pos);
+                m_debugMin = glm::min(m_debugMin, vert.m_pos);
+
+                vertList.push_back(vert);
+            }
+
+            for(uint32_t i = 0; i < mesh->mNumFaces; i++)
+            {
+                aiFace face = mesh->mFaces[i];
+                for (int j = 0; j < face.mNumIndices; ++j)
+                    indices.push_back(face.mIndices[j]);
+            }
+
+            result->bind(false);
+            m_debugMesh.push_back(result);
         }
     }
 }

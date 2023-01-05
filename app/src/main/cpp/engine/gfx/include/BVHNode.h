@@ -17,6 +17,8 @@ namespace view
 
 namespace gfx
 {
+    class GfxMesh;
+
     class BVHNode
     {
     public:
@@ -42,7 +44,7 @@ namespace gfx
     class BVHBuilder
     {
     public:
-        BVHBuilder(const char *name);
+        BVHBuilder(const char *name, bool debug = false);
 
         virtual ~BVHBuilder();
 
@@ -56,6 +58,7 @@ namespace gfx
         std::string m_name;
         std::string m_srcPath;
         std::vector<view::RrtTriangle> m_triangles;
+        bool m_debugFlag;
 
     private:
         static std::shared_ptr<BVHNode> buildWithSAH(std::vector<view::RrtTriangle> &triangles,
@@ -63,6 +66,12 @@ namespace gfx
         static bool cmpX(const view::RrtTriangle &lhs, const view::RrtTriangle &rhs);
         static bool cmpY(const view::RrtTriangle &lhs, const view::RrtTriangle &rhs);
         static bool cmpZ(const view::RrtTriangle &lhs, const view::RrtTriangle &rhs);
+
+        void dealDebugMesh(aiMesh *mesh, const aiScene *scene);
+
+        std::vector<std::shared_ptr<GfxMesh>> m_debugMesh;
+        glm::vec3 m_debugMax, m_debugMin;
+        uint32_t m_debugId;
     };
 }
 

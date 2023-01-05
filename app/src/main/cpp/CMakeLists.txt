@@ -19,6 +19,7 @@ include_directories(${CMAKE_SOURCE_DIR}/engine/view/conv/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/view/layers/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/view/layers/items/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/view/rrt/include)
+include_directories(${CMAKE_SOURCE_DIR}/engine/view/structure/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/view/include)
 
 aux_source_directory(${CMAKE_SOURCE_DIR}/common SRC_COMMON)
@@ -35,6 +36,7 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view/conv SRC_CONV_VIEW)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view/layers SRC_LAYERS_VIEW)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view/layers/items SRC_ITEMS_VIEW)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view/rrt SRC_RRT)
+aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view/structure SRC_STRUCTURE)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/view SRC_VIEW)
 
 add_library(lib-assimp
@@ -66,6 +68,7 @@ add_library( # Sets the name of the library.
              ${SRC_CONV_VIEW}
              ${SRC_ITEMS_VIEW}
              ${SRC_LAYERS_VIEW}
+             ${SRC_STRUCTURE}
              ${SRC_RRT}
              loader.cpp)
 
