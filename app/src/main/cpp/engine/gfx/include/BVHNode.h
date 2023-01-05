@@ -42,18 +42,27 @@ namespace gfx
     class BVHBuilder
     {
     public:
-        BVHBuilder(const char *path);
+        BVHBuilder(const char *name);
 
         virtual ~BVHBuilder();
+
+        std::shared_ptr<BVHNode> build();
 
     protected:
         void load();
         void processNode(aiNode *node, const aiScene *scene);
         void processMesh(aiMesh *mesh, const aiScene *scene);
 
-        std::string m_srcPath, m_srcDirectory;
         std::string m_name;
+        std::string m_srcPath;
         std::vector<view::RrtTriangle> m_triangles;
+
+    private:
+        static std::shared_ptr<BVHNode> buildWithSAH(std::vector<view::RrtTriangle> &triangles,
+                                                     uint32_t l, uint32_t r, uint32_t limit);
+        static bool cmpX(const view::RrtTriangle &lhs, const view::RrtTriangle &rhs);
+        static bool cmpY(const view::RrtTriangle &lhs, const view::RrtTriangle &rhs);
+        static bool cmpZ(const view::RrtTriangle &lhs, const view::RrtTriangle &rhs);
     };
 }
 
