@@ -58,8 +58,7 @@ namespace gfx
         bool m_debugFlag;
 
     private:
-        static std::shared_ptr<BVHNode> buildWithSAH(std::vector<RrtTriangle> &triangles,
-                                                     uint32_t l, uint32_t r, uint32_t limit);
+        static std::shared_ptr<BVHNode> buildWithSAH(std::vector<RrtTriangle> &triangles, int l, int r, int limit);
         static bool cmpX(const RrtTriangle &lhs, const RrtTriangle &rhs);
         static bool cmpY(const RrtTriangle &lhs, const RrtTriangle &rhs);
         static bool cmpZ(const RrtTriangle &lhs, const RrtTriangle &rhs);

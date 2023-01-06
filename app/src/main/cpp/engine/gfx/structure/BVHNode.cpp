@@ -4,18 +4,21 @@
 #include <limits>
 #include <algorithm>
 
-#include "include/BVHNode.h"
+#include "BVHNode.h"
 #include "GfxMesh.h"
 
 #include "RrtStruct.h"
 
 #include "AssetsMgr.h"
+#include "SystemUtil.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
 #define LOCAL_TAG "BVHNode"
+
+#define INF 114514.0
 
 namespace gfx
 {
@@ -59,22 +62,22 @@ namespace gfx
             LOG_ERR("triangle is empty");
             return nullptr;
         }
-        LOG_FUNC_ENTER;
-        //todo debug the crash
+        LOG_DEBUG("start build BVH[%s]", m_name.c_str());
+        int64_t start = systemTimeMs();
         std::shared_ptr<BVHNode> node = buildWithSAH(m_triangles, 0, m_triangles.size() - 1, 8);
-        LOG_DEBUG("finish build BVH");
+        LOG_DEBUG("finish build BVH, cost[%.3f]s", (systemTimeMs() - start) / 1000.f);
         return node;
     }
 
     std::shared_ptr<BVHNode> BVHBuilder::buildWithSAH(std::vector<RrtTriangle> &triangles,
-                                                      uint32_t l, uint32_t r, uint32_t limit)
+                                                      int l, int r, int limit)
     {
         if (l > r)
             return nullptr;
 
         std::shared_ptr<BVHNode> node = std::make_shared<BVHNode>();
-        node->m_AA = glm::vec3(FLT_MAX);
-        node->m_BB = glm::vec3(FLT_MIN);
+        node->m_AA = glm::vec3(-INF);
+        node->m_BB = glm::vec3(0.f);
 
         // find AABB
         for(auto &item : triangles)
@@ -93,44 +96,44 @@ namespace gfx
             return node;
         }
 
-        float Cost = FLT_MAX;
-        uint32_t Axis = 0;
-        uint32_t Split = l;
+        float Cost = INF;
+        int Axis = 0;
+        int Split = (l + r) / 2;
 
         // iterate each axis
-        for (uint32_t axisInd = 0; axisInd < 3; ++axisInd)
+        for (int axisInd = 0; axisInd < 3; ++axisInd)
         {
             // sort the triangles by certain axis
             if(axisInd == 0)  std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpX);
             if(axisInd == 1)  std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpY);
             if(axisInd == 2)  std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpZ);
 
-            std::vector<glm::vec3> leftMin(r - l + 1, glm::vec3(FLT_MAX));
-            std::vector<glm::vec3> leftMax(r - l + 1, glm::vec3(FLT_MIN));
-            for (uint32_t i = l; i <= r; i++)
+            std::vector<glm::vec3> leftMin(r - l + 1, glm::vec3(-INF));
+            std::vector<glm::vec3> leftMax(r - l + 1, glm::vec3(0.f));
+            for (int i = l; i <= r; ++i)
             {
-                auto &tri = triangles[i];
-                uint32_t bias = (i == l) ? 0 : 1;
+                RrtTriangle& tri = triangles[i];
+                int bias = ((i == l) ? 0 : 1);
 
                 leftMin[i - l] = glm::min(leftMin[i - l - bias], glm::min(tri.p0, glm::min(tri.p1, tri.p2)));
                 leftMax[i - l] = glm::max(leftMax[i - l - bias], glm::max(tri.p0, glm::max(tri.p1, tri.p2)));
             }
 
-            std::vector<glm::vec3> rightMin(r - l + 1, glm::vec3(FLT_MAX));
-            std::vector<glm::vec3> rightMax(r - l + 1, glm::vec3(FLT_MIN));
-            for (uint32_t i = r; i >= l; i--)
+            std::vector<glm::vec3> rightMin(r - l + 1, glm::vec3(-INF));
+            std::vector<glm::vec3> rightMax(r - l + 1, glm::vec3(0.f));
+            for (int i = r; i >= l; --i)
             {
-                auto &tri = triangles[i];
-                uint32_t bias = (i == r) ? 0 : 1;
+                RrtTriangle& tri = triangles[i];
+                int bias = ((i == r) ? 0 : 1);
 
                 rightMin[i - l] = glm::min(rightMin[i - l + bias], glm::min(tri.p0, glm::min(tri.p1, tri.p2)));
                 rightMax[i - l] = glm::max(rightMax[i - l + bias], glm::max(tri.p0, glm::max(tri.p1, tri.p2)));
             }
 
-            uint32_t split = l;
+            int split = l;
             float cost = FLT_MAX;
             // split from l to r - 1 to calculate cost and split position
-            for (uint32_t i = l; i <= r - 1; ++i)
+            for (int i = l; i <= r - 1; ++i)
             {
                 // left side[l, i]
                glm::vec3 leftAA = leftMin[i - l];
@@ -215,13 +218,13 @@ namespace gfx
 
     void BVHBuilder::processNode(aiNode *node, const aiScene *scene)
     {
-        for(unsigned int i = 0; i < node->mNumMeshes; i++)
+        for(int i = 0; i < node->mNumMeshes; ++i)
         {
             aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
             processMesh(mesh, scene);
         }
 
-        for(unsigned int i = 0; i < node->mNumChildren; i++)
+        for(int i = 0; i < node->mNumChildren; ++i)
         {
             processNode(node->mChildren[i], scene);
         }
@@ -239,7 +242,7 @@ namespace gfx
         RrtTriangle tri{};
         bool normalExist = (mesh->mNormals != nullptr);
 
-        for(uint32_t i = 0; i < mesh->mNumFaces; i++)
+        for(int i = 0; i < mesh->mNumFaces; ++i)
         {
             aiFace face = mesh->mFaces[i];
             if(face.mNumIndices != 3)
@@ -301,7 +304,7 @@ namespace gfx
             std::vector<Vertex> &vertList = result->getVertex();
             std::vector<uint32_t> &indices = result->getIndices();
 
-            for(uint32_t i = 0; i < mesh->mNumVertices; i++)
+            for(int i = 0; i < mesh->mNumVertices; ++i)
             {
                 Vertex vert{};
                 aiVector3D aiVert = mesh->mVertices[i];
@@ -312,7 +315,7 @@ namespace gfx
                 vertList.push_back(vert);
             }
 
-            for(uint32_t i = 0; i < mesh->mNumFaces; i++)
+            for(int i = 0; i < mesh->mNumFaces; ++i)
             {
                 aiFace face = mesh->mFaces[i];
                 for (int j = 0; j < face.mNumIndices; ++j)
