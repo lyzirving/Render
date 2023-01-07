@@ -1,5 +1,6 @@
 #include "BVHScene.h"
 #include "BVHLayer.h"
+#include "ClearLayer.h"
 
 #include "LogUtil.h"
 
@@ -19,8 +20,11 @@ namespace view
 
     void BVHScene::createLayers()
     {
-        auto canvas = std::make_shared<BVHLayer>();
-        addLayer(canvas);
+        std::shared_ptr<Layer> clearLayer = std::make_shared<ClearLayer>(LayerOrder::LOW);
+        std::shared_ptr<Layer> bvhLayer = std::make_shared<BVHLayer>(LayerOrder::MID);
+
+        addLayer(clearLayer);
+        addLayer(bvhLayer);
     }
 
     void BVHScene::update(const std::shared_ptr<ViewConv> &conv)

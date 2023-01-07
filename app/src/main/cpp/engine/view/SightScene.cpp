@@ -14,7 +14,6 @@ namespace view
     SightScene::SightScene() : Scene()
     {
         SightScene::createLayers();
-        sortLayer();
     }
 
     SightScene::~SightScene() = default;

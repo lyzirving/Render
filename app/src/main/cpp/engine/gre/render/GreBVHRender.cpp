@@ -5,6 +5,7 @@
 
 #include "Viewport.h"
 #include "BVHScene.h"
+#include "Camera.h"
 
 #include "LogUtil.h"
 
@@ -28,6 +29,9 @@ namespace gre
     {
         auto& viewport = m_conv->viewport();
         glViewport(viewport->x(), viewport->y(), viewport->width(), viewport->height());
+
+        const std::shared_ptr<Camera> &cam = m_conv->camera();
+        cam->setPosition(8, 75.f, 20.f);
     }
 
     void GreBVHRender::update()

@@ -10,10 +10,14 @@ class aiScene;
 class aiNode;
 class aiMesh;
 
+namespace view
+{
+    class ViewConv;
+}
+
 namespace gfx
 {
     class GfxMesh;
-
     struct RrtTriangle;
 
     class BVHNode
@@ -46,6 +50,7 @@ namespace gfx
         virtual ~BVHBuilder();
 
         std::shared_ptr<BVHNode> build();
+        void drawDebug(const std::shared_ptr<view::ViewConv> &conv);
 
     protected:
         void load();
@@ -63,10 +68,12 @@ namespace gfx
         static bool cmpY(const RrtTriangle &lhs, const RrtTriangle &rhs);
         static bool cmpZ(const RrtTriangle &lhs, const RrtTriangle &rhs);
 
+        void adjDebugMesh();
         void dealDebugMesh(aiMesh *mesh, const aiScene *scene);
 
         std::vector<std::shared_ptr<GfxMesh>> m_debugMesh;
         glm::vec3 m_debugMax, m_debugMin;
+        glm::mat4 m_debugModelMt;
         uint32_t m_debugMeshId;
     };
 }

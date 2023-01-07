@@ -8,6 +8,7 @@ namespace gfx
     class GfxShader;
     class BVHBuilder;
     class BVHNode;
+    class BVHBoundingBox;
 }
 
 namespace view
@@ -15,7 +16,7 @@ namespace view
     class BVHLayer : public Layer
     {
     public:
-        BVHLayer();
+        BVHLayer(LayerOrder order);
 
         virtual ~BVHLayer();
 
@@ -28,6 +29,7 @@ namespace view
         std::shared_ptr<gfx::GfxShader> m_shader;
         std::shared_ptr<gfx::BVHBuilder> m_builder;
         std::shared_ptr<gfx::BVHNode> m_node;
+        std::shared_ptr<gfx::BVHBoundingBox> m_box;
     };
 }
 

@@ -15,10 +15,11 @@ namespace gfx
     static std::mutex g_mutex{};
     static GfxShaderMgr *g_mgr{nullptr};
 
-    static const char *STR_NONE   = "none";
-    static const char *STR_OBJ    = "obj";
-    static const char *STR_SPHERE = "sphere";
-    static const char *STR_CANVAS = "cas";
+    static const char *STR_NONE      = "none";
+    static const char *STR_OBJ       = "obj";
+    static const char *STR_SPHERE    = "sphere";
+    static const char *STR_CANVAS    = "cas";
+    static const char *STR_COLOR_OBJ = "color_obj";
 
     GfxShaderMgr * GfxShaderMgr::get()
     {
@@ -63,6 +64,10 @@ namespace gfx
         key = STR_CANVAS;
         std::shared_ptr<GfxShader> casShader = std::make_shared<GfxShader>(STR_CANVAS, STR_CANVAS, STR_CANVAS);
         m_shaders.insert(std::pair<std::string, std::shared_ptr<GfxShader>>(key, casShader));
+
+        key = STR_COLOR_OBJ;
+        std::shared_ptr<GfxShader> colorObj = std::make_shared<GfxShader>(STR_COLOR_OBJ, STR_OBJ, STR_COLOR_OBJ);
+        m_shaders.insert(std::pair<std::string, std::shared_ptr<GfxShader>>(key, colorObj));
     }
 
     void GfxShaderMgr::release()
@@ -90,6 +95,10 @@ namespace gfx
             case ShaderType::CANVAS:
             {
                 return STR_CANVAS;
+            }
+            case ShaderType::COLOR_OBJ:
+            {
+                return STR_COLOR_OBJ;
             }
             default:
             {

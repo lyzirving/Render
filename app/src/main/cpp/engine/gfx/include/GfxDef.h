@@ -24,6 +24,7 @@ namespace gfx
         OBJ,
         SPHERE,
         CANVAS,
+        COLOR_OBJ,
         SHADER_CNT
     };
 

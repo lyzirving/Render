@@ -3,6 +3,11 @@
 
 #include "GfxMesh.h"
 
+namespace view
+{
+    class ViewConv;
+}
+
 namespace gfx
 {
     class BVHNode;
@@ -15,14 +20,17 @@ namespace gfx
         virtual ~BVHBoundingBox();
         virtual void bind(bool force) override;
         virtual void createMem() override;
-        virtual void draw(const std::shared_ptr<gfx::GfxShader> &shader) override;
 
+        virtual void draw(const std::shared_ptr<view::ViewConv> &conv);
         void getBVHBound(const std::shared_ptr<gfx::BVHNode> &node);
 
     private:
+        void adjModel();
         void itrBVH(const std::shared_ptr<gfx::BVHNode> &node);
         void parseBVH(const std::shared_ptr<gfx::BVHNode> &node);
 
+        glm::vec3 m_max, m_min;
+        glm::mat4 m_modelMt;
     };
 }
 

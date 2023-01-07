@@ -3,11 +3,15 @@
 #include <assimp/postprocess.h>
 #include <limits>
 #include <algorithm>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "BVHNode.h"
 #include "GfxMesh.h"
-
+#include "GfxShader.h"
 #include "RrtStruct.h"
+#include "GfxShaderMgr.h"
+
+#include "ViewConv.h"
 
 #include "AssetsMgr.h"
 #include "SystemUtil.h"
@@ -19,6 +23,8 @@
 #define LOCAL_TAG "BVHNode"
 
 #define INF 114514.0
+
+using namespace view;
 
 namespace gfx
 {
@@ -36,6 +42,7 @@ namespace gfx
     BVHBuilder::BVHBuilder(const char *name, bool debug) : m_name(name), m_srcPath(), m_triangles(),
                                                            m_debugFlag(debug), m_debugMesh(),
                                                            m_debugMax(FLT_MIN), m_debugMin(FLT_MAX),
+                                                           m_debugModelMt(1.f),
                                                            m_debugMeshId(0)
     {
         load();
@@ -213,6 +220,7 @@ namespace gfx
         }
         LOG_DEBUG("load from[%s], begin to parse", m_srcPath.c_str());
         processNode(scene->mRootNode, scene);
+        adjDebugMesh();
         LOG_DEBUG("finish parsing, rrt triangle size[%lu]", m_triangles.size());
     }
 
@@ -292,6 +300,45 @@ namespace gfx
         }
 
         dealDebugMesh(mesh, scene);
+    }
+
+    void BVHBuilder::adjDebugMesh()
+    {
+        if (m_debugFlag)
+        {
+            glm::mat4 mtTrans{1.f}, mtScale{1.f};
+
+            glm::vec3 center = (m_debugMax + m_debugMin) * 0.5f;
+            mtTrans = glm::translate(mtTrans, -center);
+
+            glm::vec3 interval = m_debugMax - m_debugMin;
+            float scale = 2.f / std::max(std::max(interval.x, interval.y), interval.z);
+            mtScale = glm::scale(mtScale, glm::vec3(scale));
+
+            m_debugModelMt = mtScale * mtTrans;
+        }
+    }
+
+    void BVHBuilder::drawDebug(const std::shared_ptr<view::ViewConv> &conv)
+    {
+        if(m_debugFlag)
+        {
+            const glm::mat4 &viewMt = conv->getViewMat();
+            const glm::mat4 &prjMt = conv->getProjectMat();
+
+            const std::shared_ptr<gfx::GfxShader> &shader = GfxShaderMgr::get()->getShader(ShaderType::COLOR_OBJ);
+            shader->use(true);
+            shader->setMat4(U_MT_VIEW, viewMt);
+            shader->setMat4(U_MT_PROJ, prjMt);
+            shader->setMat4(U_MT_MODEL, m_debugModelMt);
+            shader->setVec4(U_COLOR, 1.f, 0.f, 0.f, 1.f);
+
+            for(auto &item : m_debugMesh)
+            {
+                item->draw(shader);
+            }
+            shader->use(false);
+        }
     }
 
     void BVHBuilder::dealDebugMesh(aiMesh *mesh, const aiScene *scene)
