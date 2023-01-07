@@ -73,12 +73,12 @@ namespace gfx
         }
         if (m_eglCore->getDisplay() == EGL_NO_DISPLAY)
         {
-            LOG_ERR("[%u] empty egl display", m_id);
+            LOG_ERR("id[%u] empty egl display", m_id);
             return false;
         }
         if (!m_window)
         {
-            LOG_ERR("[%u] window is null", m_id);
+            LOG_ERR("id[%u] window is null", m_id);
             return false;
         }
 
@@ -89,14 +89,14 @@ namespace gfx
         EGLint ret = eglGetError();
         if (ret != EGL_SUCCESS)
         {
-            LOG_ERR("[%u] fail to prepare, err code[0x%x]", m_id, ret);
+            LOG_ERR("id[%u] fail to prepare, err code[0x%x]", m_id, ret);
             m_surface = EGL_NO_SURFACE;
         }
         else
         {
             m_width = ANativeWindow_getWidth(m_window);
             m_height = ANativeWindow_getHeight(m_window);
-            LOG_DEBUG("[%u], success, width(%d) height(%d)", m_id, m_width, m_height);
+            LOG_DEBUG("id[%u], success, width(%d) height(%d)", m_id, m_width, m_height);
         }
         return ret == EGL_SUCCESS;
     }

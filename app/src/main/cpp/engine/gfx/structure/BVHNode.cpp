@@ -41,7 +41,7 @@ namespace gfx
 
     BVHBuilder::BVHBuilder(const char *name, bool debug) : m_name(name), m_srcPath(), m_triangles(),
                                                            m_debugFlag(debug), m_debugMesh(),
-                                                           m_debugMax(FLT_MIN), m_debugMin(FLT_MAX),
+                                                           m_debugMax(-INF), m_debugMin(INF),
                                                            m_debugModelMt(1.f),
                                                            m_debugMeshId(0)
     {
@@ -83,12 +83,12 @@ namespace gfx
             return nullptr;
 
         std::shared_ptr<BVHNode> node = std::make_shared<BVHNode>();
-        node->m_AA = glm::vec3(-INF);
-        node->m_BB = glm::vec3(0.f);
+        node->m_AA = glm::vec3(INF);
+        node->m_BB = glm::vec3(-INF);
 
         // find AABB
-        for(auto &item : triangles)
-        {
+        for (int i = l; i <= r; ++i) {
+            RrtTriangle& item = triangles[i];
             glm::vec3 min = glm::min(item.p0, glm::min(item.p1, item.p2));
             glm::vec3 max = glm::max(item.p0, glm::max(item.p1, item.p2));
             node->m_AA = glm::min(node->m_AA, min);
@@ -115,8 +115,8 @@ namespace gfx
             if(axisInd == 1)  std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpY);
             if(axisInd == 2)  std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpZ);
 
-            std::vector<glm::vec3> leftMin(r - l + 1, glm::vec3(-INF));
-            std::vector<glm::vec3> leftMax(r - l + 1, glm::vec3(0.f));
+            std::vector<glm::vec3> leftMin(r - l + 1, glm::vec3(INF));
+            std::vector<glm::vec3> leftMax(r - l + 1, glm::vec3(-INF));
             for (int i = l; i <= r; ++i)
             {
                 RrtTriangle& tri = triangles[i];
@@ -126,8 +126,8 @@ namespace gfx
                 leftMax[i - l] = glm::max(leftMax[i - l - bias], glm::max(tri.p0, glm::max(tri.p1, tri.p2)));
             }
 
-            std::vector<glm::vec3> rightMin(r - l + 1, glm::vec3(-INF));
-            std::vector<glm::vec3> rightMax(r - l + 1, glm::vec3(0.f));
+            std::vector<glm::vec3> rightMin(r - l + 1, glm::vec3(INF));
+            std::vector<glm::vec3> rightMax(r - l + 1, glm::vec3(-INF));
             for (int i = r; i >= l; --i)
             {
                 RrtTriangle& tri = triangles[i];
@@ -138,7 +138,7 @@ namespace gfx
             }
 
             int split = l;
-            float cost = FLT_MAX;
+            float cost = INF;
             // split from l to r - 1 to calculate cost and split position
             for (int i = l; i <= r - 1; ++i)
             {

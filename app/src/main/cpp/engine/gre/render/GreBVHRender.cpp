@@ -30,6 +30,15 @@ namespace gre
         auto& viewport = m_conv->viewport();
         glViewport(viewport->x(), viewport->y(), viewport->width(), viewport->height());
 
+        glEnable(GL_DEPTH_TEST);
+
+        glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CCW);
+        glCullFace(GL_BACK);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         const std::shared_ptr<Camera> &cam = m_conv->camera();
         cam->setPosition(8, 75.f, 20.f);
     }
@@ -39,5 +48,10 @@ namespace gre
         m_scene->update(m_conv);
     }
 
-    void GreBVHRender::postUpd() {}
+    void GreBVHRender::postUpd()
+    {
+        glDisable(GL_BLEND);
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+    }
 }

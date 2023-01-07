@@ -95,7 +95,7 @@ namespace gfx
         shader->setMat4(U_MT_VIEW, viewMt);
         shader->setMat4(U_MT_PROJ, prjMt);
         shader->setMat4(U_MT_MODEL, m_modelMt);
-        shader->setVec4(U_COLOR, 0.f, 0.f, 1.f, 1.f);
+        shader->setVec4(U_COLOR, 0.f, 0.f, 1.f, 0.8f);
         glLineWidth(3.f);
 
         glBindVertexArray(m_vao);
@@ -130,15 +130,14 @@ namespace gfx
 
     void BVHBoundingBox::parseBVH(const std::shared_ptr<gfx::BVHNode> &node)
     {
-        const glm::vec3& min = node->m_AA;
-        const glm::vec3& max = node->m_BB;
-
+        const glm::vec3& aa = node->m_AA;
+        const glm::vec3& bb = node->m_BB;
         Vertex pt0{}, pt1{};
 
         // edge perpendicular to plane x-y
         // right-top
-        pt0.m_pos = glm::vec3(max.x, max.y, max.z);
-        pt1.m_pos = glm::vec3(max.x, max.y, min.z);
+        pt0.m_pos = glm::vec3(bb.x, bb.y, bb.z);
+        pt1.m_pos = glm::vec3(bb.x, bb.y, aa.z);
         m_max = glm::max(m_max, pt0.m_pos);
         m_max = glm::max(m_max, pt1.m_pos);
         m_min = glm::min(m_min, pt0.m_pos);
@@ -147,8 +146,8 @@ namespace gfx
         m_vertex.push_back(pt1);
 
         // right-bottom
-        pt0.m_pos = glm::vec3(max.x, min.y, max.z);
-        pt1.m_pos = glm::vec3(max.x, min.y, min.z);
+        pt0.m_pos = glm::vec3(bb.x, aa.y, bb.z);
+        pt1.m_pos = glm::vec3(bb.x, aa.y, aa.z);
         m_max = glm::max(m_max, pt0.m_pos);
         m_max = glm::max(m_max, pt1.m_pos);
         m_min = glm::min(m_min, pt0.m_pos);
@@ -157,8 +156,8 @@ namespace gfx
         m_vertex.push_back(pt1);
 
         // left-bottom
-        pt0.m_pos = glm::vec3(min.x, min.y, max.z);
-        pt1.m_pos = glm::vec3(min.x, min.y, min.z);
+        pt0.m_pos = glm::vec3(aa.x, aa.y, bb.z);
+        pt1.m_pos = glm::vec3(aa.x, aa.y, aa.z);
         m_max = glm::max(m_max, pt0.m_pos);
         m_max = glm::max(m_max, pt1.m_pos);
         m_min = glm::min(m_min, pt0.m_pos);
@@ -167,8 +166,8 @@ namespace gfx
         m_vertex.push_back(pt1);
 
         // left-top
-        pt0.m_pos = glm::vec3(min.x, max.y, max.z);
-        pt1.m_pos = glm::vec3(min.x, max.y, min.z);
+        pt0.m_pos = glm::vec3(aa.x, bb.y, bb.z);
+        pt1.m_pos = glm::vec3(aa.x, bb.y, aa.z);
         m_max = glm::max(m_max, pt0.m_pos);
         m_max = glm::max(m_max, pt1.m_pos);
         m_min = glm::min(m_min, pt0.m_pos);
@@ -178,8 +177,8 @@ namespace gfx
 
         // edge perpendicular to plane y-z
         // front-top
-        pt0.m_pos = glm::vec3(min.x, max.y, max.z);
-        pt1.m_pos = glm::vec3(max.x, max.y, max.z);
+        pt0.m_pos = glm::vec3(aa.x, bb.y, bb.z);
+        pt1.m_pos = glm::vec3(bb.x, bb.y, bb.z);
         m_max = glm::max(m_max, pt0.m_pos);
         m_max = glm::max(m_max, pt1.m_pos);
         m_min = glm::min(m_min, pt0.m_pos);
@@ -188,8 +187,8 @@ namespace gfx
         m_vertex.push_back(pt1);
 
         // front-bottom
-        pt0.m_pos = glm::vec3(min.x, min.y, max.z);
-        pt1.m_pos = glm::vec3(max.x, min.y, max.z);
+        pt0.m_pos = glm::vec3(aa.x, aa.y, bb.z);
+        pt1.m_pos = glm::vec3(bb.x, aa.y, bb.z);
         m_max = glm::max(m_max, pt0.m_pos);
         m_max = glm::max(m_max, pt1.m_pos);
         m_min = glm::min(m_min, pt0.m_pos);
@@ -198,8 +197,8 @@ namespace gfx
         m_vertex.push_back(pt1);
 
         // back-bottom
-        pt0.m_pos = glm::vec3(min.x, min.y, min.z);
-        pt1.m_pos = glm::vec3(max.x, min.y, min.z);
+        pt0.m_pos = glm::vec3(aa.x, aa.y, aa.z);
+        pt1.m_pos = glm::vec3(bb.x, aa.y, aa.z);
         m_max = glm::max(m_max, pt0.m_pos);
         m_max = glm::max(m_max, pt1.m_pos);
         m_min = glm::min(m_min, pt0.m_pos);
@@ -208,8 +207,8 @@ namespace gfx
         m_vertex.push_back(pt1);
 
         // back-top
-        pt0.m_pos = glm::vec3(min.x, max.y, min.z);
-        pt1.m_pos = glm::vec3(max.x, max.y, min.z);
+        pt0.m_pos = glm::vec3(aa.x, bb.y, aa.z);
+        pt1.m_pos = glm::vec3(bb.x, bb.y, aa.z);
         m_max = glm::max(m_max, pt0.m_pos);
         m_max = glm::max(m_max, pt1.m_pos);
         m_min = glm::min(m_min, pt0.m_pos);
@@ -219,8 +218,8 @@ namespace gfx
 
         // edge perpendicular to plane x-z
         // left-front
-        pt0.m_pos = glm::vec3(min.x, max.y, max.z);
-        pt1.m_pos = glm::vec3(min.x, min.y, max.z);
+        pt0.m_pos = glm::vec3(aa.x, bb.y, bb.z);
+        pt1.m_pos = glm::vec3(aa.x, aa.y, bb.z);
         m_max = glm::max(m_max, pt0.m_pos);
         m_max = glm::max(m_max, pt1.m_pos);
         m_min = glm::min(m_min, pt0.m_pos);
@@ -229,8 +228,8 @@ namespace gfx
         m_vertex.push_back(pt1);
 
         // left-back
-        pt0.m_pos = glm::vec3(min.x, max.y, min.z);
-        pt1.m_pos = glm::vec3(min.x, min.y, min.z);
+        pt0.m_pos = glm::vec3(aa.x, bb.y, aa.z);
+        pt1.m_pos = glm::vec3(aa.x, aa.y, aa.z);
         m_max = glm::max(m_max, pt0.m_pos);
         m_max = glm::max(m_max, pt1.m_pos);
         m_min = glm::min(m_min, pt0.m_pos);
@@ -239,8 +238,8 @@ namespace gfx
         m_vertex.push_back(pt1);
 
         // right-back
-        pt0.m_pos = glm::vec3(max.x, max.y, min.z);
-        pt1.m_pos = glm::vec3(max.x, min.y, min.z);
+        pt0.m_pos = glm::vec3(bb.x, bb.y, aa.z);
+        pt1.m_pos = glm::vec3(bb.x, aa.y, aa.z);
         m_max = glm::max(m_max, pt0.m_pos);
         m_max = glm::max(m_max, pt1.m_pos);
         m_min = glm::min(m_min, pt0.m_pos);
@@ -249,8 +248,8 @@ namespace gfx
         m_vertex.push_back(pt1);
 
         // right-front
-        pt0.m_pos = glm::vec3(max.x, max.y, max.z);
-        pt1.m_pos = glm::vec3(max.x, min.y, max.z);
+        pt0.m_pos = glm::vec3(bb.x, bb.y, bb.z);
+        pt1.m_pos = glm::vec3(bb.x, aa.y, bb.z);
         m_max = glm::max(m_max, pt0.m_pos);
         m_max = glm::max(m_max, pt1.m_pos);
         m_min = glm::min(m_min, pt0.m_pos);
