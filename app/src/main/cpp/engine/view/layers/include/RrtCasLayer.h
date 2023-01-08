@@ -7,7 +7,9 @@
 namespace gfx
 {
     class GfxShader;
+    class BVHBuilder;
     class RrtTriBuf;
+    class RrtBVHBuf;
 }
 
 namespace view
@@ -26,15 +28,16 @@ namespace view
 
     private:
         void drawCall();
-        void initVideoMem();
+        void initCasMem();
 
-        gfx::CasVert m_canvas[4];
-        uint32_t m_casInd[6]{0, 1, 2, 2, 1, 3};
         uint32_t m_vao, m_vbo, m_ebo;
         uint32_t m_bgColor;
 
         std::shared_ptr<gfx::GfxShader> m_shader;
+        std::shared_ptr<gfx::BVHBuilder> m_BVHBuilder;
+
         std::shared_ptr<gfx::RrtTriBuf> m_triBuf;
+        std::shared_ptr<gfx::RrtBVHBuf> m_BVHBuf;
     };
 }
 

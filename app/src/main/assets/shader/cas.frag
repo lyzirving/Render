@@ -6,15 +6,18 @@ out vec4 o_color;
 
 /******************* uniform fields **************************/
 uniform highp samplerBuffer u_triangles;
+uniform highp samplerBuffer u_BVHNodes;
 
 uniform vec4 u_bgColor;
 uniform vec3 u_eysPos;
 uniform int u_triCnt;
+uniform int u_BVHNodeCnt;
 /*************************************************************/
 
 
 /********************** constant *****************************/
 #define TRI_OFFSET      7
+#define BVH_OFFSET      4
 #define PI              3.1415926
 #define INF             114514.0
 /*************************************************************/
@@ -30,6 +33,13 @@ struct Triangle {
     vec3 n0, n1, n2;
     vec3 color;
 };
+struct BVHNode {
+    // firt vec3, x = left, y = right, z is reserved
+    int left, right;
+    // second vec3, x = n, y = start, z is reserved
+    int n, start;
+    vec3 AA, BB;
+};
 struct HitResult {
     bool isHit;
     bool back;
@@ -42,6 +52,7 @@ struct HitResult {
 
 /********************* method declaration ********************/
 Triangle getTri(int i);
+BVHNode getBVHNode(int i);
 Ray genRay();
 HitResult hitTriArray(Ray ray, int l, int r);
 HitResult hitTriangle(Ray ray, Triangle triangle);
@@ -74,6 +85,23 @@ Triangle getTri(int i) {
     t.color = texelFetch(u_triangles, offset + 6).xyz;
 
     return t;
+}
+
+BVHNode getBVHNode(int i) {
+    int offset = i * BVH_OFFSET;
+
+    BVHNode node;
+    vec3 childInfo = texelFetch(u_BVHNodes, offset + 0).xyz;
+    vec3 posInfo = texelFetch(u_BVHNodes, offset + 1).xyz;
+    node.AA = texelFetch(u_BVHNodes, offset + 2).xyz;
+    node.BB = texelFetch(u_BVHNodes, offset + 3).xyz;
+
+    node.left = int(childInfo.x);
+    node.right = int(childInfo.y);
+    node.n = int(posInfo.x);
+    node.start = int(posInfo.y);
+
+    return node;
 }
 
 Ray genRay() {

@@ -39,11 +39,11 @@ namespace gfx
         m_right.reset();
     }
 
-    BVHBuilder::BVHBuilder(const char *name, bool debug) : m_name(name), m_srcPath(), m_triangles(),
-                                                           m_debugFlag(debug), m_debugMesh(),
-                                                           m_debugMax(-INF), m_debugMin(INF),
-                                                           m_debugModelMt(1.f),
-                                                           m_debugMeshId(0)
+    BVHBuilder::BVHBuilder(const char *name, bool adj, bool debug) : m_name(name), m_srcPath(), m_triangles(),
+                                                                     m_adjFlag(adj), m_debugFlag(debug),
+                                                                     m_max(-INF), m_min(INF),
+                                                                     m_debugMesh(),
+                                                                     m_debugModelMt(1.f), m_debugMeshId(0)
     {
         load();
     }
@@ -76,6 +76,24 @@ namespace gfx
         return node;
     }
 
+    void BVHBuilder::buildEncoded(std::vector<RrtBVHNode> &encodeNodes)
+    {
+        if(m_triangles.empty())
+        {
+            LOG_ERR("triangle is empty");
+            return;
+        }
+        if(!encodeNodes.empty())
+        {
+            LOG_DEBUG("out nodes are not empty[%lu], return", encodeNodes.size());
+            return;
+        }
+        LOG_DEBUG("start build BVH[%s]", m_name.c_str());
+        int64_t start = systemTimeMs();
+        buildWithSAH(m_triangles, encodeNodes, 0, m_triangles.size() - 1, 8);
+        LOG_DEBUG("finish build BVH, cost[%.3f]s, node size[%lu]", (systemTimeMs() - start) / 1000.f, encodeNodes.size());
+    }
+
     std::shared_ptr<BVHNode> BVHBuilder::buildWithSAH(std::vector<RrtTriangle> &triangles,
                                                       int l, int r, int limit)
     {
@@ -103,11 +121,102 @@ namespace gfx
             return node;
         }
 
-        float Cost = INF;
-        int Axis = 0;
-        int Split = (l + r) / 2;
+        float cost = INF;
+        int axis = 0;
+        int split = (l + r) / 2;
 
-        // iterate each axis
+        lowestCostSAH(triangles, l, r, cost, axis, split);
+
+        // sort by the axis with the lowest cost
+        if(axis == 0) std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpX);
+        if(axis == 1) std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpY);
+        if(axis == 2) std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpZ);
+
+        node->m_left = buildWithSAH(triangles, l, split, limit);
+        node->m_right = buildWithSAH(triangles, split + 1, r, limit);
+
+        return node;
+    }
+
+    int BVHBuilder::buildWithSAH(std::vector<RrtTriangle> &triangles,
+                                 std::vector<RrtBVHNode> &outNodes, int l, int r, int limit)
+    {
+        if (l > r)
+        {
+            LOG_DEBUG("left[%d] is larger than right[%d]", l, r);
+            return -1;
+        }
+
+        // insert a default node
+        outNodes.emplace_back();
+        int id = outNodes.size() - 1;
+        RrtBVHNode &node = outNodes[id];
+
+        node.AA = glm::vec3(INF);
+        node.BB = glm::vec3(-INF);
+
+        // find AABB
+        for (int i = l; i <= r; ++i) {
+            RrtTriangle& item = triangles[i];
+            glm::vec3 min = glm::min(item.p0, glm::min(item.p1, item.p2));
+            glm::vec3 max = glm::max(item.p0, glm::max(item.p1, item.p2));
+            node.AA = glm::min(node.AA, min);
+            node.BB = glm::max(node.BB, max);
+        }
+
+        //  leaf node
+        if((r - l + 1) <= limit)
+        {
+            node.posInfo.x = r - l + 1;
+            node.posInfo.y = l;
+            return id;
+        }
+
+        float cost = INF;
+        int axis = 0;
+        int split = (l + r) / 2;
+
+        lowestCostSAH(triangles, l, r, cost, axis, split);
+
+        // sort by the axis with the lowest cost
+        if(axis == 0) std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpX);
+        if(axis == 1) std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpY);
+        if(axis == 2) std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpZ);
+
+        node.childInfo.x = buildWithSAH(triangles, outNodes, l, split, limit);
+        node.childInfo.y = buildWithSAH(triangles, outNodes, split + 1, r, limit);
+
+        return id;
+    }
+
+    bool BVHBuilder::cmpX(const RrtTriangle &lhs, const RrtTriangle &rhs)
+    {
+        glm::vec3 lhsCenter = (lhs.p0 + lhs.p1 + lhs.p2) / 3.f;
+        glm::vec3 rhsCenter = (rhs.p0 + rhs.p1 + rhs.p2) / 3.f;
+        return lhsCenter.x < rhsCenter.x;
+    }
+
+    bool BVHBuilder::cmpY(const RrtTriangle &lhs, const RrtTriangle &rhs)
+    {
+        glm::vec3 lhsCenter = (lhs.p0 + lhs.p1 + lhs.p2) / 3.f;
+        glm::vec3 rhsCenter = (rhs.p0 + rhs.p1 + rhs.p2) / 3.f;
+        return lhsCenter.y < rhsCenter.y;
+    }
+
+    bool BVHBuilder::cmpZ(const RrtTriangle &lhs, const RrtTriangle &rhs)
+    {
+        glm::vec3 lhsCenter = (lhs.p0 + lhs.p1 + lhs.p2) / 3.f;
+        glm::vec3 rhsCenter = (rhs.p0 + rhs.p1 + rhs.p2) / 3.f;
+        return lhsCenter.z < rhsCenter.z;
+    }
+
+    void BVHBuilder::getTriangles(std::vector<RrtTriangle> &out)
+    {
+        out.assign(m_triangles.begin(), m_triangles.end());
+    }
+
+    void BVHBuilder::lowestCostSAH(std::vector<RrtTriangle> &triangles, int l, int r, float &lowCost, int &lowAxis, int &lowSplit)
+    {
         for (int axisInd = 0; axisInd < 3; ++axisInd)
         {
             // sort the triangles by certain axis
@@ -143,13 +252,13 @@ namespace gfx
             for (int i = l; i <= r - 1; ++i)
             {
                 // left side[l, i]
-               glm::vec3 leftAA = leftMin[i - l];
-               glm::vec3 leftBB = leftMax[i - l];
-               glm::vec3 diff = leftBB - leftAA;
-               float leftArea = 2 * (diff.x * diff.y + diff.x * diff.z + diff.y * diff.z);
-               float leftCost = leftArea * float(i - l + 1);
+                glm::vec3 leftAA = leftMin[i - l];
+                glm::vec3 leftBB = leftMax[i - l];
+                glm::vec3 diff = leftBB - leftAA;
+                float leftArea = 2 * (diff.x * diff.y + diff.x * diff.z + diff.y * diff.z);
+                float leftCost = leftArea * float(i - l + 1);
 
-               // right side[i + 1, r]
+                // right side[i + 1, r]
                 glm::vec3 rightAA = rightMin[i - l + 1];
                 glm::vec3 rightBB = rightMax[i - l + 1];
                 diff = rightBB - rightAA;
@@ -164,44 +273,13 @@ namespace gfx
                 }
             }
 
-            if(cost < Cost)
+            if(cost < lowCost)
             {
-                Cost = cost;
-                Split = split;
-                Axis = axisInd;
+                lowCost = cost;
+                lowSplit = split;
+                lowAxis = axisInd;
             }
         }
-
-        // sort by the axis with the lowest cost
-        if(Axis == 0) std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpX);
-        if(Axis == 1) std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpY);
-        if(Axis == 2) std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpZ);
-
-        node->m_left = buildWithSAH(triangles, l, Split, limit);
-        node->m_right = buildWithSAH(triangles, Split + 1, r, limit);
-
-        return node;
-    }
-
-    bool BVHBuilder::cmpX(const RrtTriangle &lhs, const RrtTriangle &rhs)
-    {
-        glm::vec3 lhsCenter = (lhs.p0 + lhs.p1 + lhs.p2) / 3.f;
-        glm::vec3 rhsCenter = (rhs.p0 + rhs.p1 + rhs.p2) / 3.f;
-        return lhsCenter.x < rhsCenter.x;
-    }
-
-    bool BVHBuilder::cmpY(const RrtTriangle &lhs, const RrtTriangle &rhs)
-    {
-        glm::vec3 lhsCenter = (lhs.p0 + lhs.p1 + lhs.p2) / 3.f;
-        glm::vec3 rhsCenter = (rhs.p0 + rhs.p1 + rhs.p2) / 3.f;
-        return lhsCenter.y < rhsCenter.y;
-    }
-
-    bool BVHBuilder::cmpZ(const RrtTriangle &lhs, const RrtTriangle &rhs)
-    {
-        glm::vec3 lhsCenter = (lhs.p0 + lhs.p1 + lhs.p2) / 3.f;
-        glm::vec3 rhsCenter = (rhs.p0 + rhs.p1 + rhs.p2) / 3.f;
-        return lhsCenter.z < rhsCenter.z;
     }
 
     void BVHBuilder::load()
@@ -220,7 +298,7 @@ namespace gfx
         }
         LOG_DEBUG("load from[%s], begin to parse", m_srcPath.c_str());
         processNode(scene->mRootNode, scene);
-        adjDebugMesh();
+        adjust();
         LOG_DEBUG("finish parsing, rrt triangle size[%lu]", m_triangles.size());
     }
 
@@ -264,6 +342,8 @@ namespace gfx
             tri.p0.x = aiVert.x;
             tri.p0.y = aiVert.y;
             tri.p0.z = aiVert.z;
+            m_max = glm::max(m_max, tri.p0);
+            m_min = glm::min(m_min, tri.p0);
             if (normalExist)
             {
                 aiNormal = mesh->mNormals[face.mIndices[0]];
@@ -276,6 +356,8 @@ namespace gfx
             tri.p1.x = aiVert.x;
             tri.p1.y = aiVert.y;
             tri.p1.z = aiVert.z;
+            m_max = glm::max(m_max, tri.p1);
+            m_min = glm::min(m_min, tri.p1);
             if(normalExist)
             {
                 aiNormal = mesh->mNormals[face.mIndices[1]];
@@ -288,6 +370,8 @@ namespace gfx
             tri.p2.x = aiVert.x;
             tri.p2.y = aiVert.y;
             tri.p2.z = aiVert.z;
+            m_max = glm::max(m_max, tri.p2);
+            m_min = glm::min(m_min, tri.p2);
             if(normalExist)
             {
                 aiNormal = mesh->mNormals[face.mIndices[2]];
@@ -302,17 +386,32 @@ namespace gfx
         dealDebugMesh(mesh, scene);
     }
 
-    void BVHBuilder::adjDebugMesh()
+    void BVHBuilder::adjust()
     {
+        glm::vec3 center = (m_max + m_min) * 0.5f;
+        glm::vec3 interval = m_max - m_min;
+        float scale = 2.f / std::max(std::max(interval.x, interval.y), interval.z);
+
+        if(m_adjFlag)
+        {
+            for (RrtTriangle &item : m_triangles)
+            {
+                item.p0 -= center;
+                item.p0 *= scale;
+
+                item.p1 -= center;
+                item.p1 *= scale;
+
+                item.p2 -= center;
+                item.p2 *= scale;
+            }
+        }
+
         if (m_debugFlag)
         {
             glm::mat4 mtTrans{1.f}, mtScale{1.f};
 
-            glm::vec3 center = (m_debugMax + m_debugMin) * 0.5f;
             mtTrans = glm::translate(mtTrans, -center);
-
-            glm::vec3 interval = m_debugMax - m_debugMin;
-            float scale = 2.f / std::max(std::max(interval.x, interval.y), interval.z);
             mtScale = glm::scale(mtScale, glm::vec3(scale));
 
             m_debugModelMt = mtScale * mtTrans;
@@ -356,8 +455,6 @@ namespace gfx
                 Vertex vert{};
                 aiVector3D aiVert = mesh->mVertices[i];
                 vert.m_pos = glm::vec3(aiVert.x, aiVert.y, aiVert.z);
-                m_debugMax = glm::max(m_debugMax, vert.m_pos);
-                m_debugMin = glm::min(m_debugMin, vert.m_pos);
 
                 vertList.push_back(vert);
             }

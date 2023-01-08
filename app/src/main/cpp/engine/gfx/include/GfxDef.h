@@ -18,6 +18,7 @@ namespace gfx
     static const std::string U_BG_COLOR  = std::string("u_bgColor");
     static const std::string U_EYS_POS   = std::string("u_eysPos");
     static const std::string U_TRI_CNT   = std::string("u_triCnt");
+    static const std::string U_BVH_CNT   = std::string("u_BVHNodeCnt");
 
     enum ShaderType : uint8_t
     {

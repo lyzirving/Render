@@ -19,6 +19,7 @@ namespace gfx
 {
     class GfxMesh;
     struct RrtTriangle;
+    struct RrtBVHNode;
 
     class BVHNode
     {
@@ -45,12 +46,14 @@ namespace gfx
     class BVHBuilder
     {
     public:
-        BVHBuilder(const char *name, bool debug = false);
+        BVHBuilder(const char *name, bool adj = false, bool debug = false);
 
         virtual ~BVHBuilder();
 
         std::shared_ptr<BVHNode> build();
+        void buildEncoded(std::vector<RrtBVHNode> &encodeNodes);
         void drawDebug(const std::shared_ptr<view::ViewConv> &conv);
+        void getTriangles(std::vector<RrtTriangle> &out);
 
     protected:
         void load();
@@ -60,19 +63,23 @@ namespace gfx
         std::string m_name;
         std::string m_srcPath;
         std::vector<RrtTriangle> m_triangles;
-        bool m_debugFlag;
+        bool m_adjFlag, m_debugFlag;
+        glm::vec3 m_max, m_min;
 
     private:
         static std::shared_ptr<BVHNode> buildWithSAH(std::vector<RrtTriangle> &triangles, int l, int r, int limit);
+        static int buildWithSAH(std::vector<RrtTriangle> &triangles, std::vector<RrtBVHNode> &outNodes,
+                                int l, int r, int limit);
         static bool cmpX(const RrtTriangle &lhs, const RrtTriangle &rhs);
         static bool cmpY(const RrtTriangle &lhs, const RrtTriangle &rhs);
         static bool cmpZ(const RrtTriangle &lhs, const RrtTriangle &rhs);
+        static void lowestCostSAH(std::vector<RrtTriangle> &triangles, int l, int r, float &lowCost,
+                                  int &lowAxis, int &lowSplit);
 
-        void adjDebugMesh();
+        void adjust();
         void dealDebugMesh(aiMesh *mesh, const aiScene *scene);
 
         std::vector<std::shared_ptr<GfxMesh>> m_debugMesh;
-        glm::vec3 m_debugMax, m_debugMin;
         glm::mat4 m_debugModelMt;
         uint32_t m_debugMeshId;
     };

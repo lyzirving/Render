@@ -29,6 +29,7 @@ namespace gfx
         if (!input.empty())
         {
             m_triangles.assign(input.begin(), input.end());
+            LOG_DEBUG("triangle size[%lu]", m_triangles.size());
 
             initBuf();
 

@@ -37,7 +37,8 @@ namespace view
 
     void BVHLayer::createItems()
     {
-        m_builder = std::make_shared<BVHBuilder>("StanfordBunny", true);
+        // todo build a model manager to load model in a single work thread
+        m_builder = std::make_shared<BVHBuilder>("StanfordBunny", false, true);
         m_node = m_builder->build();
         int64_t start = systemTimeMs();
         m_box->getBVHBound(m_node);
