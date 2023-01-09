@@ -31,11 +31,22 @@
         android:enabled="false" />
 
     <Button
-        android:id="@+id/btn_ray_trace"
+        android:id="@+id/btn_hit_aabb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@+id/btn_bvh"
         app:layout_constraintTop_toTopOf="@+id/btn_bvh"
+        android:layout_marginStart="5dp"
+        android:textAllCaps="false"
+        android:text="hit aabb"
+        android:enabled="false" />
+
+    <Button
+        android:id="@+id/btn_ray_trace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/btn_hit_aabb"
+        app:layout_constraintTop_toTopOf="@+id/btn_hit_aabb"
         android:layout_marginStart="5dp"
         android:textAllCaps="false"
         android:text="ray trace"

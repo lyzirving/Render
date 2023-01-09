@@ -14,6 +14,7 @@ import android.os.Message;
 import android.view.View;
 
 import com.lau.render.ui.BVHActivity;
+import com.lau.render.ui.HitAABBActivity;
 import com.lau.render.ui.RayTraceActivity;
 import com.lau.render.ui.ShadowActivity;
 import com.lau.render.utils.AssetsManager;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_shadow).setOnClickListener(this);
         findViewById(R.id.btn_ray_trace).setOnClickListener(this);
         findViewById(R.id.btn_bvh).setOnClickListener(this);
+        findViewById(R.id.btn_hit_aabb).setOnClickListener(this);
 
         requestUserPermission(CODE_REQUEST_READ_WRITE_PERMISSION);
     }
@@ -106,6 +108,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             case R.id.btn_ray_trace: {
                 startActivity(RayTraceActivity.class);
+                break;
+            }
+            case R.id.btn_hit_aabb: {
+                startActivity(HitAABBActivity.class);
                 break;
             }
             default: {
@@ -152,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_shadow).setEnabled(enable);
         findViewById(R.id.btn_bvh).setEnabled(enable);
         findViewById(R.id.btn_ray_trace).setEnabled(enable);
+        findViewById(R.id.btn_hit_aabb).setEnabled(enable);
     }
 
     private void startActivity(Class<?> activityClass) {

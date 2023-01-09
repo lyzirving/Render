@@ -28,6 +28,8 @@
 
         <activity android:name=".ui.BVHActivity" android:launchMode="singleTask" />
 
+        <activity android:name=".ui.HitAABBActivity" android:launchMode="singleTask" />
+
     </application>
 
 </manifest>
