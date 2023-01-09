@@ -10,8 +10,19 @@
  */
 
 #include <cmath>
+#include <glm/glm.hpp>
 
-#include "glm/glm.hpp"
+#include "LogUtil.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "GfxLib"
+
+#define LIB_LOG_D(format, ...)  __android_log_print(ANDROID_LOG_DEBUG,                \
+                                                     LIB_TAG, "[%s][%s] " format,     \
+                                                     LOCAL_TAG, __FUNCTION__,         \
+                                                     ##__VA_ARGS__)
 
 namespace gfx
 {
@@ -141,6 +152,43 @@ namespace gfx
                 // vecA is on the left side of vecB
                 return 360.f - absAngle;
             }
+        }
+
+        float hitAABB(const glm::vec2 &start, const glm::vec2 &dir, const glm::vec2 &AA, const glm::vec2 &BB)
+        {
+            float dist = -1.f;
+            if(std::abs(dir.x) < 0.000001f || std::abs(dir.y) < 0.000001f)
+            {
+                LIB_LOG_D("no intersection, input dir[%f, %f] is parallel to axis", dir.x, dir.y);
+                return dist;
+            }
+            glm::vec2 invDir = 1.f / dir;
+            glm::vec2 far = (BB - start) * invDir;
+            glm::vec2 near = (AA - start) * invDir;
+
+            glm::vec2 tMax = glm::max(far, near);
+            glm::vec2 tMin = glm::min(far, near);
+
+
+            float t1 = std::max(tMax.x, tMax.y);
+            float t0 = std::min(tMin.x, tMin.y);
+            if(t0 < t1)
+            {
+                if(t0 > 0.f)
+                {
+                    LIB_LOG_D("intersected, dist[%f]", t0);
+                    dist = t0;
+                }
+                else
+                {
+                    LIB_LOG_D("unknown result, t0[%.5f] < t1[%.5f], but t0 < 0.0", t0, t1);
+                }
+            }
+            else
+            {
+                LIB_LOG_D("no intersection, t0[%.5f] >= t1[%.5f]", t0, t1);
+            }
+            return dist;
         }
     }
 
