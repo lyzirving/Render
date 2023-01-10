@@ -223,8 +223,8 @@ namespace gfx
             glm::vec3 tMax = glm::max(far, near);
             glm::vec3 tMin = glm::min(far, near);
 
-            float t1 = std::min(tMax.x, tMax.y, tMax.z);
-            float t0 = std::max(tMin.x, tMin.y, tMin.z);
+            float t1 = std::min(tMax.x, std::min(tMax.y, tMax.z));
+            float t0 = std::max(tMin.x, std::max(tMin.y, tMin.z));
 
             if(t0 < t1 && t0 > 0.f)
             {
