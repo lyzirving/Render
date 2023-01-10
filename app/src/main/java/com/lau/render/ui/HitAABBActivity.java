@@ -25,6 +25,10 @@ public class HitAABBActivity extends AppCompatActivity implements RadioGroup.OnC
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         switch (checkedId) {
+            case R.id.radio_clear: {
+                mHitAABBView.setMode(HitAABBView.ACT_CLEAR);
+                break;
+            }
             case R.id.radio_set_bound: {
                 mHitAABBView.setMode(HitAABBView.ACT_BOUND);
                 break;
@@ -33,8 +37,8 @@ public class HitAABBActivity extends AppCompatActivity implements RadioGroup.OnC
                 mHitAABBView.setMode(HitAABBView.ACT_RAY_ANCHOR);
                 break;
             }
-            case R.id.radio_set_dir: {
-                mHitAABBView.setMode(HitAABBView.ACT_RAY_DIR);
+            case R.id.radio_set_end: {
+                mHitAABBView.setMode(HitAABBView.ACT_RAY_END);
                 break;
             }
             default: {

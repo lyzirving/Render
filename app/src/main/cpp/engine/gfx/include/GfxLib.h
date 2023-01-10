@@ -154,9 +154,12 @@ namespace gfx
             }
         }
 
-        float hitAABB(const glm::vec2 &start, const glm::vec2 &dir, const glm::vec2 &AA, const glm::vec2 &BB)
+        //todo the algorithm needs to be fixed
+        float hitAABB(const glm::vec2 &start, const glm::vec2 &end, const glm::vec2 &AA, const glm::vec2 &BB)
         {
             float dist = -1.f;
+            glm::vec2 dir{end.x - start.x, end.y - start.y};
+            dir = glm::normalize(dir);
             if(std::abs(dir.x) < 0.000001f || std::abs(dir.y) < 0.000001f)
             {
                 LIB_LOG_D("no intersection, input dir[%f, %f] is parallel to axis", dir.x, dir.y);

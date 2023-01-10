@@ -19,6 +19,13 @@
         android:orientation="horizontal">
 
         <RadioButton
+            android:id="@+id/radio_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="clear"/>
+
+        <RadioButton
             android:id="@+id/radio_set_bound"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,11 +41,11 @@
             android:text="set anchor"/>
 
         <RadioButton
-            android:id="@+id/radio_set_dir"
+            android:id="@+id/radio_set_end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAllCaps="false"
-            android:text="set direction"/>
+            android:text="set end"/>
 
     </RadioGroup>
 

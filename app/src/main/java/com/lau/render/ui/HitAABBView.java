@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import com.lau.render.utils.GfxUtil;
 import com.lau.render.utils.LogUtil;
 
 import java.lang.annotation.Retention;
@@ -21,18 +22,20 @@ public class HitAABBView extends View {
     private static final String TAG = "HitAABBView";
     private static final float INVALID = -1.f;
 
-    public static final int ACT_BOUND      = 0;
-    public static final int ACT_RAY_ANCHOR = 1;
-    public static final int ACT_RAY_DIR    = 2;
+    public static final int ACT_CLEAR      = 0;
+    public static final int ACT_BOUND      = 1;
+    public static final int ACT_RAY_ANCHOR = 2;
+    public static final int ACT_RAY_END    = 3;
+    public static final int ACT_COUNT      = 4;
 
-    @IntDef({ACT_BOUND, ACT_RAY_ANCHOR, ACT_RAY_DIR})
+    @IntDef({ACT_CLEAR, ACT_BOUND, ACT_RAY_ANCHOR, ACT_RAY_END, ACT_COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActMode {}
 
     private @ActMode int mMode;
 
     private PointF mAA, mBB;
-    private PointF mStart, mDir;
+    private PointF mStart, mEnd;
     private Paint mPaint;
 
     public HitAABBView(Context context) {
@@ -49,7 +52,7 @@ public class HitAABBView extends View {
         mAA = new PointF(INVALID, INVALID);
         mBB = new PointF(INVALID, INVALID);
         mStart = new PointF(INVALID, INVALID);
-        mDir = new PointF(INVALID, INVALID);
+        mEnd = new PointF(INVALID, INVALID);
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.STROKE);
     }
@@ -73,16 +76,20 @@ public class HitAABBView extends View {
             canvas.drawPoint(mBB.x, mBB.y, mPaint);
         }
 
-        if(isValid(mStart) && isValid(mDir)) {
+        if(isValid(mStart) && isValid(mEnd)) {
             mPaint.setColor(Color.parseColor("#FF0000FF"));
             mPaint.setStrokeWidth(10.f);
-            canvas.drawLine(mStart.x, mStart.y, mDir.x, mDir.y, mPaint);
+            canvas.drawLine(mStart.x, mStart.y, mEnd.x, mEnd.y, mPaint);
         }
 
         if(isValid(mStart)) {
             mPaint.setColor(Color.parseColor("#FF00FF00"));
             mPaint.setStrokeWidth(15.f);
             canvas.drawPoint(mStart.x, mStart.y, mPaint);
+        }
+
+        if(isValid(mAA) && isValid(mBB) && isValid(mStart) && isValid(mEnd)) {
+            GfxUtil.hitAABB(mStart, mEnd, mAA, mBB, getMeasuredWidth(), getMeasuredHeight());
         }
 
     }
@@ -101,8 +108,8 @@ public class HitAABBView extends View {
                     invalidate();
                     break;
                 }
-                case ACT_RAY_DIR: {
-                    setDir(event.getX(), event.getY());
+                case ACT_RAY_END: {
+                    setEnd(event.getX(), event.getY());
                     invalidate();
                     break;
                 }
@@ -115,34 +122,22 @@ public class HitAABBView extends View {
     }
 
     public void setMode(@ActMode int mode) {
-        if(mode != ACT_BOUND && mode != ACT_RAY_ANCHOR && mode != ACT_RAY_DIR) {
+        if(mode >= ACT_COUNT) {
             LogUtil.d(TAG, "setMode: invalid mode = " + mode);
             return;
         }
         mMode = mode;
-        switch (mMode) {
-            case ACT_BOUND: {
-                mAA.x = INVALID;
-                mAA.y = INVALID;
-                mBB.x = INVALID;
-                mBB.y = INVALID;
-                break;
-            }
-            case ACT_RAY_ANCHOR: {
-                mStart.x = INVALID;
-                mStart.y = INVALID;
-                break;
-            }
-            case ACT_RAY_DIR: {
-                mDir.x = INVALID;
-                mDir.y = INVALID;
-                break;
-            }
-            default: {
-                break;
-            }
+        if (mMode == ACT_CLEAR) {
+            mAA.x = INVALID;
+            mAA.y = INVALID;
+            mBB.x = INVALID;
+            mBB.y = INVALID;
+            mStart.x = INVALID;
+            mStart.y = INVALID;
+            mEnd.x = INVALID;
+            mEnd.y = INVALID;
+            invalidate();
         }
-        invalidate();
     }
 
     private void setBound(float x, float y) {
@@ -163,13 +158,18 @@ public class HitAABBView extends View {
     private void setAnchor(float x, float y) {
         mStart.x = x;
         mStart.y = y;
-        mDir.x = INVALID;
-        mDir.y = INVALID;
+        mEnd.x = INVALID;
+        mEnd.y = INVALID;
     }
 
-    private void setDir(float x, float y) {
-        mDir.x = x;
-        mDir.y = y;
+    private void setEnd(float x, float y) {
+        if(mStart.x < 0.f || mStart.y < 0.f) {
+            mStart.x = x;
+            mStart.y = y;
+        } else {
+            mEnd.x = x;
+            mEnd.y = y;
+        }
     }
 
     private boolean isValid(PointF pt) {

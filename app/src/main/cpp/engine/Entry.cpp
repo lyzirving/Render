@@ -47,16 +47,16 @@ static void nativeTestInterface(JNIEnv *env, jclass clazz, jint id)
     gre::PROXY_testInterface(id);
 }
 
-static jboolean nativeHitAABB(JNIEnv *env, jclass clazz, jfloatArray jStart, jfloatArray jDir, jfloatArray jAABB)
+static jboolean nativeHitAABB(JNIEnv *env, jclass clazz, jfloatArray jStart, jfloatArray jEnd, jfloatArray jAABB)
 {
     if(env->GetArrayLength(jStart) != 2 || !jStart)
     {
         LOG_ERR("start float array's length is not 2 or ptr is null[%s]", !jStart ? "true" : "false");
         assert(0);
     }
-    if(env->GetArrayLength(jDir) != 2 || !jDir)
+    if(env->GetArrayLength(jEnd) != 2 || !jEnd)
     {
-        LOG_ERR("dir float array's length is not 2 or ptr is null[%s]", !jDir ? "true" : "false");
+        LOG_ERR("end float array's length is not 2 or ptr is null[%s]", !jEnd ? "true" : "false");
         assert(0);
     }
     if(env->GetArrayLength(jAABB) != 4 || !jAABB)
@@ -65,15 +65,18 @@ static jboolean nativeHitAABB(JNIEnv *env, jclass clazz, jfloatArray jStart, jfl
         assert(0);
     }
     jfloat *start = env->GetFloatArrayElements(jStart, nullptr);
-    jfloat *dir = env->GetFloatArrayElements(jDir, nullptr);
+    jfloat *end = env->GetFloatArrayElements(jEnd, nullptr);
     jfloat *aabb = env->GetFloatArrayElements(jAABB, nullptr);
 
     glm::vec2 s{start[0], start[1]};
-    glm::vec2 d{dir[0], dir[1]};
+    glm::vec2 e{end[0], end[1]};
     glm::vec2 aa{aabb[0], aabb[1]};
     glm::vec2 bb{aabb[2], aabb[3]};
 
-    float dist = gfx::gfx2d::hitAABB(s, d, aa, bb);
+    LOG_DEBUG("start[%.5f, %.5f], end[%.5f, %.5f], aa[%.5f, %.5f], bb[%.5f, %.5f]",
+              s.x, s.y, e.x, e.y, aa.x, aa.y, bb.x, bb.y);
+
+    float dist = gfx::gfx2d::hitAABB(s, e, aa, bb);
 
     return dist > 0.f;
 }
