@@ -1,12 +1,39 @@
 package com.lau.render.ui;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import com.lau.render.utils.LogUtil;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 public class HitAABBView extends View {
+    private static final String TAG = "HitAABBView";
+    private static final float INVALID = -1.f;
+
+    public static final int ACT_BOUND      = 0;
+    public static final int ACT_RAY_ANCHOR = 1;
+    public static final int ACT_RAY_DIR    = 2;
+
+    @IntDef({ACT_BOUND, ACT_RAY_ANCHOR, ACT_RAY_DIR})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActMode {}
+
+    private @ActMode int mMode;
+
+    private PointF mAA, mBB;
+    private PointF mStart, mDir;
+    private Paint mPaint;
 
     public HitAABBView(Context context) {
         this(context, null);
@@ -18,5 +45,134 @@ public class HitAABBView extends View {
 
     public HitAABBView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mMode = ACT_BOUND;
+        mAA = new PointF(INVALID, INVALID);
+        mBB = new PointF(INVALID, INVALID);
+        mStart = new PointF(INVALID, INVALID);
+        mDir = new PointF(INVALID, INVALID);
+        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mPaint.setStyle(Paint.Style.STROKE);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if(isValid(mAA) && isValid(mBB)) {
+            mPaint.setColor(Color.parseColor("#FFFF0000"));
+            mPaint.setStrokeWidth(10.f);
+            canvas.drawRect(mAA.x, mAA.y, mBB.x, mBB.y, mPaint);
+        }
+        if(isValid(mAA)) {
+            mPaint.setColor(Color.parseColor("#FF000000"));
+            mPaint.setStrokeWidth(15.f);
+            canvas.drawPoint(mAA.x, mAA.y, mPaint);
+        }
+        if(isValid(mBB)) {
+            mPaint.setColor(Color.parseColor("#FF000000"));
+            mPaint.setStrokeWidth(15.f);
+            canvas.drawPoint(mBB.x, mBB.y, mPaint);
+        }
+
+        if(isValid(mStart) && isValid(mDir)) {
+            mPaint.setColor(Color.parseColor("#FF0000FF"));
+            mPaint.setStrokeWidth(10.f);
+            canvas.drawLine(mStart.x, mStart.y, mDir.x, mDir.y, mPaint);
+        }
+
+        if(isValid(mStart)) {
+            mPaint.setColor(Color.parseColor("#FF00FF00"));
+            mPaint.setStrokeWidth(15.f);
+            canvas.drawPoint(mStart.x, mStart.y, mPaint);
+        }
+
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            switch (mMode) {
+                case ACT_BOUND: {
+                    setBound(event.getX(), event.getY());
+                    invalidate();
+                    break;
+                }
+                case ACT_RAY_ANCHOR: {
+                    setAnchor(event.getX(), event.getY());
+                    invalidate();
+                    break;
+                }
+                case ACT_RAY_DIR: {
+                    setDir(event.getX(), event.getY());
+                    invalidate();
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void setMode(@ActMode int mode) {
+        if(mode != ACT_BOUND && mode != ACT_RAY_ANCHOR && mode != ACT_RAY_DIR) {
+            LogUtil.d(TAG, "setMode: invalid mode = " + mode);
+            return;
+        }
+        mMode = mode;
+        switch (mMode) {
+            case ACT_BOUND: {
+                mAA.x = INVALID;
+                mAA.y = INVALID;
+                mBB.x = INVALID;
+                mBB.y = INVALID;
+                break;
+            }
+            case ACT_RAY_ANCHOR: {
+                mStart.x = INVALID;
+                mStart.y = INVALID;
+                break;
+            }
+            case ACT_RAY_DIR: {
+                mDir.x = INVALID;
+                mDir.y = INVALID;
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+        invalidate();
+    }
+
+    private void setBound(float x, float y) {
+        if (mAA.x < 0.f || mAA.y < 0.f) {
+            mAA.x = x;
+            mAA.y = y;
+        } else if (mBB.x < 0.f || mBB.y < 0.f) {
+            mBB.x = x;
+            mBB.y = y;
+        } else {
+            mAA.x = x;
+            mAA.y = y;
+            mBB.x = INVALID;
+            mBB.y = INVALID;
+        }
+    }
+
+    private void setAnchor(float x, float y) {
+        mStart.x = x;
+        mStart.y = y;
+        mDir.x = INVALID;
+        mDir.y = INVALID;
+    }
+
+    private void setDir(float x, float y) {
+        mDir.x = x;
+        mDir.y = y;
+    }
+
+    private boolean isValid(PointF pt) {
+        return pt != null && pt.x >= 0.f && pt.y >= 0.f;
     }
 }

@@ -7,6 +7,39 @@
     <com.lau.render.ui.HitAABBView
         android:id="@+id/view_hit_aabb"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="5dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_set_bound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:checked="true"
+            android:text="set bound"/>
+
+        <RadioButton
+            android:id="@+id/radio_set_anchor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="set anchor"/>
+
+        <RadioButton
+            android:id="@+id/radio_set_dir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="set direction"/>
+
+    </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
