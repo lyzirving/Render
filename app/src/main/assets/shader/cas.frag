@@ -56,13 +56,15 @@ BVHNode getBVHNode(int i);
 Ray genRay();
 HitResult hitTriArray(Ray ray, int l, int r);
 HitResult hitTriangle(Ray ray, Triangle triangle);
+float hitAABB(Ray ray, vec3 AA, vec3 BB);
+HitResult hitBVH(Ray ray);
 /*************************************************************/
 
 
 /*********************** implementation **********************/
 void main() {
     Ray ray = genRay();
-    HitResult hit = hitTriArray(ray, 0, u_triCnt - 1);
+    HitResult hit = hitBVH(ray);
     if(hit.isHit) {
         o_color = vec4(hit.color.x, hit.color.y, hit.color.z, 1.f);
     } else {
@@ -179,6 +181,79 @@ HitResult hitTriangle(Ray ray, Triangle triangle) {
     }
 
     return res;
+}
+
+float hitAABB(Ray ray, vec3 AA, vec3 BB) {
+    vec3 dir = ray.dir;
+    if(abs(dir.x) < 0.000001 || abs(dir.y) < 0.000001 || abs(dir.z) < 0.000001) { return -1.f; }
+
+    vec3 invDir = 1.f / dir;
+    vec3 far = (BB - ray.start) * invDir;
+    vec3 near = (AA - ray.start) * invDir;
+
+    vec3 tMax = max(far, near);
+    vec3 tMin = min(far, near);
+
+    float t1 = min(tMax.x, min(tMax.y, tMax.z));
+    float t0 = max(tMin.x, max(tMin.y, tMin.z));
+
+    if(t0 < t1 && t0 > 0.f) {
+        return t0;
+    } else {
+        return -1.f;
+    }
+}
+
+HitResult hitBVH(Ray ray) {
+    HitResult result;
+    result.isHit = false;
+    result.distance = INF;
+
+    int stack[256];
+    int sp = 0;
+    // root node's index is 0
+    stack[sp++] = 0;
+
+    while(sp > 0) {
+        int index = stack[--sp];
+        BVHNode node = getBVHNode(index);
+
+        // leaf node
+        if(node.n > 0) {
+            HitResult r = hitTriArray(ray, node.start, node.start + node.n - 1);
+            if(r.isHit && r.distance < result.distance) { result = r; }
+            continue;
+        }
+
+        float d1 = INF;
+        float d2 = INF;
+        if(node.left > 0) {
+            BVHNode leftChild = getBVHNode(node.left);
+            d1 = hitAABB(ray, leftChild.AA, leftChild.BB);
+        }
+        if(node.right > 0) {
+            BVHNode rightChild = getBVHNode(node.right);
+            d2 = hitAABB(ray, rightChild.AA, rightChild.BB);
+        }
+
+        if(d1 > 0.f && d2 > 0.f) {
+            if(d1 < d2) {
+                // left should be polled out of stack firstly
+                stack[sp++] = node.right;
+                stack[sp++] = node.left;
+            } else {
+                // right should be polled out of stack firstly
+                stack[sp++] = node.left;
+                stack[sp++] = node.right;
+            }
+        } else if(d1 > 0.f) {
+            stack[sp++] = node.left;
+        } else if(d2 > 0.f) {
+            stack[sp++] = node.right;
+        }
+    }// stack over
+
+    return result;
 }
 
 /*************************************************************/

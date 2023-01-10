@@ -102,7 +102,7 @@ namespace view
         // if iteration count is out of driver's limit, gpu will recognize it as dead lock, and crash the application.
         m_shader->use(true);
         m_triBuf->bind(m_shader, 0);
-        m_shader->setInt(U_TRI_CNT, /*m_triBuf->triangleCnt()*/20);
+        m_shader->setInt(U_TRI_CNT, m_triBuf->triangleCnt());
 
         m_BVHBuf->bind(m_shader, 1);
         m_shader->setInt(U_BVH_CNT, m_BVHBuf->nodesCnt());

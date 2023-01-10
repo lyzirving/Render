@@ -7,6 +7,7 @@ project("render")
 include_directories(${CMAKE_SOURCE_DIR}/third/include)
 include_directories(${CMAKE_SOURCE_DIR}/common/include)
 include_directories(${CMAKE_SOURCE_DIR}/common/tools/include)
+include_directories(${CMAKE_SOURCE_DIR}/engine/debug/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gre/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gre/fw/include)
 include_directories(${CMAKE_SOURCE_DIR}/engine/gre/render/include)
@@ -25,6 +26,7 @@ include_directories(${CMAKE_SOURCE_DIR}/engine/view/include)
 aux_source_directory(${CMAKE_SOURCE_DIR}/common SRC_COMMON)
 aux_source_directory(${CMAKE_SOURCE_DIR}/common/tools SRC_TOOLS)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine SRC_ENGINE)
+aux_source_directory(${CMAKE_SOURCE_DIR}/engine/debug SRC_DEBUG)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gre SRC_GRE)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gre/fw SRC_FW)
 aux_source_directory(${CMAKE_SOURCE_DIR}/engine/gre/render SRC_RENDER)
@@ -59,6 +61,7 @@ add_library( # Sets the name of the library.
              ${SRC_TOOLS}
              ${SRC_ENGINE}
              ${SRC_GRE}
+             ${SRC_DEBUG}
              ${SRC_FW}
              ${SRC_RENDER}
              ${SRC_GFX}
