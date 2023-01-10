@@ -154,7 +154,7 @@ namespace gfx
             }
         }
 
-        //todo the algorithm needs to be fixed
+        //todo fix the minus dist return value
         float hitAABB(const glm::vec2 &start, const glm::vec2 &end, const glm::vec2 &AA, const glm::vec2 &BB)
         {
             float dist = -1.f;
@@ -173,18 +173,20 @@ namespace gfx
             glm::vec2 tMin = glm::min(far, near);
 
 
-            float t1 = std::max(tMax.x, tMax.y);
-            float t0 = std::min(tMin.x, tMin.y);
+            float t1 = std::min(tMax.x, tMax.y);
+            float t0 = std::max(tMin.x, tMin.y);
+
             if(t0 < t1)
             {
                 if(t0 > 0.f)
                 {
-                    LIB_LOG_D("intersected, dist[%f]", t0);
+                    LIB_LOG_D("intersected, dist[%.5f]", t0);
                     dist = t0;
                 }
                 else
                 {
-                    LIB_LOG_D("unknown result, t0[%.5f] < t1[%.5f], but t0 < 0.0", t0, t1);
+                    LIB_LOG_D("intersected, dist[%.5f] is minus", t1);
+                    dist = t1;
                 }
             }
             else
