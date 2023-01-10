@@ -154,46 +154,34 @@ namespace gfx
             }
         }
 
-        //todo fix the minus dist return value
-        float hitAABB(const glm::vec2 &start, const glm::vec2 &end, const glm::vec2 &AA, const glm::vec2 &BB)
+        bool rayHitAABB(const glm::vec2 &start, const glm::vec2 &dir, const glm::vec2 &AA,
+                        const glm::vec2 &BB, float &outDist)
         {
-            float dist = -1.f;
-            glm::vec2 dir{end.x - start.x, end.y - start.y};
-            dir = glm::normalize(dir);
-            if(std::abs(dir.x) < 0.000001f || std::abs(dir.y) < 0.000001f)
+            bool hit{false};
+            // make sure direction is uniformed
+            glm::vec2 nDir = glm::normalize(dir);
+            if(std::abs(nDir.x) < 0.000001f || std::abs(nDir.y) < 0.000001f)
             {
-                LIB_LOG_D("no intersection, input dir[%f, %f] is parallel to axis", dir.x, dir.y);
-                return dist;
+                LIB_LOG_D("no intersection, input dir[%f, %f] is parallel to axis", nDir.x, nDir.y);
+                outDist = -1.f;
+                return hit;
             }
-            glm::vec2 invDir = 1.f / dir;
+            glm::vec2 invDir = 1.f / nDir;
             glm::vec2 far = (BB - start) * invDir;
             glm::vec2 near = (AA - start) * invDir;
 
             glm::vec2 tMax = glm::max(far, near);
             glm::vec2 tMin = glm::min(far, near);
 
-
             float t1 = std::min(tMax.x, tMax.y);
             float t0 = std::max(tMin.x, tMin.y);
 
-            if(t0 < t1)
+            if(t0 < t1 && t0 > 0.f)
             {
-                if(t0 > 0.f)
-                {
-                    LIB_LOG_D("intersected, dist[%.5f]", t0);
-                    dist = t0;
-                }
-                else
-                {
-                    LIB_LOG_D("intersected, dist[%.5f] is minus", t1);
-                    dist = t1;
-                }
+                outDist = t0;
+                hit = true;
             }
-            else
-            {
-                LIB_LOG_D("no intersection, t0[%.5f] >= t1[%.5f]", t0, t1);
-            }
-            return dist;
+            return hit;
         }
     }
 
@@ -214,6 +202,36 @@ namespace gfx
             item.x /= len;
             item.y /= len;
             item.z /= len;
+        }
+
+        bool rayHitAABB(const glm::vec3 &start, const glm::vec3 &dir, const glm::vec3 &AA,
+                        const glm::vec3 &BB, float &outDist)
+        {
+            bool hit{false};
+            // make sure direction is uniformed
+            glm::vec3 nDir = glm::normalize(dir);
+            if(std::abs(nDir.x) < 0.000001f || std::abs(nDir.y) < 0.000001f || std::abs(nDir.z) < 0.000001f)
+            {
+                LIB_LOG_D("no intersection, input dir[%f, %f, %f] is parallel to axis", nDir.x, nDir.y, nDir.z);
+                outDist = -1.f;
+                return hit;
+            }
+            glm::vec3 invDir = 1.f / nDir;
+            glm::vec3 far = (BB - start) * invDir;
+            glm::vec3 near = (AA - start) * invDir;
+
+            glm::vec3 tMax = glm::max(far, near);
+            glm::vec3 tMin = glm::min(far, near);
+
+            float t1 = std::min(tMax.x, tMax.y, tMax.z);
+            float t0 = std::max(tMin.x, tMin.y, tMin.z);
+
+            if(t0 < t1 && t0 > 0.f)
+            {
+                outDist = t0;
+                hit = true;
+            }
+            return hit;
         }
     }
 }

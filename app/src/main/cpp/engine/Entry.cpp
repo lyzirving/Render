@@ -69,16 +69,15 @@ static jboolean nativeHitAABB(JNIEnv *env, jclass clazz, jfloatArray jStart, jfl
     jfloat *aabb = env->GetFloatArrayElements(jAABB, nullptr);
 
     glm::vec2 s{start[0], start[1]};
-    glm::vec2 e{end[0], end[1]};
+    glm::vec2 d{end[0] - start[0], end[1] - start[1]};
+    d = glm::normalize(d);
     glm::vec2 aa{aabb[0], aabb[1]};
     glm::vec2 bb{aabb[2], aabb[3]};
-
-    LOG_DEBUG("start[%.5f, %.5f], end[%.5f, %.5f], aa[%.5f, %.5f], bb[%.5f, %.5f]",
-              s.x, s.y, e.x, e.y, aa.x, aa.y, bb.x, bb.y);
-
-    float dist = gfx::gfx2d::hitAABB(s, e, aa, bb);
-
-    return dist > 0.f;
+    float dist;
+    bool hit = gfx::gfx2d::rayHitAABB(s, d, aa, bb, dist);
+    LOG_DEBUG("hit[%s], start[%.5f, %.5f], dir[%.5f, %.5f], result dist[%f]",
+              hit ? "true" : "false", s.x, s.y, d.x, d.y, dist);
+    return hit;
 }
 
 static JNINativeMethod methods[] = {
