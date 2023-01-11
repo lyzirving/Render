@@ -225,8 +225,8 @@ HitResult hitBVH(Ray ray) {
             continue;
         }
 
-        float d1 = INF;
-        float d2 = INF;
+        float d1 = -1.f;
+        float d2 = -1.f;
         if(node.left > 0) {
             BVHNode leftChild = getBVHNode(node.left);
             d1 = hitAABB(ray, leftChild.AA, leftChild.BB);

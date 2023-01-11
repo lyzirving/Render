@@ -150,25 +150,25 @@ namespace gfx
         // insert a default node
         outNodes.emplace_back();
         int id = outNodes.size() - 1;
-        RrtBVHNode &node = outNodes[id];
-
-        node.AA = glm::vec3(INF);
-        node.BB = glm::vec3(-INF);
+        outNodes[id].childInfo.x = outNodes[id].childInfo.y = 0;
+        outNodes[id].posInfo.x = outNodes[id].posInfo.y = 0;
+        outNodes[id].AA = glm::vec3(INF);
+        outNodes[id].BB = glm::vec3(-INF);
 
         // find AABB
         for (int i = l; i <= r; ++i) {
             RrtTriangle& item = triangles[i];
             glm::vec3 min = glm::min(item.p0, glm::min(item.p1, item.p2));
             glm::vec3 max = glm::max(item.p0, glm::max(item.p1, item.p2));
-            node.AA = glm::min(node.AA, min);
-            node.BB = glm::max(node.BB, max);
+            outNodes[id].AA = glm::min(outNodes[id].AA, min);
+            outNodes[id].BB = glm::max(outNodes[id].BB, max);
         }
 
         //  leaf node
         if((r - l + 1) <= limit)
         {
-            node.posInfo.x = r - l + 1;
-            node.posInfo.y = l;
+            outNodes[id].posInfo.x = r - l + 1;
+            outNodes[id].posInfo.y = l;
             return id;
         }
 
@@ -183,8 +183,8 @@ namespace gfx
         if(axis == 1) std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpY);
         if(axis == 2) std::sort(&triangles[0] + l, &triangles[0] + r + 1, cmpZ);
 
-        node.childInfo.x = buildWithSAH(triangles, outNodes, l, split, limit);
-        node.childInfo.y = buildWithSAH(triangles, outNodes, split + 1, r, limit);
+        outNodes[id].childInfo.x = buildWithSAH(triangles, outNodes, l, split, limit);
+        outNodes[id].childInfo.y = buildWithSAH(triangles, outNodes, split + 1, r, limit);
 
         return id;
     }

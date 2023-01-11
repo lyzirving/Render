@@ -10,6 +10,7 @@
 #include "RrtTriBuf.h"
 #include "RrtBVHBuf.h"
 
+#include "RrtDebugEngine.h"
 #include "LogUtil.h"
 
 #ifdef LOCAL_TAG
@@ -53,6 +54,8 @@ namespace view
         m_BVHBuilder = std::make_shared<BVHBuilder>("StanfordBunny", true, false);
         m_BVHBuilder->buildEncoded(nodes);
         m_BVHBuilder->getTriangles(triangles);
+
+        //RrtDebugEngine::debug(triangles, nodes);
 
         m_triBuf->addTriangles(triangles);
         m_BVHBuf->addNodes(nodes);

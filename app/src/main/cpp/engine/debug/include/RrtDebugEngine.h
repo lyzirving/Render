@@ -17,13 +17,14 @@ class RrtDebugEngine
 public:
     static RrtDebugEngine* get();
 
-    void debug(const std::vector<gfx::RrtTriangle> &triangles, const std::vector<gfx::RrtBVHNode> &nodes);
+    static void debug(const std::vector<gfx::RrtTriangle> &triangles, const std::vector<gfx::RrtBVHNode> &nodes);
 private:
     static void hitBVH(const glm::vec3 &start, const glm::vec3 &dir, const std::vector<gfx::RrtTriangle> &triangles,
                 const std::vector<gfx::RrtBVHNode> &nodes, HitResult &result);
     static HitResult hitTriArray(const glm::vec3 &start, const glm::vec3 &dir, const int l, const int r,
                           const std::vector<gfx::RrtTriangle> &triangles);
     static HitResult hitTriangle(const glm::vec3 &start, const glm::vec3 &dir, const gfx::RrtTriangle &tri);
+    static float hitAABB(const glm::vec3 &start, const glm::vec3 &dir, const glm::vec3 &AA, const glm::vec3 &BB);
 
     RrtDebugEngine();
     ~RrtDebugEngine();
